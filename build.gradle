@@ -21,6 +21,11 @@ apply plugin: "idea"
 repositories {
     mavenLocal()
     maven {url "http://maven.aliyun.com/nexus/content/groups/public"}
+    maven {url "/Users/liuyandong/repositories/releases/"}
+}
+
+task hello() {
+    println("$rootDir")
 }
 
 dependencies {
@@ -37,4 +42,5 @@ dependencies {
     compile("com.google.zxing:javase:3.3.0")
     compile("dom4j:dom4j:1.6.1")
     compile("redis.clients:jedis:2.9.0")
+    compile("build.dream:saas-common:0.1.0")
 }
