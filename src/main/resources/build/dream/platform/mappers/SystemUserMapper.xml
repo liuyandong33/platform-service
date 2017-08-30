@@ -5,4 +5,10 @@
         INSERT INTO system_user()
         VALUES ()
     </insert>
+
+    <update id="update" parameterType="build.dream.common.saas.domains.SystemUser">
+        UPDATE system_user
+        SET
+        WHERE id = #{id}
+    </update>
 </mapper>

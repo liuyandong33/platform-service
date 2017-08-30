@@ -2,7 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.TenantMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.Tenant" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO tenant()
-        VALUES ()
+        INSERT INTO tenant(code, name, mobile,
+        email, linkman, business,
+        province_code, city_code, district_code,
+        goods_table_name, sale_table_name, partition_code,
+        user_id, create_user_id, last_update_user_id)
+        VALUES (#{code}, #{name}, #{mobile},
+        #{email}, #{linkman}, #{business},
+        #{provinceCode}, #{cityCode}, #{districtCode},
+        #{goodsTableName}, #{saleTableName}, #{partitionCode},
+        #{userId}, #{createUserId}, #{lastUpdateUserId})
     </insert>
+
+    <update id="update" parameterType="build.dream.common.saas.domains.SystemUser">
+        UPDATE tenant
+        SET code = #{code}, name = #{name}, email = #{email},
+        linkman = #{linkman}, business = #{business},
+        province_code = #{provinceCode}, city_code = #{cityCode}, district_code = #{districtCode},
+        goods_table_name = #{goodsTableName}, sale_table_name = #{saleTableName}, partition_code = #{partitionCode},
+        user_id = #{userId}, create_user_id = #{createUserId}, last_update_user_id = #{lastUpdateUserId},
+        deleted = #{deleted}
+        WHERE id = #{id}
+    </update>
 </mapper>
