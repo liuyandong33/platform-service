@@ -1,10 +1,13 @@
 package build.dream.platform.listeners;
 
+import build.dream.common.saas.domains.Configuration;
 import build.dream.common.saas.domains.SystemPartition;
+import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.common.utils.PropertyUtils;
 import build.dream.common.utils.SystemPartitionUtils;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -20,6 +23,8 @@ public class PlatformServiceServletContextListener implements ServletContextList
     private static final String PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME = "PlatformServiceServletContextListener";
     @Autowired
     private SystemPartitionService systemPartitionService;
+    @Autowired
+    private ConfigurationService configurationService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -27,9 +32,12 @@ public class PlatformServiceServletContextListener implements ServletContextList
         try {
             String deploymentEnvironment = PropertyUtils.getProperty(Constants.DEPLOYMENT_ENVIRONMENT);
             List<SystemPartition> systemPartitions = systemPartitionService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            SystemPartitionUtils.loadSystemPartition(systemPartitions, deploymentEnvironment);
+            SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
+
+            List<Configuration> configurations = configurationService.findAllByDeploymentEnvironment(deploymentEnvironment);
+            ConfigurationUtils.loadConfigurations(configurations);
         } catch (IOException e) {
-            LogUtils.error("初始化分区数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
+            LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
         }
     }
 

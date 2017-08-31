@@ -22,14 +22,14 @@ public class SystemManagementController {
     @Autowired
     private SystemPartitionService systemPartitionService;
 
-    @RequestMapping(value = "/refreshSystemPartition")
+    @RequestMapping(value = "/refreshSystemPartitions")
     @ResponseBody
-    public String refreshSystemPartition() {
+    public String refreshSystemPartitions() {
         ApiRest apiRest = null;
         try {
             String deploymentEnvironment = PropertyUtils.getProperty(Constants.DEPLOYMENT_ENVIRONMENT);
             List<SystemPartition> systemPartitions = systemPartitionService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            SystemPartitionUtils.loadSystemPartition(systemPartitions, deploymentEnvironment);
+            SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
             apiRest = new ApiRest();
             apiRest.setMessage("刷新分区配置成功！");
             apiRest.setSuccessful(true);
