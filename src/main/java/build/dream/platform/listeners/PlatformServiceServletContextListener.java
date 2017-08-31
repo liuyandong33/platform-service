@@ -9,6 +9,7 @@ import build.dream.common.utils.SystemPartitionUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -32,10 +33,14 @@ public class PlatformServiceServletContextListener implements ServletContextList
         try {
             String deploymentEnvironment = PropertyUtils.getProperty(Constants.DEPLOYMENT_ENVIRONMENT);
             List<SystemPartition> systemPartitions = systemPartitionService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
+            if (CollectionUtils.isNotEmpty(systemPartitions)) {
+                SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
+            }
 
             List<Configuration> configurations = configurationService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            ConfigurationUtils.loadConfigurations(configurations);
+            if (CollectionUtils.isNotEmpty(configurations)) {
+                ConfigurationUtils.loadConfigurations(configurations);
+            }
         } catch (IOException e) {
             LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
         }

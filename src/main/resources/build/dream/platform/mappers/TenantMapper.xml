@@ -24,4 +24,8 @@
         deleted = #{deleted}
         WHERE id = #{id}
     </update>
+
+    <select id="findById" resultType="build.dream.common.saas.domains.Tenant">
+        SELECT * FROM tenant WHERE id = #{tenantId} AND deleted = 0
+    </select>
 </mapper>

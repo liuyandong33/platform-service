@@ -11,4 +11,8 @@
         SET
         WHERE id = #{id}
     </update>
+
+    <select id="findByLoginNameOrEmailOrMobile" resultType="build.dream.common.saas.domains.SystemUser">
+        SELECT * FROM system_user WHERE (login_name = #{loginName} OR email = #{loginName} OR mobile = #{loginName}) AND deleted = 0
+    </select>
 </mapper>

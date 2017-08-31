@@ -4,6 +4,7 @@ import build.dream.common.saas.domains.Configuration;
 import build.dream.platform.mappers.ConfigurationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class ConfigurationService {
     @Autowired
     private ConfigurationMapper configurationMapper;
 
-    @Autowired
+    @Transactional(readOnly = true)
     public List<Configuration> findAllByDeploymentEnvironment(String deploymentEnvironment) {
         return configurationMapper.findAllByDeploymentEnvironment(deploymentEnvironment);
     }
