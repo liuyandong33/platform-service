@@ -19,6 +19,7 @@ public class UserService {
     private SystemUserMapper systemUserMapper;
     @Autowired
     private TenantMapper tenantMapper;
+
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(String loginName) {
         SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
