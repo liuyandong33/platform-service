@@ -36,8 +36,8 @@ public class RegisterController {
             Validate.notNull(requestParameters.get("provinceCode"), "省编码不能为空！");
             Validate.notNull(requestParameters.get("cityCode"), "市编码不能为空！");
             Validate.notNull(requestParameters.get("districtCode"), "区编码不能为空！");
-            Tenant tenant = ApplicationHandler.instantiateDomain(Tenant.class, requestParameters);
-            apiRest = new ApiRest(registerService.registerTenant(tenant), "注册商户成功！");
+            Validate.notNull(requestParameters.get("password"), "密码不能为空！");
+            apiRest = new ApiRest(registerService.registerTenant(requestParameters), "注册商户成功！");
         } catch (Exception e) {
             LogUtils.error("注册商户失败", REGISTER_CONTROLLER_SIMPLE_NAME, "registerTenant", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest(e);
