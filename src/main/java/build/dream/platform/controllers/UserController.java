@@ -30,7 +30,7 @@ public class UserController extends BasicController {
             Validate.notNull(loginName, "参数(loginName)不能为空！");
             apiRest = userService.obtainUserInfo(loginName);
         } catch (Exception e) {
-            LogUtils.error("获取用户信息失败", controllerSimpleName, "obtainUserInfo", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            LogUtils.error("获取用户信息失败", controllerSimpleName, "obtainUserInfo", e, requestParameters);
             apiRest = new ApiRest();
             apiRest.setError(e.getMessage());
             apiRest.setSuccessful(false);

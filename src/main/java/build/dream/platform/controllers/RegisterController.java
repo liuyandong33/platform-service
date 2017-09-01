@@ -39,7 +39,7 @@ public class RegisterController {
             Validate.notNull(requestParameters.get("password"), "密码不能为空！");
             apiRest = new ApiRest(registerService.registerTenant(requestParameters), "注册商户成功！");
         } catch (Exception e) {
-            LogUtils.error("注册商户失败", REGISTER_CONTROLLER_SIMPLE_NAME, "registerTenant", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            LogUtils.error("注册商户失败", REGISTER_CONTROLLER_SIMPLE_NAME, "registerTenant", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

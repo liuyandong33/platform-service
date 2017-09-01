@@ -36,9 +36,9 @@ public class RegisterService {
         String partitionCode = null;
         String business = tenant.getBusiness();
         if ("1".equals(business)) {
-            partitionCode = PropertyUtils.getProperty(Constants.CATERING_CURRENT_PARTITION_CODE);
+            partitionCode = ConfigurationUtils.getConfiguration(Constants.CATERING_CURRENT_PARTITION_CODE);
         } else if ("2".equals(business)) {
-            partitionCode = PropertyUtils.getProperty(Constants.RETAIL_CURRENT_PARTITION_CODE);
+            partitionCode = ConfigurationUtils.getConfiguration(Constants.RETAIL_CURRENT_PARTITION_CODE);
         }
         Integer currentPartitionQuantity = sequenceMapper.nextValue(partitionCode);
         Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
@@ -54,7 +54,7 @@ public class RegisterService {
         systemUser.setMobile(tenant.getMobile());
         systemUser.setEmail(tenant.getEmail());
         systemUser.setLoginName(tenant.getCode());
-        systemUser.setUserType(1); //TODO 使用common包中常量
+        systemUser.setUserType(Constants.USER_TYPE_TENANT);
         systemUser.setPassword(DigestUtils.md5Hex(parameters.get("password")));
         systemUser.setTenantId(tenant.getId());
         systemUser.setAccountNonExpired(true);
@@ -81,6 +81,7 @@ public class RegisterService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("systemUser", systemUser);
         data.put("tenant", tenant);
+        data.put("branch", initializeBranchApiRest.getData());
         return data;
     }
 }

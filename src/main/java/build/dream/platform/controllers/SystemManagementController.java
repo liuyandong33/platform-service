@@ -1,6 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.controllers.BasicController;
 import build.dream.common.saas.domains.SystemPartition;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
@@ -17,8 +18,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "/systemManagement")
-public class SystemManagementController {
-    private static final String SYSTEM_MANAGEMENT_CONTROLLER_SIMPLE_NAME = "SystemManagementController";
+public class SystemManagementController extends BasicController {
     @Autowired
     private SystemPartitionService systemPartitionService;
 
@@ -34,7 +34,7 @@ public class SystemManagementController {
             apiRest.setMessage("刷新分区配置成功！");
             apiRest.setSuccessful(true);
         } catch (Exception e) {
-            LogUtils.error("刷新分区配置失败", SYSTEM_MANAGEMENT_CONTROLLER_SIMPLE_NAME, "refreshSystemPartition", e.getClass().getSimpleName(), e.getMessage());
+            LogUtils.error("刷新分区配置失败", controllerSimpleName, "refreshSystemPartition", e);
             apiRest = new ApiRest();
             apiRest.setError(e.getMessage());
             apiRest.setSuccessful(false);
