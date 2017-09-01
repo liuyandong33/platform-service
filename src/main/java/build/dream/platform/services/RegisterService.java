@@ -32,7 +32,6 @@ public class RegisterService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException {
         Tenant tenant = ApplicationHandler.instantiateDomain(Tenant.class, parameters);
-        String code = SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("tenant_code"));
         String partitionCode = null;
         String business = tenant.getBusiness();
         if ("1".equals(business)) {
@@ -43,9 +42,7 @@ public class RegisterService {
         Integer currentPartitionQuantity = sequenceMapper.nextValue(partitionCode);
         Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
-        tenant.setGoodsTableName("goods_" + code);
-        tenant.setSaleTableName("sale_" + code);
-        tenant.setCode(code);
+        tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("tenant_code")));
         tenant.setCreateUserId(BigInteger.ZERO);
         tenant.setLastUpdateUserId(BigInteger.ZERO);
 
