@@ -27,8 +27,8 @@ public class UserService {
         Tenant tenant = tenantMapper.findById(systemUser.getTenantId());
         Validate.notNull(tenant, "商户不存在！");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("userInfo", systemUser);
-        data.put("tenantInfo", tenant);
+        data.put("user", systemUser);
+        data.put("tenant", tenant);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);

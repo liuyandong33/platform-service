@@ -30,7 +30,7 @@ public class RegisterService {
     private SequenceMapper sequenceMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException {
+    public ApiRest registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException {
         Tenant tenant = ApplicationHandler.instantiateDomain(Tenant.class, parameters);
         String partitionCode = null;
         String business = tenant.getBusiness();
@@ -76,9 +76,10 @@ public class RegisterService {
         ApiRest initializeBranchApiRest = ApiRest.fromJson(initializeBranchResult);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("systemUser", systemUser);
+        data.put("user", systemUser);
         data.put("tenant", tenant);
         data.put("branch", initializeBranchApiRest.getData());
-        return data;
+        ApiRest apiRest = new ApiRest(data, "注册商户成功！");
+        return apiRest;
     }
 }
