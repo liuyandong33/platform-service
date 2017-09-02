@@ -37,4 +37,20 @@ public class UserController extends BasicController {
         }
         return GsonUtils.toJson(apiRest);
     }
+
+    @RequestMapping(value = "/findAllUsers")
+    @ResponseBody
+    public String findAllUsers() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            apiRest = userService.findAllUsers(requestParameters);
+        } catch (Exception e) {
+            LogUtils.error("查询用户失败", controllerSimpleName, "findAllUsers", e, requestParameters);
+            apiRest = new ApiRest();
+            apiRest.setError(e.getMessage());
+            apiRest.setSuccessful(false);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
 }
