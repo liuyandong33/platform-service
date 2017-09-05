@@ -45,19 +45,23 @@ public class OrderService {
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             String tenantId = parameters.get("tenantId");
             Validate.notNull(tenantId, "参数(tenantId)不能为空！");
+            order.setOrderType(Constants.ORDER_TYPE_TENANT_ORDER);
             order.setTenantId(BigInteger.valueOf(Long.valueOf(tenantId)));
             order.setOrderNumber(SerialNumberGenerator.nextSerialNumber(10, sequenceMapper.nextValue("tenant_order_number")));
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
             String agentId = parameters.get("agentId");
             Validate.notNull(agentId, "参数(agentId)不能为空！");
+            order.setOrderType(Constants.ORDER_TYPE_AGENT_ORDER);
+            order.setAgentId(BigInteger.valueOf(Long.valueOf(agentId)));
             order.setOrderNumber(SerialNumberGenerator.nextSerialNumber(10, sequenceMapper.nextValue("tenant_order_number")));
         }
 
+        order.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
         order.setCreateUserId(bigIntegerUserId);
         order.setLastUpdateUserId(bigIntegerUserId);
         orderMapper.insert(order);
 
-        JsonArray orderDetailsJsonArray = GsonUtils.parseJsonArray(parameters.get("orderDetails"));
+        JsonArray orderDetailsJsonArray = GsonUtils.parseJsonArray(parameters.get("orderDetailsJson"));
         int size = orderDetailsJsonArray.size();
         List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
 
@@ -68,7 +72,7 @@ public class OrderService {
             goodsSpecificationIds.add(orderDetailsJsonArray.get(index).getAsJsonObject().get("goodsSpecificationId").getAsBigInteger());
         }
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", "=", goodsIds);
+        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
         List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new LinkedHashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
@@ -76,13 +80,16 @@ public class OrderService {
         }
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("id", "=", goodsSpecificationIds);
+        goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
         List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
         Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new LinkedHashMap<BigInteger, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
         }
 
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal payableAmount = BigDecimal.ZERO;
         for (int index = 0; index < size; index++) {
             JsonObject orderDetailJsonObject = orderDetailsJsonArray.get(index).getAsJsonObject();
             OrderDetail orderDetail = new OrderDetail();
@@ -94,9 +101,19 @@ public class OrderService {
             BigInteger goodsSpecificationId = orderDetailJsonObject.get("goodsSpecificationId").getAsBigInteger();
             GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
             orderDetail.setGoodsSpecificationId(goodsSpecification.getId());
-            orderDetail.setPrice(BigDecimal.ONE);
-            orderDetail.setDiscountAmount(BigDecimal.ZERO);
-            orderDetail.setRealPrice(BigDecimal.ZERO);
+            if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
+                orderDetail.setPrice(goodsSpecification.getTenantPrice());
+                orderDetail.setDiscountAmount(BigDecimal.ZERO);
+                orderDetail.setPayableAmount(goodsSpecification.getTenantPrice());
+            } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
+                orderDetail.setPrice(goodsSpecification.getAgentPrice());
+                orderDetail.setDiscountAmount(BigDecimal.ZERO);
+                orderDetail.setPayableAmount(goodsSpecification.getAgentPrice());
+            }
+            orderDetail.setAmount(orderDetailJsonObject.get("amount").getAsInt());
+            totalAmount = totalAmount.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getAmount())));
+            discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
+            payableAmount = payableAmount.add(orderDetail.getPayableAmount());
             orderDetail.setCreateUserId(bigIntegerUserId);
             orderDetail.setLastUpdateUserId(bigIntegerUserId);
             orderDetail.setLastUpdateRemark("保存订单！");
@@ -104,9 +121,9 @@ public class OrderService {
         }
         orderDetailMapper.insertAll(orderDetails);
 
-        order.setTotalAmount(BigDecimal.ZERO);
-        order.setDiscountAmount(BigDecimal.ZERO);
-        order.setPayableAmount(BigDecimal.ZERO);
+        order.setTotalAmount(totalAmount);
+        order.setDiscountAmount(discountAmount);
+        order.setPayableAmount(payableAmount);
         orderMapper.update(order);
 
         Map<String, Object> data = new HashMap<String, Object>();
