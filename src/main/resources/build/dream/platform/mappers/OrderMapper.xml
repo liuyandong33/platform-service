@@ -32,8 +32,25 @@
         WHERE id = #{id}
     </update>
 
-    <select id="find" parameterType="build.dream.common.utils.SearchModel">
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.Order">
         SELECT * FROM `order` <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findOrderInfos" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        SELECT
+            order.id AS order_id,
+            order.tenant_id,
+            order_detail.branch_id,
+            goods.id AS goods_id,
+            goods.metering_mode,
+            goods_specification.id AS goods_specification_id,
+            goods_specification.renewal_time
+        FROM `order`
+            INNER JOIN order_detail ON order.id = order_detail.order_id AND order_detail.deleted = 0
+            INNER JOIN goods ON order_detail.goods_id = goods.id AND goods.deleted = 0
+            INNER JOIN goods_specification ON order_detail.goods_specification_id = goods_specification.id AND goods_specification.deleted = 0
+        WHERE order.id = #{orderId}
+        AND order.deleted = 0
     </select>
 
     <sql id="searchConditionSql">

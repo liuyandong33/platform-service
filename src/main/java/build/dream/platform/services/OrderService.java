@@ -5,9 +5,11 @@ import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.Order;
 import build.dream.common.saas.domains.OrderDetail;
+import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
+import build.dream.platform.Application;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import com.google.gson.JsonArray;
@@ -98,10 +100,12 @@ public class OrderService {
             orderDetail.setOrderId(order.getId());
             BigInteger goodsId = orderDetailJsonObject.get("goodsId").getAsBigInteger();
             Goods goods = goodsMap.get(goodsId);
+            Validate.notNull(goods, "产品不存在！");
             orderDetail.setGoodsId(goods.getId());
 
             BigInteger goodsSpecificationId = orderDetailJsonObject.get("goodsSpecificationId").getAsBigInteger();
             GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
+            Validate.notNull(goodsSpecification, "产品规格不存在！");
             orderDetail.setGoodsSpecificationId(goodsSpecification.getId());
             Integer amount = orderDetailJsonObject.get("amount").getAsInt();
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
@@ -113,6 +117,7 @@ public class OrderService {
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
                 orderDetail.setPayableAmount(goodsSpecification.getAgentPrice().multiply(BigDecimal.valueOf(amount)));
             }
+            orderDetail.setBranchId(orderDetailJsonObject.get("branchId").getAsBigInteger());
             orderDetail.setAmount(amount);
             totalAmount = totalAmount.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getAmount())));
             discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
@@ -164,7 +169,15 @@ public class OrderService {
         order.setLastUpdateRemark(lastUpdateRemark);
         order.setPaidAmount(order.getPaidAmount().add(paidAmount));
         order.setLastUpdateUserId(BigInteger.ZERO);
+        order.setPaidType(paidType);
         orderMapper.update(order);
+
+        List<Map<String, Object>> orderInfos = orderMapper.findOrderInfos(order.getId());
+        for (Map<String, Object> orderInfo : orderInfos) {
+            long start = System.currentTimeMillis();
+            BigInteger orderId = ApplicationHandler.obtainBigIntegerFromMap(orderInfo, "orderId");
+            System.out.println(System.currentTimeMillis() - start);
+        }
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("支付回调处理成功！");
         apiRest.setSuccessful(true);

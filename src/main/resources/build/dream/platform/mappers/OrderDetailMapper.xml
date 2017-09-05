@@ -3,26 +3,26 @@
 <mapper namespace="build.dream.platform.mappers.OrderDetailMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.OrderDetail" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO order_detail(order_id, goods_id, goods_specification_id,
-        price, discount_amount, payable_amount,
-        amount, create_user_id, last_update_user_id,
-        last_update_remark)
+        branch_id, price, discount_amount,
+        payable_amount, amount, create_user_id,
+        last_update_user_id, last_update_remark)
         VALUES (#{orderId}, #{goodsId}, #{goodsSpecificationId},
-        #{price}, #{discountAmount}, #{payableAmount},
-        #{amount}, #{createUserId}, #{lastUpdateUserId},
-        #{lastUpdateRemark})
+        #{branchId}, #{price}, #{discountAmount},
+        #{payableAmount}, #{amount}, #{createUserId},
+        #{lastUpdateUserId}, #{lastUpdateRemark})
     </insert>
 
     <insert id="insertAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO order_detail(order_id, goods_id, goods_specification_id,
-        price, discount_amount, payable_amount,
-        amount, create_user_id, last_update_user_id,
-        last_update_remark)
+        branch_id, price, discount_amount,
+        payable_amount, amount, create_user_id,
+        last_update_user_id, last_update_remark)
         VALUES
         <foreach collection="list" index="index" item="orderDetail" separator=",">
             (#{orderDetail.orderId}, #{orderDetail.goodsId}, #{orderDetail.goodsSpecificationId},
-            #{orderDetail.price}, #{orderDetail.discountAmount}, #{orderDetail.payableAmount},
-            #{orderDetail.amount}, #{orderDetail.createUserId}, #{orderDetail.lastUpdateUserId},
-            #{orderDetail.lastUpdateRemark})
+            #{orderDetail.branchId}, #{orderDetail.price}, #{orderDetail.discountAmount},
+            #{orderDetail.payableAmount}, #{orderDetail.amount}, #{orderDetail.createUserId},
+            #{orderDetail.lastUpdateUserId}, #{orderDetail.lastUpdateRemark})
         </foreach>
     </insert>
 </mapper>
