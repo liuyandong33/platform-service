@@ -40,4 +40,5 @@ dependencies {
 //    compile("build.dream:saas-common:0.1.0")
     compile("org.apache.commons:commons-collections4:4.1")
     compile fileTree(include: ["*.jar"], dir: "libs")
+    compile("net.sf.json-lib:json-lib:2.4:jdk15")
 }
