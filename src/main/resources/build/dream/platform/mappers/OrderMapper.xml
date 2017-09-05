@@ -15,7 +15,7 @@
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.OrderDetail">
-        UPDATE order
+        UPDATE `order`
         SET order_number = #{orderNumber},
         order_type = #{orderType},
         order_status = #{orderStatus},
@@ -31,4 +31,25 @@
         deleted = #{deleted}
         WHERE id = #{id}
     </update>
+
+    <select id="find" parameterType="build.dream.common.utils.SearchModel">
+        SELECT * FROM `order` <include refid="searchConditionSql"></include>
+    </select>
+
+    <sql id="searchConditionSql">
+        WHERE
+        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
+            <choose>
+                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
+                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
+                </otherwise>
+            </choose>
+        </foreach>
+    </sql>
 </mapper>

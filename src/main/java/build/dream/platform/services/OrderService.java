@@ -15,6 +15,7 @@ import com.google.gson.JsonObject;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,6 +34,7 @@ public class OrderService {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
 
+    @Transactional(rollbackFor = Exception.class)
     public ApiRest saveOrder(Map<String, String> parameters) {
         Integer orderType = Integer.valueOf(parameters.get("orderType"));
         Validate.isTrue(orderType == Constants.ORDER_TYPE_TENANT_ORDER || orderType == Constants.ORDER_TYPE_AGENT_ORDER, "参数(orderType)只能为1或者2！");
@@ -101,22 +103,23 @@ public class OrderService {
             BigInteger goodsSpecificationId = orderDetailJsonObject.get("goodsSpecificationId").getAsBigInteger();
             GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
             orderDetail.setGoodsSpecificationId(goodsSpecification.getId());
+            Integer amount = orderDetailJsonObject.get("amount").getAsInt();
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getTenantPrice());
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
-                orderDetail.setPayableAmount(goodsSpecification.getTenantPrice());
+                orderDetail.setPayableAmount(goodsSpecification.getTenantPrice().multiply(BigDecimal.valueOf(amount)));
             } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getAgentPrice());
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
-                orderDetail.setPayableAmount(goodsSpecification.getAgentPrice());
+                orderDetail.setPayableAmount(goodsSpecification.getAgentPrice().multiply(BigDecimal.valueOf(amount)));
             }
-            orderDetail.setAmount(orderDetailJsonObject.get("amount").getAsInt());
+            orderDetail.setAmount(amount);
             totalAmount = totalAmount.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getAmount())));
             discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
             payableAmount = payableAmount.add(orderDetail.getPayableAmount());
             orderDetail.setCreateUserId(bigIntegerUserId);
             orderDetail.setLastUpdateUserId(bigIntegerUserId);
-            orderDetail.setLastUpdateRemark("保存订单！");
+            orderDetail.setLastUpdateRemark("保存订单详情！");
             orderDetails.add(orderDetail);
         }
         orderDetailMapper.insertAll(orderDetails);
@@ -124,6 +127,8 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
         order.setDiscountAmount(discountAmount);
         order.setPayableAmount(payableAmount);
+        order.setPaidAmount(BigDecimal.ZERO);
+        order.setLastUpdateRemark("保存订单！");
         orderMapper.update(order);
 
         Map<String, Object> data = new HashMap<String, Object>();
@@ -132,6 +137,36 @@ public class OrderService {
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setMessage("保存订单成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest handlePaymentCallback(Map<String, String> parameters, Integer paidType) {
+        String orderNumber = null;
+        BigDecimal paidAmount = null;
+        String lastUpdateRemark = null;
+        if (paidType == Constants.ORDER_PAID_TYPE_WEI_XIN) {
+            orderNumber = parameters.get("out_trade_no");
+            paidAmount = new BigDecimal(parameters.get("total_fee")).divide(new BigDecimal(100));
+            lastUpdateRemark = "支付宝支付回调！";
+        } else if (paidType == Constants.ORDER_PAID_TYPE_ALI_PAY) {
+            orderNumber = parameters.get("out_trade_no");
+            paidAmount = new BigDecimal(parameters.get("total_amount"));
+            lastUpdateRemark = "微信支付回调！";
+        }
+        SearchModel orderSearchModel = new SearchModel(true);
+        orderSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
+        Order order = orderMapper.find(orderSearchModel);
+        Validate.notNull(order, "订单不存在！");
+        Validate.isTrue(order.getOrderStatus() == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
+        order.setOrderStatus(Constants.ORDER_STATUS_PAID);
+        order.setLastUpdateRemark(lastUpdateRemark);
+        order.setPaidAmount(order.getPaidAmount().add(paidAmount));
+        order.setLastUpdateUserId(BigInteger.ZERO);
+        orderMapper.update(order);
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("支付回调处理成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }

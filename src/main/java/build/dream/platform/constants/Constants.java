@@ -7,4 +7,16 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer ORDER_TYPE_AGENT_ORDER = 2;
     public static final Integer ORDER_STATUS_UNPAID = 1;
     public static final Integer ORDER_STATUS_PAID = 2;
+
+    public static final String WEI_XIN_PAY_CALLBACK_SUCCESS_RETURN_VALUE = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
+    public static final String WEI_XIN_PAY_CALLBACK_FAILURE_RETURN_VALUE = "<xml><return_code><![CDATA[FAILURE]]></return_code></xml>";
+
+    public static final String ALI_PAY_CALLBACK_SUCCESS_RETURN_VALUE = "SUCCESS";
+    public static final String ALI_PAY_CALLBACK_FAILURE_RETURN_VALUE = "FAILURE";
+
+    public static final String TRADE_FINISHED = "TRADE_FINISHED";
+    public static final String TRADE_SUCCESS = "TRADE_SUCCESS";
+
+    public static final Integer ORDER_PAID_TYPE_WEI_XIN = 1;
+    public static final Integer ORDER_PAID_TYPE_ALI_PAY = 2;
 }
