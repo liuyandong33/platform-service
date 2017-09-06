@@ -6,21 +6,31 @@
         login_name, user_type, password,
         tenant_id, account_non_expired, account_non_locked,
         credentials_non_expired, enabled, create_user_id,
-        last_update_user_id)
+        last_update_user_id, last_update_remark)
         VALUES (#{name}, #{mobile}, #{email},
         #{loginName}, #{userType}, #{password},
         #{tenantId}, #{accountNonExpired}, #{accountNonLocked},
         #{credentialsNonExpired}, #{enabled}, #{createUserId},
-        #{lastUpdateUserId})
+        #{lastUpdateUserId}, #{lastUpdateRemark})
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.SystemUser">
         UPDATE system_user
-        SET name = #{name}, mobile = #{mobile}, email = #{email},
-            login_name = #{loginName}, user_type = #{userType}, password = #{password},
-            tenant_id = #{tenantId}, account_non_expired = #{accountNonExpired}, account_non_locked = #{accountNonLocked},
-            credentials_non_expired = #{credentialsNonExpired}, enabled = #{enabled}, create_user_id = #{createUserId},
-            last_update_user_id = #{lastUpdateUserId}
+        SET name = #{name},
+            mobile = #{mobile},
+            email = #{email},
+            login_name = #{loginName},
+            user_type = #{userType},
+            password = #{password},
+            tenant_id = #{tenantId},
+            account_non_expired = #{accountNonExpired},
+            account_non_locked = #{accountNonLocked},
+            credentials_non_expired = #{credentialsNonExpired},
+            enabled = #{enabled},
+            create_user_id = #{createUserId},
+            last_update_user_id = #{lastUpdateUserId},
+            last_update_remark = #{lastUpdateRemark},
+            deleted = #{deleted}
         WHERE id = #{id}
     </update>
 
@@ -30,6 +40,10 @@
 
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
         SELECT * FROM system_user <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findAllPaged" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
+        SELECT * FROM system_user <include refid="searchConditionSql"></include> <include refid="paginationSql"></include>
     </select>
 
     <sql id="searchConditionSql">

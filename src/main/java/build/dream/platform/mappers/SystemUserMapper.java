@@ -12,5 +12,7 @@ public interface SystemUserMapper {
     int insert(SystemUser systemUser);
     int update(SystemUser systemUser);
     SystemUser findByLoginNameOrEmailOrMobile(@Param("loginName") String loginName);
+    SystemUser find(SearchModel searchModel);
     List<SystemUser> findAll(SearchModel searchModel);
+    List<SystemUser> findAllPaged(SearchModel searchModel);
 }
