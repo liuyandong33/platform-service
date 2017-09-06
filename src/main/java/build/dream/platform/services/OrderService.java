@@ -49,13 +49,13 @@ public class OrderService {
             Validate.notNull(tenantId, "参数(tenantId)不能为空！");
             order.setOrderType(Constants.ORDER_TYPE_TENANT_ORDER);
             order.setTenantId(BigInteger.valueOf(Long.valueOf(tenantId)));
-            order.setOrderNumber(SerialNumberGenerator.nextSerialNumber(10, sequenceMapper.nextValue("tenant_order_number")));
+            order.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO",10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
             String agentId = parameters.get("agentId");
             Validate.notNull(agentId, "参数(agentId)不能为空！");
             order.setOrderType(Constants.ORDER_TYPE_AGENT_ORDER);
             order.setAgentId(BigInteger.valueOf(Long.valueOf(agentId)));
-            order.setOrderNumber(SerialNumberGenerator.nextSerialNumber(10, sequenceMapper.nextValue("tenant_order_number")));
+            order.setOrderNumber(SerialNumberGenerator.nextOrderNumber("AO", 10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("agent_order_number"))));
         }
 
         order.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
