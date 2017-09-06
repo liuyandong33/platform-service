@@ -6,14 +6,12 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.Order;
 import build.dream.common.saas.domains.OrderDetail;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
-import build.dream.platform.Application;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,15 +63,16 @@ public class OrderService {
         order.setLastUpdateUserId(bigIntegerUserId);
         orderMapper.insert(order);
 
-        JsonArray orderDetailsJsonArray = GsonUtils.parseJsonArray(parameters.get("orderDetailsJson"));
+        JSONArray orderDetailsJsonArray = JSONArray.fromObject(parameters.get("orderDetailsJson"));
         int size = orderDetailsJsonArray.size();
         List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
 
         List<BigInteger> goodsIds = new ArrayList<BigInteger>();
         List<BigInteger>goodsSpecificationIds = new ArrayList<BigInteger>();
         for (int index = 0; index < size; index++) {
-            goodsIds.add(orderDetailsJsonArray.get(index).getAsJsonObject().get("goodsId").getAsBigInteger());
-            goodsSpecificationIds.add(orderDetailsJsonArray.get(index).getAsJsonObject().get("goodsSpecificationId").getAsBigInteger());
+            JSONObject orderDetailJSONObject = orderDetailsJsonArray.getJSONObject(index);
+            goodsIds.add(BigInteger.valueOf(orderDetailJSONObject.getLong("goodsId")));
+            goodsSpecificationIds.add(BigInteger.valueOf(orderDetailJSONObject.getLong("goodsSpecificationId")));
         }
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
@@ -95,19 +94,19 @@ public class OrderService {
         BigDecimal discountAmount = BigDecimal.ZERO;
         BigDecimal payableAmount = BigDecimal.ZERO;
         for (int index = 0; index < size; index++) {
-            JsonObject orderDetailJsonObject = orderDetailsJsonArray.get(index).getAsJsonObject();
+            JSONObject orderDetailJSONObject = orderDetailsJsonArray.getJSONObject(index);
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(order.getId());
-            BigInteger goodsId = orderDetailJsonObject.get("goodsId").getAsBigInteger();
+            BigInteger goodsId = BigInteger.valueOf(orderDetailJSONObject.getLong("goodsId"));
             Goods goods = goodsMap.get(goodsId);
             Validate.notNull(goods, "产品不存在！");
             orderDetail.setGoodsId(goods.getId());
 
-            BigInteger goodsSpecificationId = orderDetailJsonObject.get("goodsSpecificationId").getAsBigInteger();
+            BigInteger goodsSpecificationId = BigInteger.valueOf(orderDetailJSONObject.getLong("goodsSpecificationId"));
             GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
             Validate.notNull(goodsSpecification, "产品规格不存在！");
             orderDetail.setGoodsSpecificationId(goodsSpecification.getId());
-            Integer amount = orderDetailJsonObject.get("amount").getAsInt();
+            Integer amount = orderDetailJSONObject.getInt("amount");
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getTenantPrice());
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
@@ -117,7 +116,7 @@ public class OrderService {
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
                 orderDetail.setPayableAmount(goodsSpecification.getAgentPrice().multiply(BigDecimal.valueOf(amount)));
             }
-            orderDetail.setBranchId(orderDetailJsonObject.get("branchId").getAsBigInteger());
+            orderDetail.setBranchId(BigInteger.valueOf(orderDetailJSONObject.getLong("branchId")));
             orderDetail.setAmount(amount);
             totalAmount = totalAmount.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getAmount())));
             discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
@@ -174,9 +173,7 @@ public class OrderService {
 
         List<Map<String, Object>> orderInfos = orderMapper.findOrderInfos(order.getId());
         for (Map<String, Object> orderInfo : orderInfos) {
-            long start = System.currentTimeMillis();
             BigInteger orderId = ApplicationHandler.obtainBigIntegerFromMap(orderInfo, "orderId");
-            System.out.println(System.currentTimeMillis() - start);
         }
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("支付回调处理成功！");
