@@ -5,18 +5,13 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.OrderService;
-import com.google.gson.JsonObject;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/order")
@@ -83,28 +78,5 @@ public class OrderController extends BasicController {
             returnValue = Constants.WEI_XIN_PAY_CALLBACK_FAILURE_RETURN_VALUE;
         }
         return returnValue;
-    }
-
-    @RequestMapping(value = "/test")
-    @ResponseBody
-    public String test() {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        int count = Integer.valueOf(requestParameters.get("count"));
-        Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < count; i++) {
-            map.put(UUID.randomUUID().toString(), UUID.randomUUID().toString());
-        }
-        String json = GsonUtils.toJson(map);
-        long start = System.currentTimeMillis();
-        JSONObject jsonObject = JSONObject.fromObject(json);
-        long time = System.currentTimeMillis() - start;
-
-        long start1 = System.currentTimeMillis();
-        JsonObject jsonObject1 = GsonUtils.parseJsonObject(json);
-        long end1 = System.currentTimeMillis();
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData((end1 - start1) + ":" + (time));
-        apiRest.setSuccessful(true);
-        return GsonUtils.toJson(apiRest);
     }
 }
