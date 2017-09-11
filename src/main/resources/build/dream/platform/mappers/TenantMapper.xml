@@ -5,22 +5,33 @@
         INSERT INTO tenant(code, name, mobile,
         email, linkman, business,
         province_code, city_code, district_code,
-        partition_code, user_id, create_user_id,
-        last_update_user_id, last_update_remark)
+        partition_code, user_id, tenant_type,
+        create_user_id, last_update_user_id, last_update_remark)
         VALUES (#{code}, #{name}, #{mobile},
         #{email}, #{linkman}, #{business},
         #{provinceCode}, #{cityCode}, #{districtCode},
-        #{partitionCode}, #{userId}, #{createUserId},
-        #{lastUpdateUserId}, #{lastUpdateRemark})
+        #{partitionCode}, #{userId}, #{tenantType},
+        #{createUserId}, #{lastUpdateUserId}, #{lastUpdateRemark})
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.SystemUser">
         UPDATE tenant
-        SET code = #{code}, name = #{name}, mobile = #{mobile},
-        email = #{email}, linkman = #{linkman}, business = #{business},
-        province_code = #{provinceCode}, city_code = #{cityCode}, district_code = #{districtCode},
-        partition_code = #{partitionCode}, user_id = #{userId}, create_user_id = #{createUserId},
-        last_update_user_id = #{lastUpdateUserId}, last_update_remark = #{lastUpdateRemark}, deleted = #{deleted}
+        SET code = #{code},
+            name = #{name},
+            mobile = #{mobile},
+            email = #{email},
+            linkman = #{linkman},
+            business = #{business},
+            province_code = #{provinceCode},
+            city_code = #{cityCode},
+            district_code = #{districtCode},
+            partition_code = #{partitionCode},
+            user_id = #{userId},
+            tenant_type = #{tenantType},
+            create_user_id = #{createUserId},
+            last_update_user_id = #{lastUpdateUserId},
+            last_update_remark = #{lastUpdateRemark},
+            deleted = #{deleted}
         WHERE id = #{id}
     </update>
 
