@@ -12,6 +12,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -173,7 +174,7 @@ public class OrderService {
 
         List<Map<String, Object>> orderInfos = orderMapper.findOrderInfos(order.getId());
         for (Map<String, Object> orderInfo : orderInfos) {
-            BigInteger orderId = ApplicationHandler.obtainBigIntegerFromMap(orderInfo, "orderId");
+            BigInteger orderId = BigInteger.valueOf(MapUtils.getLongValue(orderInfo, "orderId"));
         }
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("支付回调处理成功！");

@@ -1,5 +1,6 @@
 package build.dream.platform.listeners;
 
+import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.saas.domains.Configuration;
 import build.dream.common.saas.domains.SystemPartition;
 import build.dream.common.saas.domains.SystemUser;
@@ -8,21 +9,18 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @WebListener
-public class PlatformServiceServletContextListener implements ServletContextListener {
+public class PlatformServiceServletContextListener extends BasicServletContextListener {
     private static final String PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME = "PlatformServiceServletContextListener";
     @Autowired
     private SystemPartitionService systemPartitionService;
@@ -33,6 +31,7 @@ public class PlatformServiceServletContextListener implements ServletContextList
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+        super.contextInitialized(servletContextEvent);
         WebApplicationContextUtils.getRequiredWebApplicationContext(servletContextEvent.getServletContext()).getAutowireCapableBeanFactory().autowireBean(this);
         try {
             String deploymentEnvironment = PropertyUtils.getProperty(Constants.DEPLOYMENT_ENVIRONMENT);

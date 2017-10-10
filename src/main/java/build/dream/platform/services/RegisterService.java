@@ -31,7 +31,7 @@ public class RegisterService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException {
-        Tenant tenant = ApplicationHandler.instantiateDomain(Tenant.class, parameters);
+        Tenant tenant = ApplicationHandler.instantiateObject(Tenant.class, parameters);
         String partitionCode = null;
         String business = tenant.getBusiness();
         if ("1".equals(business)) {
