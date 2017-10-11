@@ -6,6 +6,7 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.CacheUtils;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.SystemUserMapper;
@@ -16,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -49,6 +52,10 @@ public class LoginService {
             sessionMap.put(SessionConstants.KEY_TENANT_NAME, tenant.getName());
             sessionMap.put(SessionConstants.KEY_TENANT_PARTITION_CODE, tenant.getPartitionCode());
         }
+        List<String> authorityCodes = new ArrayList<String>();
+        authorityCodes.add("123");
+        authorityCodes.add("456");
+        sessionMap.put(SessionConstants.KEY_AUTHORITY_CODES, GsonUtils.toJson(authorityCodes));
         CacheUtils.setAttributesToSession(sessionId, sessionMap);
 
         ApiRest apiRest = new ApiRest();

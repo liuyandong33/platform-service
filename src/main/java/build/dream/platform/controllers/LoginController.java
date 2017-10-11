@@ -21,6 +21,7 @@ public class LoginController extends BasicController {
     private LoginService loginService;
 
     @RequestMapping(value = "/login")
+    @ResponseBody
     public String login() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
@@ -35,18 +36,9 @@ public class LoginController extends BasicController {
             Validate.notNull(password, ApplicationHandler.obtainParameterErrorMessage("sessionId"));
             apiRest = loginService.login(loginName, password, sessionId);
         } catch (Exception e) {
-            LogUtils.error("查询支付宝支付账号失败", controllerSimpleName, "findAlipayAccount", e, requestParameters);
-            apiRest = new ApiRest();
-            apiRest.setError(e.getMessage());
-            apiRest.setSuccessful(false);
+            LogUtils.error("登录失败", controllerSimpleName, "login", e, requestParameters);
+            apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
-    }
-
-    @RequestMapping(value = "/obtainSessionId")
-    @ResponseBody
-    public String obtainSessionId() {
-        String sessionId = ApplicationHandler.getSessionId();
-        return sessionId;
     }
 }
