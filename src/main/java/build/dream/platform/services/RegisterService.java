@@ -72,8 +72,7 @@ public class RegisterService {
         initializeBranchRequestParameters.put("tenantId", tenant.getId().toString());
         initializeBranchRequestParameters.put("tenantCode", tenant.getCode());
         initializeBranchRequestParameters.put("userId", tenant.getUserId().toString());
-        String initializeBranchResult = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
-        ApiRest initializeBranchApiRest = ApiRest.fromJson(initializeBranchResult);
+        ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
