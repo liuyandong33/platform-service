@@ -7,6 +7,7 @@ import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.services.UserService;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +48,24 @@ public class UserController extends BasicController {
             apiRest = userService.findAllUsers(requestParameters);
         } catch (Exception e) {
             LogUtils.error("查询用户失败", controllerSimpleName, "findAllUsers", e, requestParameters);
+            apiRest = new ApiRest();
+            apiRest.setError(e.getMessage());
+            apiRest.setSuccessful(false);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/findAllAppAuthorities")
+    @ResponseBody
+    public String findAllAppAuthorities() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            String userId = requestParameters.get("userId");
+            Validate.notNull(userId, ApplicationHandler.obtainParameterErrorMessage("userId"));
+            apiRest = userService.findAllAppAuthorities(NumberUtils.createBigInteger(userId));
+        } catch (Exception e) {
+            LogUtils.error("查询APP权限失败", controllerSimpleName, "findAllAppAuthorities", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest();
             apiRest.setError(e.getMessage());
             apiRest.setSuccessful(false);

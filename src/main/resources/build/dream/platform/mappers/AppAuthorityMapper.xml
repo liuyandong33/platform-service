@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.AppAuthorityMapper">
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AppAuthority">
+        SELECT ${selectColumns} FROM app_authority <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AppAuthority">
+        SELECT ${selectColumns} FROM app_authority <include refid="searchConditionSql"></include>
+    </select>
+
+    <sql id="searchConditionSql">
+        WHERE
+        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
+            <choose>
+                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
+                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
+                </otherwise>
+            </choose>
+        </foreach>
+    </sql>
+
+    <select id="findAllAppAuthorities" resultType="build.dream.common.saas.domains.AppAuthority">
+        SELECT
+        app_authority.*
+        FROM app_authority
+        INNER JOIN role_authority_r ON role_authority_r.authority_id = app_authority.id
+        INNER JOIN user_role_r ON user_role_r.role_id = role_authority_r.role_id AND user_role_r.user_id = #{userId}
+        WHERE app_authority.deleted = 0
+    </select>
+</mapper>

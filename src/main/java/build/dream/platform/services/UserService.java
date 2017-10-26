@@ -1,10 +1,12 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.AppAuthority;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
-import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.AppAuthorityMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +14,10 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +30,8 @@ public class UserService {
     private SystemUserMapper systemUserMapper;
     @Autowired
     private TenantMapper tenantMapper;
+    @Autowired
+    private AppAuthorityMapper appAuthorityMapper;
 
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(String loginName) {
@@ -59,6 +66,16 @@ public class UserService {
             List<SystemUser> systemUsers = systemUserMapper.findAll(searchModel);
             apiRest = new ApiRest(systemUsers, "查询成功！");
         }
+        return apiRest;
+    }
+
+    @Transactional(readOnly = true)
+    public ApiRest findAllAppAuthorities(BigInteger userId) throws IOException {
+        List<AppAuthority> appAuthorities = appAuthorityMapper.findAllAppAuthorities(userId);
+        ApiRest apiRest = new ApiRest();
+        apiRest.setData(appAuthorities);
+        apiRest.setMessage("查询APP权限成功！");
+        apiRest.setSuccessful(true);
         return apiRest;
     }
 }
