@@ -74,4 +74,12 @@ public class WeiXinOpenPlatformApplicationService {
         apiRest.setSuccessful(true);
         return apiRest;
     }
+
+    @Transactional(readOnly = true)
+    public WeiXinOpenPlatformApplication find(String appId) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, appId);
+        WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = weiXinOpenPlatformApplicationMapper.find(searchModel);
+        return weiXinOpenPlatformApplication;
+    }
 }
