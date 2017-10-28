@@ -19,4 +19,8 @@ public class Constants extends build.dream.common.constants.Constants {
 
     public static final Integer ORDER_PAID_TYPE_WEI_XIN = 1;
     public static final Integer ORDER_PAID_TYPE_ALI_PAY = 2;
+
+    public static final String SMS_PLATFORM_APP_ID = "sms.platform.app.id";
+    public static final String SMS_PLATFORM_APP_SECRET = "sms.platform.app.secret";
+    public static final String SMS_PLATFORM_SERVICE_URL = "sms.platform.service.url";
 }
