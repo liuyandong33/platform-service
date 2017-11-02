@@ -35,7 +35,7 @@ public class RegisterService {
     private TenantSecretKeyMapper tenantSecretKeyMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException {
+    public ApiRest registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException, NoSuchAlgorithmException {
         Tenant tenant = ApplicationHandler.instantiateObject(Tenant.class, parameters);
         String partitionCode = null;
         String business = tenant.getBusiness();
@@ -48,8 +48,10 @@ public class RegisterService {
         Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
         tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("tenant_code")));
-        tenant.setCreateUserId(BigInteger.ZERO);
-        tenant.setLastUpdateUserId(BigInteger.ZERO);
+
+        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        tenant.setCreateUserId(userId);
+        tenant.setLastUpdateUserId(userId);
 
         SystemUser systemUser = new SystemUser();
         systemUser.setName(tenant.getLinkman());
@@ -63,8 +65,8 @@ public class RegisterService {
         systemUser.setAccountNonLocked(true);
         systemUser.setCredentialsNonExpired(true);
         systemUser.setEnabled(true);
-        systemUser.setCreateUserId(BigInteger.ZERO);
-        systemUser.setLastUpdateUserId(BigInteger.ZERO);
+        systemUser.setCreateUserId(userId);
+        systemUser.setLastUpdateUserId(userId);
         systemUserMapper.insert(systemUser);
 
         tenant.setUserId(systemUser.getId());
@@ -72,6 +74,18 @@ public class RegisterService {
 
         systemUser.setTenantId(tenant.getId());
         systemUserMapper.update(systemUser);
+
+        TenantSecretKey tenantSecretKey = new TenantSecretKey();
+        tenantSecretKey.setTenantId(tenant.getId());
+        tenantSecretKey.setTenantCode(tenant.getCode());
+        String[] rsaKeys = RSAUtils.generateKeyPair(2048);
+        tenantSecretKey.setPublicKey(rsaKeys[0]);
+        tenantSecretKey.setPrivateKey(rsaKeys[1]);
+        tenantSecretKey.setCreateUserId(userId);
+        tenantSecretKey.setLastUpdateUserId(userId);
+        tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
+        tenantSecretKeyMapper.insert(tenantSecretKey);
+
         String serviceName = CommonUtils.getServiceName(business);
         Map<String, String> initializeBranchRequestParameters = new HashMap<String, String>();
         initializeBranchRequestParameters.put("tenantId", tenant.getId().toString());
