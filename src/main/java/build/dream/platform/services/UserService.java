@@ -34,7 +34,7 @@ public class UserService {
     private AppAuthorityMapper appAuthorityMapper;
 
     @Transactional(readOnly = true)
-    public ApiRest obtainUserInfo(String loginName) {
+    public ApiRest obtainUserInfo(String loginName) throws IOException {
         SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
         Validate.notNull(systemUser, "用户不存在！");
 
@@ -42,9 +42,16 @@ public class UserService {
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getTenantId());
         Tenant tenant = tenantMapper.find(searchModel);
         Validate.notNull(tenant, "商户不存在！");
+
+        Map<String, String> findBranchInfoRequestParameters = new HashMap<String, String>();
+        findBranchInfoRequestParameters.put("tenantId", tenant.getId().toString());
+        findBranchInfoRequestParameters.put("userId", systemUser.getId().toString());
+        ApiRest findBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "findBranchInfo", findBranchInfoRequestParameters);
+        Validate.isTrue(findBranchInfoApiRest.isSuccessful(), findBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
+        data.put("branch", findBranchInfoApiRest.getData());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
