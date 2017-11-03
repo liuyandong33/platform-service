@@ -4,18 +4,20 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AppAuthority;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
-import build.dream.common.utils.*;
+import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.utils.CommonUtils;
+import build.dream.common.utils.ProxyUtils;
+import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppAuthorityMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
+import build.dream.platform.mappers.TenantSecretKeyMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -32,6 +34,8 @@ public class UserService {
     private TenantMapper tenantMapper;
     @Autowired
     private AppAuthorityMapper appAuthorityMapper;
+    @Autowired
+    private TenantSecretKeyMapper tenantSecretKeyMapper;
 
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(String loginName) throws IOException {
@@ -43,6 +47,11 @@ public class UserService {
         Tenant tenant = tenantMapper.find(searchModel);
         Validate.notNull(tenant, "商户不存在！");
 
+        SearchModel tenantSecretKeySearchModel = new SearchModel(true);
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenant.getId());
+        TenantSecretKey tenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel);
+        Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
+
         Map<String, String> findBranchInfoRequestParameters = new HashMap<String, String>();
         findBranchInfoRequestParameters.put("tenantId", tenant.getId().toString());
         findBranchInfoRequestParameters.put("userId", systemUser.getId().toString());
@@ -52,6 +61,7 @@ public class UserService {
         data.put("user", systemUser);
         data.put("tenant", tenant);
         data.put("branch", findBranchInfoApiRest.getData());
+        data.put("tenantSecretKey", tenantSecretKey);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
