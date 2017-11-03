@@ -106,9 +106,9 @@ public class RegisterService {
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
         tenantSecretKey.setTenantId(BigInteger.ZERO);
         tenantSecretKey.setTenantCode("61011888");
-        String[] aa = RSAUtils.generateKeyPair(2048);
-        tenantSecretKey.setPublicKey(aa[0]);
-        tenantSecretKey.setPrivateKey(aa[1]);
+        String[] rsaKeys = RSAUtils.generateKeyPair(2048);
+        tenantSecretKey.setPublicKey(rsaKeys[0]);
+        tenantSecretKey.setPrivateKey(rsaKeys[1]);
         tenantSecretKey.setCreateUserId(BigInteger.ONE);
         tenantSecretKey.setLastUpdateUserId(BigInteger.TEN);
         tenantSecretKeyMapper.insert(tenantSecretKey);
