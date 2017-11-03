@@ -7,13 +7,12 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
+import build.dream.platform.services.SystemUserService;
 import build.dream.platform.services.TenantSecretKeyService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
@@ -31,7 +30,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     @Autowired
     private ConfigurationService configurationService;
     @Autowired
-    private SystemUserMapper systemUserMapper;
+    private SystemUserService systemUserService;
     @Autowired
     private TenantSecretKeyService tenantSecretKeyService;
 
@@ -52,7 +51,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
             SearchModel systemUserSearchModel = new SearchModel(true);
             systemUserSearchModel.addSearchCondition("user_type", Constants.SQL_OPERATION_SYMBOL_EQUALS, BigInteger.valueOf(3));
-            List<SystemUser> systemUsers = systemUserMapper.findAll(systemUserSearchModel);
+            List<SystemUser> systemUsers = systemUserService.findAll(systemUserSearchModel);
             CommonUtils.loadServiceSystemUsers(systemUsers);
 
             List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAllTenantSecretKeys();
