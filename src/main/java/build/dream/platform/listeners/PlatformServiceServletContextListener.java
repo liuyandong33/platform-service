@@ -61,6 +61,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             for (TenantSecretKey tenantSecretKey : tenantSecretKeys) {
                 tenantSecretKeyMap.put(tenantSecretKey.getTenantId().toString(), GsonUtils.toJson(tenantSecretKey));
             }
+            CacheUtils.delete(Constants.KEY_TENANT_SECRET_KEYS);
             CacheUtils.hmset(Constants.KEY_TENANT_SECRET_KEYS, tenantSecretKeyMap);
         } catch (IOException e) {
             LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
