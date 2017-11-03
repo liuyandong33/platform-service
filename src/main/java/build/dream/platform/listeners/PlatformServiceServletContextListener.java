@@ -54,7 +54,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             List<SystemUser> systemUsers = systemUserService.findAll(systemUserSearchModel);
             CommonUtils.loadServiceSystemUsers(systemUsers);
 
-            List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAllTenantSecretKeys();
+            SearchModel tenantSecretKeySearchModel = new SearchModel(true);
+            List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll(tenantSecretKeySearchModel);
             Map<String, String> tenantSecretKeyMap = new HashMap<String, String>();
             for (TenantSecretKey tenantSecretKey : tenantSecretKeys) {
                 tenantSecretKeyMap.put(tenantSecretKey.getTenantId().toString(), GsonUtils.toJson(tenantSecretKey));

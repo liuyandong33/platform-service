@@ -15,8 +15,7 @@ public class TenantSecretKeyService {
     private TenantSecretKeyMapper tenantSecretKeyMapper;
 
     @Transactional(readOnly = true)
-    public List<TenantSecretKey> findAllTenantSecretKeys() {
-        SearchModel searchModel = new SearchModel(true);
+    public List<TenantSecretKey> findAll(SearchModel searchModel) {
         return tenantSecretKeyMapper.findAll(searchModel);
     }
 }
