@@ -30,7 +30,7 @@ public class ElemeCallbackMessageController extends BasicController {
             saveElemeCallbackMessageModel.validateAndThrow();
             apiRest = elemeCallbackMessageService.saveElemeCallbackMessage(saveElemeCallbackMessageModel);
         } catch (Exception e) {
-            LogUtils.error("查询APP权限失败", controllerSimpleName, "saveElemeCallbackMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            LogUtils.error("保存饿了么回调信息失败", controllerSimpleName, "saveElemeCallbackMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest();
             apiRest.setError(e.getMessage());
             apiRest.setSuccessful(false);

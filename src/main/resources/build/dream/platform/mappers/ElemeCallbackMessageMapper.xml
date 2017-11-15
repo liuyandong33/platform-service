@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.ElemeCallbackMessageMapper">
+    <insert id="insert" parameterType="build.dream.common.saas.domains.ElemeCallbackMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO eleme_callback_message(request_id, type, app_id,
+        message, shop_id, timestamp,
+        signature, user_id, create_user_id,
+        last_update_user_id, last_update_remark)
+        VALUES(#{requestId}, #{type}, #{appId},
+        #{message}, #{shopId}, #{timestamp},
+        #{signature}, #{userId}, #{createUserId},
+        #{lastUpdateUserId}, #{lastUpdateRemark})
+    </insert>
+
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.ElemeCallbackMessage">
+        SELECT ${selectColumns} FROM eleme_callback_message <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.ElemeCallbackMessage">
+        SELECT ${selectColumns} FROM eleme_callback_message <include refid="searchConditionSql"></include>
+    </select>
+
+    <sql id="searchConditionSql">
+        WHERE
+        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
+            <choose>
+                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
+                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
+                </otherwise>
+            </choose>
+        </foreach>
+    </sql>
+</mapper>

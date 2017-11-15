@@ -50,7 +50,7 @@ public class LoginService {
             sessionMap.put(SessionConstants.KEY_TENANT_ID, tenant.getId().toString());
             sessionMap.put(SessionConstants.KEY_TENANT_CODE, tenant.getCode());
             sessionMap.put(SessionConstants.KEY_TENANT_NAME, tenant.getName());
-            sessionMap.put(SessionConstants.KEY_TENANT_PARTITION_CODE, tenant.getPartitionCode());
+            sessionMap.put(SessionConstants.KEY_PARTITION_CODE, tenant.getPartitionCode());
         }
         List<String> authorityCodes = new ArrayList<String>();
         authorityCodes.add("123");

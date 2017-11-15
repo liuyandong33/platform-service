@@ -27,10 +27,10 @@ public class SaveElemeCallbackMessageModel extends BasicModel {
     private BigInteger timestamp;
 
     @NotNull
+    @Length(max = 50)
     private String signature;
 
     @NotNull
-    @Length(max = 50)
     private BigInteger userId;
 
     public String getRequestId() {
