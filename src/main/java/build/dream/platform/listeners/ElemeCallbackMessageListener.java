@@ -2,6 +2,7 @@ package build.dream.platform.listeners;
 
 import build.dream.common.saas.domains.ElemeCallbackMessage;
 import build.dream.common.utils.CacheUtils;
+import build.dream.common.utils.CommonUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.ElemeCallbackMessageService;
 import net.sf.json.JSONObject;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -44,6 +46,16 @@ public class ElemeCallbackMessageListener implements MessageListener {
             elemeCallbackMessage.setUserId(NumberUtils.createBigInteger(callbackRequestBodyJsonObject.getString("userId")));
             elemeCallbackMessage.setMessageMd5(uuid);
             elemeCallbackMessage.setHandleResult(Constants.ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_SUCCESS);
+
+            BigInteger userId = null;
+            try {
+                userId = CommonUtils.getServiceSystemUserId();
+            } catch (Exception e) {
+                userId = BigInteger.ZERO;
+            }
+            elemeCallbackMessage.setCreateUserId(userId);
+            elemeCallbackMessage.setLastUpdateUserId(userId);
+            elemeCallbackMessage.setLastUpdateRemark("保存饿了么回调信息！");
             elemeCallbackMessageService.saveElemeCallbackMessage(elemeCallbackMessage);
         }
     }
