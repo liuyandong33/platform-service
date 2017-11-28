@@ -23,4 +23,7 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String SMS_PLATFORM_APP_ID = "sms.platform.app.id";
     public static final String SMS_PLATFORM_APP_SECRET = "sms.platform.app.secret";
     public static final String SMS_PLATFORM_SERVICE_URL = "sms.platform.service.url";
+
+    public static final Integer ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_SUCCESS = 1;
+    public static final Integer ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_FAILURE = 2;
 }

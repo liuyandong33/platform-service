@@ -5,7 +5,6 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.platform.models.elemecallbackmessage.SaveElemeCallbackMessageModel;
 import build.dream.platform.services.ElemeCallbackMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,17 +19,17 @@ public class ElemeCallbackMessageController extends BasicController {
     @Autowired
     private ElemeCallbackMessageService elemeCallbackMessageService;
 
-    @RequestMapping(value = "/saveElemeCallbackMessage")
+    @RequestMapping(value = "/markHandleFailureMessage")
     @ResponseBody
     public String saveElemeCallbackMessage() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            SaveElemeCallbackMessageModel saveElemeCallbackMessageModel = ApplicationHandler.instantiateObject(SaveElemeCallbackMessageModel.class, requestParameters);
-            saveElemeCallbackMessageModel.validateAndThrow();
-            apiRest = elemeCallbackMessageService.saveElemeCallbackMessage(saveElemeCallbackMessageModel);
+            String uuid = requestParameters.get("uuid");
+            ApplicationHandler.notNull(uuid, "uuid");
+            apiRest = elemeCallbackMessageService.markHandleFailureMessage(uuid);
         } catch (Exception e) {
-            LogUtils.error("保存饿了么回调信息失败", controllerSimpleName, "saveElemeCallbackMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            LogUtils.error("标记处理失败消息失败", controllerSimpleName, "markHandleFailureMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest();
             apiRest.setError(e.getMessage());
             apiRest.setSuccessful(false);

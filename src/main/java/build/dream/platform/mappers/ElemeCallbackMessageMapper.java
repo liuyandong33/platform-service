@@ -11,4 +11,5 @@ public interface ElemeCallbackMessageMapper {
     long insert(ElemeCallbackMessage elemeCallbackMessage);
     ElemeCallbackMessage find(SearchModel searchModel);
     List<ElemeCallbackMessage> findAll(SearchModel searchModel);
+    long update(ElemeCallbackMessage elemeCallbackMessage);
 }
