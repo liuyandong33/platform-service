@@ -2,33 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.OrderMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.OrderDetail" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `order`(order_number, order_type, order_status,
+        INSERT INTO order(order_number, order_type, order_status,
         tenant_id, agent_id, total_amount,
         discount_amount, payable_amount, paid_amount,
         paid_type, create_user_id, last_update_user_id,
         last_update_remark)
-        VALUES (#{orderNumber}, #{orderType}, #{orderStatus},
+        VALUES(#{orderNumber}, #{orderType}, #{orderStatus},
         #{tenantId}, #{agentId}, #{totalAmount},
         #{discountAmount}, #{payableAmount}, #{paidAmount},
         #{paidType}, #{createUserId}, #{lastUpdateUserId},
         #{lastUpdateRemark})
     </insert>
 
-    <update id="update" parameterType="build.dream.common.saas.domains.OrderDetail">
+    <update id="update" parameterType="build.dream.common.saas.domains.Order">
         UPDATE `order`
         SET order_number = #{orderNumber},
-        order_type = #{orderType},
-        order_status = #{orderStatus},
-        tenant_id = #{tenantId},
-        agent_id = #{agentId},
-        total_amount = #{totalAmount},
-        discount_amount = #{discountAmount},
-        payable_amount = #{payableAmount},
-        paid_amount = #{paidAmount},
-        paid_type = #{paidType},
-        create_user_id = #{createUserId},
-        last_update_user_id = #{lastUpdateUserId},
-        deleted = #{deleted}
+            order_type = #{orderType},
+            order_status = #{orderStatus},
+            tenant_id = #{tenantId},
+            agent_id = #{agentId},
+            total_amount = #{totalAmount},
+            discount_amount = #{discountAmount},
+            payable_amount = #{payableAmount},
+            paid_amount = #{paidAmount},
+            paid_type = #{paidType},
+            create_user_id = #{createUserId},
+            last_update_user_id = #{lastUpdateUserId},
+            last_update_remark = #{lastUpdateRemark},
+            deleted = #{deleted}
         WHERE id = #{id}
     </update>
 
@@ -68,4 +69,11 @@
     <sql id="paginationSql">
         LIMIT #{offset}, #{maxResults}
     </sql>
+
+    <update id="deleteAllByIds">
+        UPDATE `order` SET deleted = 1, last_update_remark = #{lastUpdateRemark} WHERE id IN
+        <foreach collection="orderIds" index="index" item="orderId" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </update>
 </mapper>

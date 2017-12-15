@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +74,28 @@ public class OrderController extends BasicController {
             apiRest = orderService.obtainAllOrderInfos(obtainAllOrderInfosModel);
         } catch (Exception e) {
             LogUtils.error("获取订单信息失败", controllerSimpleName, "obtainAllOrderInfos", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/deleteOrders", method = RequestMethod.DELETE)
+    @ResponseBody
+    public String deleteOrders() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            String orderIds = requestParameters.get("orderIds");
+            ApplicationHandler.notEmpty(orderIds, "orderIds");
+
+            List<BigInteger> bigIntegerOrderIds = new ArrayList<BigInteger>();
+            String[] orderIdArray = orderIds.split(",");
+            for (String orderId : orderIdArray) {
+                bigIntegerOrderIds.add(NumberUtils.createBigInteger(orderId));
+            }
+            apiRest = orderService.deleteOrders(bigIntegerOrderIds);
+        } catch (Exception e) {
+            LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrders", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

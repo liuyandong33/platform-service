@@ -194,4 +194,14 @@ public class OrderService {
         apiRest.setSuccessful(true);
         return apiRest;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest deleteOrders(List<BigInteger> orderIds) {
+        orderMapper.deleteAllByIds(orderIds, "删除订单信息！");
+        orderDetailMapper.deleteAllByOrderIds(orderIds, "删除订单详情！");
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("删除订单信息成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
 }

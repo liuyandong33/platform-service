@@ -1,10 +1,11 @@
 package build.dream.platform.mappers;
 
-import build.dream.common.saas.domains.Order;
 import build.dream.common.saas.domains.OrderDetail;
 import build.dream.common.utils.SearchModel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Mapper
@@ -14,4 +15,5 @@ public interface OrderDetailMapper {
     OrderDetail find(SearchModel searchModel);
     List<OrderDetail> findAll(SearchModel searchModel);
     List<OrderDetail> findAllPaged(SearchModel searchModel);
+    long deleteAllByOrderIds(@Param("orderIds") List<BigInteger> orderIds, @Param("lastUpdateRemark") String lastUpdateRemark);
 }
