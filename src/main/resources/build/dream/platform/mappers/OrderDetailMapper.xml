@@ -13,16 +13,51 @@
     </insert>
 
     <insert id="insertAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO order_detail(order_id, goods_id, goods_specification_id,
-        branch_id, price, discount_amount,
-        payable_amount, amount, create_user_id,
-        last_update_user_id, last_update_remark)
+        INSERT INTO order_detail(order_id, goods_id, goods_name,
+        goods_specification_id, goods_specification_name, branch_id,
+        price, discount_amount, payable_amount,
+        amount, create_user_id, last_update_user_id,
+        last_update_remark)
         VALUES
         <foreach collection="list" index="index" item="orderDetail" separator=",">
-            (#{orderDetail.orderId}, #{orderDetail.goodsId}, #{orderDetail.goodsSpecificationId},
-            #{orderDetail.branchId}, #{orderDetail.price}, #{orderDetail.discountAmount},
-            #{orderDetail.payableAmount}, #{orderDetail.amount}, #{orderDetail.createUserId},
-            #{orderDetail.lastUpdateUserId}, #{orderDetail.lastUpdateRemark})
+            (#{orderDetail.orderId}, #{orderDetail.goodsId}, #{orderDetail.goodsName},
+            #{orderDetail.goodsSpecificationId}, #{orderDetail.goodsSpecificationName}, #{orderDetail.branchId},
+            #{orderDetail.price}, #{orderDetail.discountAmount}, #{orderDetail.payableAmount},
+            #{orderDetail.amount}, #{orderDetail.createUserId}, #{orderDetail.lastUpdateUserId},
+            #{orderDetail.lastUpdateRemark})
         </foreach>
     </insert>
+
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.OrderDetail">
+        SELECT * FROM order_detail <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.OrderDetail">
+        SELECT * FROM order_detail <include refid="searchConditionSql"></include>
+    </select>
+
+    <select id="findAllPaged" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.OrderDetail">
+        SELECT * FROM order_detail <include refid="searchConditionSql"></include> <include refid="paginationSql"></include>
+    </select>
+
+    <sql id="searchConditionSql">
+        WHERE
+        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
+            <choose>
+                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
+                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
+                </otherwise>
+            </choose>
+        </foreach>
+    </sql>
+
+    <sql id="paginationSql">
+        LIMIT #{offset}, #{maxResults}
+    </sql>
 </mapper>

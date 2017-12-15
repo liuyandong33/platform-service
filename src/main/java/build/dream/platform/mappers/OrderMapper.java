@@ -14,5 +14,7 @@ public interface OrderMapper {
     long insert(Order order);
     long update(Order order);
     Order find(SearchModel searchModel);
-    List<Map<String, Object>> findOrderInfos(@Param("orderId") BigInteger orderId);
+    List<Order> findAll(SearchModel searchModel);
+    List<Order> findAllPaged(SearchModel searchModel);
+    long count(SearchModel searchModel);
 }

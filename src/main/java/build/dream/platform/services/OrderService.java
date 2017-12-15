@@ -5,14 +5,13 @@ import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.Order;
 import build.dream.common.saas.domains.OrderDetail;
-import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import org.apache.commons.collections.MapUtils;
+import build.dream.platform.models.order.ObtainAllOrderInfosModel;
+import build.dream.platform.models.order.SaveOrderModel;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,47 +35,30 @@ public class OrderService {
     private OrderDetailMapper orderDetailMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest saveOrder(Map<String, String> parameters) {
-        Integer orderType = Integer.valueOf(parameters.get("orderType"));
-        Validate.isTrue(orderType == Constants.ORDER_TYPE_TENANT_ORDER || orderType == Constants.ORDER_TYPE_AGENT_ORDER, "参数(orderType)只能为1或者2！");
-        String userId = parameters.get("userId");
-
-        Validate.notNull(userId, "参数(userId)不能为空！");
-        BigInteger bigIntegerUserId = BigInteger.valueOf(Long.valueOf(userId));
-
+    public ApiRest saveOrder(SaveOrderModel saveOrderModel) {
         Order order = new Order();
+        Integer orderType = saveOrderModel.getOrderType();
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-            String tenantId = parameters.get("tenantId");
-            Validate.notNull(tenantId, "参数(tenantId)不能为空！");
             order.setOrderType(Constants.ORDER_TYPE_TENANT_ORDER);
-            order.setTenantId(BigInteger.valueOf(Long.valueOf(tenantId)));
+            order.setTenantId(saveOrderModel.getTenantId());
             order.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO",10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
-            String agentId = parameters.get("agentId");
-            Validate.notNull(agentId, "参数(agentId)不能为空！");
             order.setOrderType(Constants.ORDER_TYPE_AGENT_ORDER);
-            order.setAgentId(BigInteger.valueOf(Long.valueOf(agentId)));
+            order.setAgentId(saveOrderModel.getAgentId());
             order.setOrderNumber(SerialNumberGenerator.nextOrderNumber("AO", 10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("agent_order_number"))));
         }
 
         order.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
-        order.setCreateUserId(bigIntegerUserId);
-        order.setLastUpdateUserId(bigIntegerUserId);
+
+        BigInteger userId = saveOrderModel.getUserId();
+        order.setCreateUserId(userId);
+        order.setLastUpdateUserId(userId);
         orderMapper.insert(order);
 
-        JSONArray orderDetailsJsonArray = JSONArray.fromObject(parameters.get("orderDetailsJson"));
-        int size = orderDetailsJsonArray.size();
         List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
 
-        List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-        List<BigInteger>goodsSpecificationIds = new ArrayList<BigInteger>();
-        for (int index = 0; index < size; index++) {
-            JSONObject orderDetailJSONObject = orderDetailsJsonArray.getJSONObject(index);
-            goodsIds.add(BigInteger.valueOf(orderDetailJSONObject.getLong("goodsId")));
-            goodsSpecificationIds.add(BigInteger.valueOf(orderDetailJSONObject.getLong("goodsSpecificationId")));
-        }
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
+        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, saveOrderModel.getGoodsIds());
         List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new LinkedHashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
@@ -84,7 +66,7 @@ public class OrderService {
         }
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
+        goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, saveOrderModel.getGoodsSpecificationIds());
         List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
         Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new LinkedHashMap<BigInteger, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
@@ -94,36 +76,37 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal discountAmount = BigDecimal.ZERO;
         BigDecimal payableAmount = BigDecimal.ZERO;
-        for (int index = 0; index < size; index++) {
-            JSONObject orderDetailJSONObject = orderDetailsJsonArray.getJSONObject(index);
+        List<SaveOrderModel.OrderDetailModel> orderDetailModels = saveOrderModel.getOrderDetailModels();
+        for (SaveOrderModel.OrderDetailModel orderDetailModel : orderDetailModels) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(order.getId());
-            BigInteger goodsId = BigInteger.valueOf(orderDetailJSONObject.getLong("goodsId"));
+            BigInteger goodsId = orderDetailModel.getGoodsId();
             Goods goods = goodsMap.get(goodsId);
             Validate.notNull(goods, "产品不存在！");
             orderDetail.setGoodsId(goods.getId());
+            orderDetail.setGoodsName(goods.getName());
 
-            BigInteger goodsSpecificationId = BigInteger.valueOf(orderDetailJSONObject.getLong("goodsSpecificationId"));
-            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
+            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(orderDetailModel.getGoodsSpecificationId());
             Validate.notNull(goodsSpecification, "产品规格不存在！");
             orderDetail.setGoodsSpecificationId(goodsSpecification.getId());
-            Integer amount = orderDetailJSONObject.getInt("amount");
+            orderDetail.setGoodsSpecificationName(goodsSpecification.getName());
+            Integer amount = orderDetailModel.getAmount();
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getTenantPrice());
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
                 orderDetail.setPayableAmount(goodsSpecification.getTenantPrice().multiply(BigDecimal.valueOf(amount)));
+                orderDetail.setBranchId(orderDetailModel.getBranchId());
             } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getAgentPrice());
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
                 orderDetail.setPayableAmount(goodsSpecification.getAgentPrice().multiply(BigDecimal.valueOf(amount)));
             }
-            orderDetail.setBranchId(BigInteger.valueOf(orderDetailJSONObject.getLong("branchId")));
             orderDetail.setAmount(amount);
             totalAmount = totalAmount.add(orderDetail.getPrice().multiply(BigDecimal.valueOf(orderDetail.getAmount())));
             discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
             payableAmount = payableAmount.add(orderDetail.getPayableAmount());
-            orderDetail.setCreateUserId(bigIntegerUserId);
-            orderDetail.setLastUpdateUserId(bigIntegerUserId);
+            orderDetail.setCreateUserId(userId);
+            orderDetail.setLastUpdateUserId(userId);
             orderDetail.setLastUpdateRemark("保存订单详情！");
             orderDetails.add(orderDetail);
         }
@@ -146,38 +129,66 @@ public class OrderService {
         return apiRest;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest handlePaymentCallback(Map<String, String> parameters, Integer paidType) {
-        String orderNumber = null;
-        BigDecimal paidAmount = null;
-        String lastUpdateRemark = null;
-        if (paidType == Constants.ORDER_PAID_TYPE_WEI_XIN) {
-            orderNumber = parameters.get("out_trade_no");
-            paidAmount = new BigDecimal(parameters.get("total_fee")).divide(new BigDecimal(100));
-            lastUpdateRemark = "支付宝支付回调！";
-        } else if (paidType == Constants.ORDER_PAID_TYPE_ALI_PAY) {
-            orderNumber = parameters.get("out_trade_no");
-            paidAmount = new BigDecimal(parameters.get("total_amount"));
-            lastUpdateRemark = "微信支付回调！";
-        }
+    public ApiRest obtainOrderInfo(BigInteger orderId) {
         SearchModel orderSearchModel = new SearchModel(true);
-        orderSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
+        orderSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderId);
         Order order = orderMapper.find(orderSearchModel);
         Validate.notNull(order, "订单不存在！");
-        Validate.isTrue(order.getOrderStatus() == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
-        order.setOrderStatus(Constants.ORDER_STATUS_PAID);
-        order.setLastUpdateRemark(lastUpdateRemark);
-        order.setPaidAmount(order.getPaidAmount().add(paidAmount));
-        order.setLastUpdateUserId(BigInteger.ZERO);
-        order.setPaidType(paidType);
-        orderMapper.update(order);
 
-        List<Map<String, Object>> orderInfos = orderMapper.findOrderInfos(order.getId());
-        for (Map<String, Object> orderInfo : orderInfos) {
-            BigInteger orderId = BigInteger.valueOf(MapUtils.getLongValue(orderInfo, "orderId"));
-        }
+        SearchModel orderDetailSearchModel = new SearchModel(true);
+        orderDetailSearchModel.addSearchCondition("order_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderId);
+        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("order", order);
+        data.put("orderDetails", orderDetails);
         ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("支付回调处理成功！");
+        apiRest.setData(data);
+        apiRest.setMessage("获取订单信息成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
+        PagedSearchModel orderPagedSearchModel = new PagedSearchModel(true);
+        orderPagedSearchModel.setOffsetAndMaxResults(obtainAllOrderInfosModel.getPage(), obtainAllOrderInfosModel.getRows());
+        List<Order> orders = orderMapper.findAllPaged(orderPagedSearchModel);
+
+        SearchModel orderSearchModel = new SearchModel(true);
+        long total = orderMapper.count(orderSearchModel);
+
+        List<BigInteger> orderIds = new ArrayList<BigInteger>();
+        for (Order order : orders) {
+            orderIds.add(order.getId());
+        }
+
+        SearchModel orderDetailSearchModel = new SearchModel(true);
+        orderDetailSearchModel.addSearchCondition("order_id", Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
+        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+        Map<BigInteger, List<OrderDetail>> orderDetailsMap = new HashMap<BigInteger, List<OrderDetail>>();
+        for (OrderDetail orderDetail : orderDetails) {
+            List<OrderDetail> orderDetailList = orderDetailsMap.get(orderDetail.getOrderId());
+            if (orderDetailList == null) {
+                orderDetailList = new ArrayList<OrderDetail>();
+                orderDetailsMap.put(orderDetail.getOrderId(), orderDetailList);
+            }
+            orderDetailList.add(orderDetail);
+        }
+
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        for (Order order : orders) {
+            Map<String, Object> row = new HashMap<String, Object>();
+            row.put("order", order);
+            row.put("orderDetail", orderDetailsMap.get(order.getId()));
+            rows.add(row);
+        }
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("rows", rows);
+        data.put("total", total);
+        ApiRest apiRest = new ApiRest();
+        apiRest.setData(data);
+        apiRest.setMessage("获取订单信息成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }
