@@ -11,6 +11,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.GoodsMapper;
 import build.dream.platform.mappers.GoodsSpecificationMapper;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
+import build.dream.platform.models.goods.SaveGoodsModel;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,5 +73,10 @@ public class GoodsService {
         apiRest.setMessage("获取商品信息成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveGoods(SaveGoodsModel saveGoodsModel) {
+        return null;
     }
 }
