@@ -24,6 +24,10 @@
         WHERE id = #{id}
     </update>
 
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.Goods">
+        SELECT * FROM goods <include refid="searchConditionSql"></include>
+    </select>
+
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.Goods">
         SELECT * FROM goods <include refid="searchConditionSql"></include>
     </select>
@@ -52,4 +56,8 @@
     <sql id="paginationSql">
         LIMIT #{offset}, #{maxResults}
     </sql>
+
+    <select id="count" parameterType="build.dream.common.utils.SearchModel" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM goods <include refid="searchConditionSql"></include>
+    </select>
 </mapper>

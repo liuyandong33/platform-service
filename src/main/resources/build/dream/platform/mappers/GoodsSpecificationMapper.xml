@@ -23,6 +23,10 @@
         WHERE id = #{id}
     </update>
 
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.GoodsSpecification">
+        SELECT * FROM goods_specification <include refid="searchConditionSql"></include>
+    </select>
+
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.GoodsSpecification">
         SELECT * FROM goods_specification <include refid="searchConditionSql"></include>
     </select>
