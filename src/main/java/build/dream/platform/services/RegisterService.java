@@ -102,13 +102,14 @@ public class RegisterService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest test() throws NoSuchAlgorithmException {
+    public ApiRest test() throws NoSuchAlgorithmException, IOException {
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
         tenantSecretKey.setTenantId(BigInteger.ZERO);
         tenantSecretKey.setTenantCode("61011888");
         String[] rsaKeys = RSAUtils.generateKeyPair(2048);
         tenantSecretKey.setPublicKey(rsaKeys[0]);
         tenantSecretKey.setPrivateKey(rsaKeys[1]);
+        tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY));
         tenantSecretKey.setCreateUserId(BigInteger.ONE);
         tenantSecretKey.setLastUpdateUserId(BigInteger.TEN);
         tenantSecretKeyMapper.insert(tenantSecretKey);
