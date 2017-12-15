@@ -129,6 +129,7 @@ public class OrderService {
         return apiRest;
     }
 
+    @Transactional(readOnly = true)
     public ApiRest obtainOrderInfo(BigInteger orderId) {
         SearchModel orderSearchModel = new SearchModel(true);
         orderSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderId);
@@ -149,6 +150,7 @@ public class OrderService {
         return apiRest;
     }
 
+    @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
         PagedSearchModel orderPagedSearchModel = new PagedSearchModel(true);
         orderPagedSearchModel.setOffsetAndMaxResults(obtainAllOrderInfosModel.getPage(), obtainAllOrderInfosModel.getRows());
