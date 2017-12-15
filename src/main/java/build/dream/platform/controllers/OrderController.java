@@ -24,8 +24,7 @@ public class OrderController extends BasicController {
     @Autowired
     private OrderService orderService;
 
-    // TODO 修改为POST请求
-    @RequestMapping(value = "/saveOrder")
+    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
     @ResponseBody
     public String saveOrder() {
         ApiRest apiRest = null;
