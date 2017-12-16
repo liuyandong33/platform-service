@@ -13,6 +13,7 @@ import build.dream.platform.mappers.GoodsSpecificationMapper;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,37 +33,41 @@ public class GoodsService {
 
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
-        PagedSearchModel goodsPagedSearchModel = new PagedSearchModel(true);
-        goodsPagedSearchModel.setOffsetAndMaxResults(obtainAllGoodsInfosModel.getPage(), obtainAllGoodsInfosModel.getRows());
-        List<Goods> goodses = goodsMapper.findAllPaged(goodsPagedSearchModel);
-
         SearchModel goodsSearchModel = new SearchModel(true);
         long total = goodsMapper.count(goodsSearchModel);
 
-        List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-        for (Goods goods : goodses) {
-            goodsIds.add(goods.getId());
-        }
-
-        SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
-        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
-        Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = new HashMap<BigInteger, List<GoodsSpecification>>();
-        for (GoodsSpecification goodsSpecification : goodsSpecifications) {
-            List<GoodsSpecification> goodsSpecificationList = goodsSpecificationsMap.get(goodsSpecification.getGoodsId());
-            if (goodsSpecificationList == null) {
-                goodsSpecificationList = new ArrayList<GoodsSpecification>();
-                goodsSpecificationsMap.put(goodsSpecification.getGoodsId(), goodsSpecificationList);
-            }
-            goodsSpecificationList.add(goodsSpecification);
-        }
-
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
-        for (Goods goods : goodses) {
-            Map<String, Object> row = new HashMap<String, Object>();
-            row.put("goods", goods);
-            row.put("goodsSpecifications", goodsSpecificationsMap.get(goods.getId()));
-            rows.add(row);
+        if (total > 0) {
+            PagedSearchModel goodsPagedSearchModel = new PagedSearchModel(true);
+            goodsPagedSearchModel.setOffsetAndMaxResults(obtainAllGoodsInfosModel.getPage(), obtainAllGoodsInfosModel.getRows());
+            List<Goods> goodses = goodsMapper.findAllPaged(goodsPagedSearchModel);
+
+            if (CollectionUtils.isNotEmpty(goodses)) {
+                List<BigInteger> goodsIds = new ArrayList<BigInteger>();
+                for (Goods goods : goodses) {
+                    goodsIds.add(goods.getId());
+                }
+
+                SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
+                List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+                Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = new HashMap<BigInteger, List<GoodsSpecification>>();
+                for (GoodsSpecification goodsSpecification : goodsSpecifications) {
+                    List<GoodsSpecification> goodsSpecificationList = goodsSpecificationsMap.get(goodsSpecification.getGoodsId());
+                    if (goodsSpecificationList == null) {
+                        goodsSpecificationList = new ArrayList<GoodsSpecification>();
+                        goodsSpecificationsMap.put(goodsSpecification.getGoodsId(), goodsSpecificationList);
+                    }
+                    goodsSpecificationList.add(goodsSpecification);
+                }
+
+                for (Goods goods : goodses) {
+                    Map<String, Object> row = new HashMap<String, Object>();
+                    row.put("goods", goods);
+                    row.put("goodsSpecifications", goodsSpecificationsMap.get(goods.getId()));
+                    rows.add(row);
+                }
+            }
         }
 
         Map<String, Object> data = new HashMap<String, Object>();

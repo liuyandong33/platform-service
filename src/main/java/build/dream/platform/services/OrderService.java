@@ -12,6 +12,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
 import build.dream.platform.models.order.SaveOrderModel;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -152,37 +153,41 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
-        PagedSearchModel orderPagedSearchModel = new PagedSearchModel(true);
-        orderPagedSearchModel.setOffsetAndMaxResults(obtainAllOrderInfosModel.getPage(), obtainAllOrderInfosModel.getRows());
-        List<Order> orders = orderMapper.findAllPaged(orderPagedSearchModel);
-
         SearchModel orderSearchModel = new SearchModel(true);
         long total = orderMapper.count(orderSearchModel);
 
-        List<BigInteger> orderIds = new ArrayList<BigInteger>();
-        for (Order order : orders) {
-            orderIds.add(order.getId());
-        }
-
-        SearchModel orderDetailSearchModel = new SearchModel(true);
-        orderDetailSearchModel.addSearchCondition("order_id", Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
-        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
-        Map<BigInteger, List<OrderDetail>> orderDetailsMap = new HashMap<BigInteger, List<OrderDetail>>();
-        for (OrderDetail orderDetail : orderDetails) {
-            List<OrderDetail> orderDetailList = orderDetailsMap.get(orderDetail.getOrderId());
-            if (orderDetailList == null) {
-                orderDetailList = new ArrayList<OrderDetail>();
-                orderDetailsMap.put(orderDetail.getOrderId(), orderDetailList);
-            }
-            orderDetailList.add(orderDetail);
-        }
-
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
-        for (Order order : orders) {
-            Map<String, Object> row = new HashMap<String, Object>();
-            row.put("order", order);
-            row.put("orderDetail", orderDetailsMap.get(order.getId()));
-            rows.add(row);
+        if (total > 0) {
+            PagedSearchModel orderPagedSearchModel = new PagedSearchModel(true);
+            orderPagedSearchModel.setOffsetAndMaxResults(obtainAllOrderInfosModel.getPage(), obtainAllOrderInfosModel.getRows());
+            List<Order> orders = orderMapper.findAllPaged(orderPagedSearchModel);
+
+            if (CollectionUtils.isNotEmpty(orders)) {
+                List<BigInteger> orderIds = new ArrayList<BigInteger>();
+                for (Order order : orders) {
+                    orderIds.add(order.getId());
+                }
+
+                SearchModel orderDetailSearchModel = new SearchModel(true);
+                orderDetailSearchModel.addSearchCondition("order_id", Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
+                List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+                Map<BigInteger, List<OrderDetail>> orderDetailsMap = new HashMap<BigInteger, List<OrderDetail>>();
+                for (OrderDetail orderDetail : orderDetails) {
+                    List<OrderDetail> orderDetailList = orderDetailsMap.get(orderDetail.getOrderId());
+                    if (orderDetailList == null) {
+                        orderDetailList = new ArrayList<OrderDetail>();
+                        orderDetailsMap.put(orderDetail.getOrderId(), orderDetailList);
+                    }
+                    orderDetailList.add(orderDetail);
+                }
+
+                for (Order order : orders) {
+                    Map<String, Object> row = new HashMap<String, Object>();
+                    row.put("order", order);
+                    row.put("orderDetail", orderDetailsMap.get(order.getId()));
+                    rows.add(row);
+                }
+            }
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
