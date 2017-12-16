@@ -62,6 +62,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             }
             CacheUtils.delete(Constants.KEY_TENANT_SECRET_KEYS);
             CacheUtils.hmset(Constants.KEY_TENANT_SECRET_KEYS, tenantSecretKeyMap);
+
+            CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
         } catch (IOException e) {
             LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
         }
