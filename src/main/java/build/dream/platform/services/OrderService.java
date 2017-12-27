@@ -159,7 +159,8 @@ public class OrderService {
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
         if (total > 0) {
             PagedSearchModel orderPagedSearchModel = new PagedSearchModel(true);
-            orderPagedSearchModel.setOffsetAndMaxResults(obtainAllOrderInfosModel.getPage(), obtainAllOrderInfosModel.getRows());
+            orderPagedSearchModel.setPage(obtainAllOrderInfosModel.getPage());
+            orderPagedSearchModel.setRows(obtainAllOrderInfosModel.getRows());
             List<Order> orders = orderMapper.findAllPaged(orderPagedSearchModel);
 
             if (CollectionUtils.isNotEmpty(orders)) {

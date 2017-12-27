@@ -39,7 +39,8 @@ public class GoodsService {
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
         if (total > 0) {
             PagedSearchModel goodsPagedSearchModel = new PagedSearchModel(true);
-            goodsPagedSearchModel.setOffsetAndMaxResults(obtainAllGoodsInfosModel.getPage(), obtainAllGoodsInfosModel.getRows());
+            goodsPagedSearchModel.setPage(obtainAllGoodsInfosModel.getPage());
+            goodsPagedSearchModel.setRows(obtainAllGoodsInfosModel.getRows());
             List<Goods> goodses = goodsMapper.findAllPaged(goodsPagedSearchModel);
 
             if (CollectionUtils.isNotEmpty(goodses)) {
