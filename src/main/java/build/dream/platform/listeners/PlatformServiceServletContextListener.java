@@ -56,12 +56,12 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
             SearchModel tenantSecretKeySearchModel = new SearchModel(true);
             List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll(tenantSecretKeySearchModel);
-            Map<String, String> tenantSecretKeyMap = new HashMap<String, String>();
+            Map<String, String> tenantPrivateKeys = new HashMap<String, String>();
             for (TenantSecretKey tenantSecretKey : tenantSecretKeys) {
-                tenantSecretKeyMap.put(tenantSecretKey.getTenantId().toString(), GsonUtils.toJson(tenantSecretKey));
+                tenantPrivateKeys.put(tenantSecretKey.getTenantId().toString(), tenantSecretKey.getPrivateKey());
             }
-            CacheUtils.delete(Constants.KEY_TENANT_SECRET_KEYS);
-            CacheUtils.hmset(Constants.KEY_TENANT_SECRET_KEYS, tenantSecretKeyMap);
+            CacheUtils.delete(Constants.KEY_TENANT_PRIVATE_KEYS);
+            CacheUtils.hmset(Constants.KEY_TENANT_PRIVATE_KEYS, tenantPrivateKeys);
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
         } catch (IOException e) {
