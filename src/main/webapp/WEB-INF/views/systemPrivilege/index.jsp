@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../libraries/jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../libraries/zTree_v3-v3.5.16/js/jquery.ztree.all-3.5.js"></script>
     <script type="text/javascript">
+        var interval = undefined;
         $(function () {
             var setting = {
                 view: {
@@ -42,7 +43,25 @@
                     var zTree = $.fn.zTree.init($("#tree"), setting, treeNodes);
                 }
             }, "json");
+
+            startPolling();
+
+            window.setTimeout(function () {
+                stopPolling();
+            }, 5000);
         });
+
+        function startPolling() {
+            interval = window.setInterval(function () {
+                console.log(123);
+            }, 500);
+        }
+
+        function stopPolling() {
+            if (interval) {
+                window.clearInterval(interval);
+            }
+        }
     </script>
 </head>
 <body>

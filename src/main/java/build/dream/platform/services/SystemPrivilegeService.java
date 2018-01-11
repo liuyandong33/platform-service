@@ -27,11 +27,7 @@ public class SystemPrivilegeService {
             ZTreeNode zTreeNode = new ZTreeNode();
             zTreeNode.setId(systemPrivilege.getId().toString());
             zTreeNode.setpId(systemPrivilege.getParentId().toString());
-            if (StringUtils.isNotBlank(systemPrivilege.getResourceName()) && StringUtils.isNotBlank(systemPrivilege.getOperateName())) {
-                zTreeNode.setName(systemPrivilege.getOperateName());
-            } else {
-                zTreeNode.setName(systemPrivilege.getResourceName());
-            }
+            zTreeNode.setName(systemPrivilege.getPrivilegeName());
             zTreeNodes.add(zTreeNode);
         }
         ApiRest apiRest = new ApiRest();
