@@ -1,7 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AppAuthority;
+import build.dream.common.saas.domains.AppPrivilege;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.saas.domains.TenantSecretKey;
@@ -9,7 +9,7 @@ import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.AppAuthorityMapper;
+import build.dream.platform.mappers.AppPrivilegeMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.mappers.TenantSecretKeyMapper;
@@ -33,7 +33,7 @@ public class UserService {
     @Autowired
     private TenantMapper tenantMapper;
     @Autowired
-    private AppAuthorityMapper appAuthorityMapper;
+    private AppPrivilegeMapper appPrivilegeMapper;
     @Autowired
     private TenantSecretKeyMapper tenantSecretKeyMapper;
 
@@ -87,10 +87,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findAllAppAuthorities(BigInteger userId) throws IOException {
-        List<AppAuthority> appAuthorities = appAuthorityMapper.findAllAppAuthorities(userId);
+    public ApiRest findAllAppPrivileges(BigInteger userId) {
+        List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
         ApiRest apiRest = new ApiRest();
-        apiRest.setData(appAuthorities);
+        apiRest.setData(appPrivileges);
         apiRest.setMessage("查询APP权限成功！");
         apiRest.setSuccessful(true);
         return apiRest;

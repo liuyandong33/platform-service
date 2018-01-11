@@ -2,44 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.WeiXinOpenPlatformApplicationMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.WeiXinOpenPlatformApplication" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO wei_xin_open_platform_application(app_id, app_secret, create_user_id,
-        last_update_user_id, last_update_remark)
-        VALUES (#{appId}, #{appSecret}, #{createUserId},
-        #{lastUpdateUserId}, #{lastUpdateRemark});
+        ${@build.dream.common.utils.BeanUtils@generateInsertSql("build.dream.common.saas.domains.WeiXinOpenPlatformApplication")}
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.WeiXinOpenPlatformApplication">
-        UPDATE wei_xin_open_platform_application
-        SET app_id = #{appId},
-        app_secret = #{appSecret},
-        last_update_user_id = #{lastUpdateUserId},
-        last_update_remark = #{lastUpdateRemark},
-        deleted = #{deleted}
-        WHERE id = #{id}
+        ${@build.dream.common.utils.BeanUtils@generateUpdateSql("build.dream.common.saas.domains.WeiXinOpenPlatformApplication")}
     </update>
 
     <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.WeiXinOpenPlatformApplication">
-        SELECT ${selectColumns} FROM wei_xin_open_platform_application <include refid="searchConditionSql"></include>
+        SELECT ${selectColumns} FROM wei_xin_open_platform_application <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
 
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.WeiXinOpenPlatformApplication">
-        SELECT ${selectColumns} FROM wei_xin_open_platform_application <include refid="searchConditionSql"></include>
+        SELECT ${selectColumns} FROM wei_xin_open_platform_application <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
-
-    <sql id="searchConditionSql">
-        WHERE
-        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
-            <choose>
-                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
-                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
-                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
-                </otherwise>
-            </choose>
-        </foreach>
-    </sql>
 </mapper>

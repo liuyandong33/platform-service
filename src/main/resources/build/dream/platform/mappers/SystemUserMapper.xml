@@ -2,36 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.SystemUserMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.SystemUser" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO system_user(name, mobile, email,
-        login_name, user_type, password,
-        tenant_id, account_non_expired, account_non_locked,
-        credentials_non_expired, enabled, create_user_id,
-        last_update_user_id, last_update_remark)
-        VALUES (#{name}, #{mobile}, #{email},
-        #{loginName}, #{userType}, #{password},
-        #{tenantId}, #{accountNonExpired}, #{accountNonLocked},
-        #{credentialsNonExpired}, #{enabled}, #{createUserId},
-        #{lastUpdateUserId}, #{lastUpdateRemark})
+        ${@build.dream.common.utils.BeanUtils@generateInsertSql("build.dream.common.saas.domains.SystemUser")}
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.SystemUser">
-        UPDATE system_user
-        SET name = #{name},
-            mobile = #{mobile},
-            email = #{email},
-            login_name = #{loginName},
-            user_type = #{userType},
-            password = #{password},
-            tenant_id = #{tenantId},
-            account_non_expired = #{accountNonExpired},
-            account_non_locked = #{accountNonLocked},
-            credentials_non_expired = #{credentialsNonExpired},
-            enabled = #{enabled},
-            create_user_id = #{createUserId},
-            last_update_user_id = #{lastUpdateUserId},
-            last_update_remark = #{lastUpdateRemark},
-            deleted = #{deleted}
-        WHERE id = #{id}
+        ${@build.dream.common.utils.BeanUtils@generateUpdateSql("build.dream.common.saas.domains.SystemUser")}
     </update>
 
     <select id="findByLoginNameOrEmailOrMobile" resultType="build.dream.common.saas.domains.SystemUser">
@@ -39,31 +14,10 @@
     </select>
 
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
-        SELECT * FROM system_user <include refid="searchConditionSql"></include>
+        SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
 
     <select id="findAllPaged" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
-        SELECT * FROM system_user <include refid="searchConditionSql"></include> <include refid="paginationSql"></include>
+        SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include> <include refid="build.dream.platform.mappers.CommonMapper.paginationSql"></include>
     </select>
-
-    <sql id="searchConditionSql">
-        WHERE
-        <foreach collection="searchConditions" index="index" item="searchCondition" separator=" AND ">
-            <choose>
-                <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'IN')">
-                    ${searchCondition.columnName} ${searchCondition.operationSymbol}
-                    <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
-                </otherwise>
-            </choose>
-        </foreach>
-    </sql>
-
-    <sql id="paginationSql">
-        LIMIT #{offset}, #{maxResults}
-    </sql>
 </mapper>

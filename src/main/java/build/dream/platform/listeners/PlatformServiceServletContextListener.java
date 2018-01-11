@@ -7,6 +7,7 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.CommonMapper;
 import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
 import build.dream.platform.services.SystemUserService;
@@ -37,8 +38,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         super.contextInitialized(servletContextEvent);
+        super.previousInjectionBean(servletContextEvent.getServletContext(), CommonMapper.class);
         try {
-            String deploymentEnvironment = PropertyUtils.getProperty(Constants.DEPLOYMENT_ENVIRONMENT);
+            String deploymentEnvironment = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
             List<SystemPartition> systemPartitions = systemPartitionService.findAllByDeploymentEnvironment(deploymentEnvironment);
             if (CollectionUtils.isNotEmpty(systemPartitions)) {
                 SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
