@@ -8,4 +8,16 @@
     <select id="count" parameterType="build.dream.common.utils.SearchModel" resultType="long">
         SELECT COUNT(1) FROM background_role <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
+
+    <delete id="deleteRolePrivileges">
+        DELETE FROM background_role_privilege_r WHERE background_role_id = ${roleId}
+    </delete>
+
+    <insert id="saveRolePrivileges">
+        INSERT INTO background_role_privilege_r(background_role_id, privilege_id)
+        VALUES
+        <foreach collection="privilegeIds" index="index" item="privilegeId" separator=",">
+            (#{roleId}, #{privilegeId})
+        </foreach>
+    </insert>
 </mapper>

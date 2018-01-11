@@ -7,6 +7,7 @@ import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.BackgroundRoleMapper;
 import build.dream.platform.models.role.ListBackgroundRolesModel;
+import build.dream.platform.models.role.SaveRolePrivilegesModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,18 @@ public class RoleService {
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setMessage("查询权限列表成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveRolePrivileges(SaveRolePrivilegesModel saveRolePrivilegesModel) {
+        if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(saveRolePrivilegesModel.getType())) {
+            backgroundRoleMapper.deleteRolePrivileges(saveRolePrivilegesModel.getRoleId());
+            backgroundRoleMapper.saveRolePrivileges(saveRolePrivilegesModel.getRoleId(), saveRolePrivilegesModel.getPrivilegeIds());
+        }
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("保存角色权限成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }

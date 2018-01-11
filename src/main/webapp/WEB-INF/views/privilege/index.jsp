@@ -38,7 +38,7 @@
                 }
             };
 
-            $.get("../systemPrivilege/findAll", {}, function (result) {
+            $.get("../privilege/listBackgroundPrivileges", {}, function (result) {
                 if (result["successful"]) {
                     var treeNodes = result["data"];
                     zTreeObj = $.fn.zTree.init($("#tree"), setting, treeNodes);
