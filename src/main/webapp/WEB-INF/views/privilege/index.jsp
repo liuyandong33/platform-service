@@ -15,6 +15,7 @@
     <script type="text/javascript">
         var interval = undefined;
         var zTreeObj = undefined;
+        var privileges = undefined;
         $(function () {
             var setting = {
                 view: {
@@ -38,7 +39,7 @@
                 }
             };
 
-            $.get("../privilege/listBackgroundPrivileges", {}, function (result) {
+            $.get("../privilege/listAppPrivileges", {}, function (result) {
                 if (result["successful"]) {
                     var treeNodes = result["data"];
                     zTreeObj = $.fn.zTree.init($("#tree"), setting, treeNodes);
@@ -51,15 +52,13 @@
             }, "json");
 
             startPolling();
-
-            window.setTimeout(function () {
-                stopPolling();
-            }, 5000);
+            renderGoodsNode(privileges);
         });
 
         function startPolling() {
+            var i = 0;
             interval = window.setInterval(function () {
-                console.log(123);
+                console.log(i++);
             }, 500);
         }
 
@@ -77,6 +76,10 @@
                 checkedNodeIds.push(checkedNodes[index]["id"]);
             }
             alert(checkedNodeIds.join(","));
+        }
+        
+        function renderGoodsNode(privileges) {
+
         }
     </script>
 </head>
