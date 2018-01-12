@@ -5,6 +5,16 @@ public class ZTreeNode {
     private String name;
     private String pId;
 
+    public ZTreeNode() {
+
+    }
+
+    public ZTreeNode(String id, String name, String pId) {
+        this.id = id;
+        this.name = name;
+        this.pId = pId;
+    }
+
     public String getId() {
         return id;
     }

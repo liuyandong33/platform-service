@@ -9,10 +9,8 @@ import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.AppPrivilegeMapper;
-import build.dream.platform.mappers.SystemUserMapper;
-import build.dream.platform.mappers.TenantMapper;
-import build.dream.platform.mappers.TenantSecretKeyMapper;
+import build.dream.platform.mappers.*;
+import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,11 @@ public class UserService {
     @Autowired
     private TenantMapper tenantMapper;
     @Autowired
+    private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
+    @Autowired
     private AppPrivilegeMapper appPrivilegeMapper;
+    @Autowired
+    private PosPrivilegeMapper posPrivilegeMapper;
     @Autowired
     private TenantSecretKeyMapper tenantSecretKeyMapper;
 
@@ -87,11 +89,18 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findAllAppPrivileges(BigInteger userId) {
-        List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
+    public ApiRest obtainAllPrivileges(ObtainAllPrivilegesModel obtainAllPrivilegesModel) {
+        Object data = null;
+        if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(obtainAllPrivilegesModel.getType())) {
+            data = backgroundPrivilegeMapper.findAllBackgroundPrivileges(obtainAllPrivilegesModel.getUserId());
+        } else if (Constants.PRIVILEGE_TYPE_APP.equals(obtainAllPrivilegesModel.getType())) {
+            data = appPrivilegeMapper.findAllAppPrivileges(obtainAllPrivilegesModel.getUserId());
+        } else if (Constants.PRIVILEGE_TYPE_POS.equals(obtainAllPrivilegesModel.getType())) {
+            data = posPrivilegeMapper.findAllPosPrivileges(obtainAllPrivilegesModel.getUserId());
+        }
         ApiRest apiRest = new ApiRest();
-        apiRest.setData(appPrivileges);
-        apiRest.setMessage("查询APP权限成功！");
+        apiRest.setData(data);
+        apiRest.setMessage("查询权限成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }

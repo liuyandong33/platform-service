@@ -1,12 +1,16 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.AppRole;
 import build.dream.common.saas.domains.BackgroundRole;
+import build.dream.common.saas.domains.PosRole;
 import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.AppRoleMapper;
 import build.dream.platform.mappers.BackgroundRoleMapper;
-import build.dream.platform.models.role.ListBackgroundRolesModel;
+import build.dream.platform.mappers.PosRoleMapper;
+import build.dream.platform.models.role.ListRolesModel;
 import build.dream.platform.models.role.SaveRolePrivilegesModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,24 +25,47 @@ import java.util.Map;
 public class RoleService {
     @Autowired
     private BackgroundRoleMapper backgroundRoleMapper;
+    @Autowired
+    private AppRoleMapper appRoleMapper;
+    @Autowired
+    private PosRoleMapper posRoleMapper;
 
     @Transactional(readOnly = true)
-    public ApiRest listBackgroundRoles(ListBackgroundRolesModel listBackgroundRolesModel) {
+    public ApiRest listRoles(ListRolesModel listRolesModel) {
         SearchModel countSearchModel = new SearchModel(true);
-        countSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listBackgroundRolesModel.getTenantId());
-        long total = backgroundRoleMapper.count(countSearchModel);
+        countSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listRolesModel.getTenantId());
 
-        List<BackgroundRole> backgroundRoles = new ArrayList<BackgroundRole>();
-        if (total > 0) {
-            PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
-            pagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listBackgroundRolesModel.getTenantId());
-            pagedSearchModel.setPage(listBackgroundRolesModel.getPage());
-            pagedSearchModel.setRows(listBackgroundRolesModel.getRows());
-            backgroundRoles = backgroundRoleMapper.findAllPaged(pagedSearchModel);
-        }
+        PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
+        pagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listRolesModel.getTenantId());
+        pagedSearchModel.setPage(listRolesModel.getPage());
+        pagedSearchModel.setRows(listRolesModel.getRows());
+
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("total", total);
-        data.put("rows", backgroundRoles);
+        if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(listRolesModel.getType())) {
+            long total = backgroundRoleMapper.count(countSearchModel);
+            List<BackgroundRole> backgroundRoles = new ArrayList<BackgroundRole>();
+            if (total > 0) {
+                backgroundRoles = backgroundRoleMapper.findAllPaged(pagedSearchModel);
+            }
+            data.put("total", total);
+            data.put("rows", backgroundRoles);
+        } else if (Constants.PRIVILEGE_TYPE_APP.equals(listRolesModel.getType())) {
+            long total = appRoleMapper.count(countSearchModel);
+            List<AppRole> appRoles = new ArrayList<AppRole>();
+            if (total > 0) {
+                appRoles = appRoleMapper.findAllPaged(pagedSearchModel);
+            }
+            data.put("total", total);
+            data.put("rows", appRoles);
+        } else if (Constants.PRIVILEGE_TYPE_POS.equals(listRolesModel.getType())) {
+            long total = posRoleMapper.count(countSearchModel);
+            List<PosRole> posRoles = new ArrayList<PosRole>();
+            if (total > 0) {
+                posRoles = posRoleMapper.findAllPaged(pagedSearchModel);
+            }
+            data.put("total", total);
+            data.put("rows", posRoles);
+        }
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setMessage("查询权限列表成功！");
@@ -51,6 +78,12 @@ public class RoleService {
         if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(saveRolePrivilegesModel.getType())) {
             backgroundRoleMapper.deleteRolePrivileges(saveRolePrivilegesModel.getRoleId());
             backgroundRoleMapper.saveRolePrivileges(saveRolePrivilegesModel.getRoleId(), saveRolePrivilegesModel.getPrivilegeIds());
+        } else if (Constants.PRIVILEGE_TYPE_APP.equals(saveRolePrivilegesModel.getType())) {
+            appRoleMapper.deleteRolePrivileges(saveRolePrivilegesModel.getRoleId());
+            appRoleMapper.saveRolePrivileges(saveRolePrivilegesModel.getRoleId(), saveRolePrivilegesModel.getPrivilegeIds());
+        } else if (Constants.PRIVILEGE_TYPE_POS.equals(saveRolePrivilegesModel.getType())) {
+            posRoleMapper.deleteRolePrivileges(saveRolePrivilegesModel.getRoleId());
+            posRoleMapper.saveRolePrivileges(saveRolePrivilegesModel.getRoleId(), saveRolePrivilegesModel.getPrivilegeIds());
         }
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("保存角色权限成功！");

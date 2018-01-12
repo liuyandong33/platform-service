@@ -8,4 +8,12 @@
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.BackgroundPrivilege">
         SELECT ${selectColumns} FROM background_privilege <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
+
+    <select id="findAllBackgroundPrivileges" resultType="build.dream.common.saas.domains.BackgroundPrivilege">
+        SELECT
+        *
+        FROM background_privilege
+        WHERE id IN (SELECT privilege_id FROM background_role_privilege_r WHERE background_role_id IN (SELECT background_role_id FROM user_background_role_r WHERE user_id = #{userId}))
+        AND deleted = 0
+    </select>
 </mapper>

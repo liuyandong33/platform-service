@@ -36,9 +36,35 @@ public class PrivilegeController extends BasicController {
             apiRest = privilegeService.listBackgroundPrivileges();
         } catch (Exception e) {
             LogUtils.error("获取后台权限列表失败", controllerSimpleName, "listBackgroundPrivileges", e, requestParameters);
-            apiRest = new ApiRest();
-            apiRest.setError(e.getMessage());
-            apiRest.setSuccessful(false);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/listAppPrivileges")
+    @ResponseBody
+    public String listAppPrivileges() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            apiRest = privilegeService.listAppPrivileges();
+        } catch (Exception e) {
+            LogUtils.error("获取APP权限列表失败", controllerSimpleName, "listAppPrivileges", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/listPosPrivileges")
+    @ResponseBody
+    public String listPosPrivileges() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            apiRest = privilegeService.listPosPrivileges();
+        } catch (Exception e) {
+            LogUtils.error("获取POS权限列表失败", controllerSimpleName, "listPosPrivileges", e, requestParameters);
+            apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
     }
