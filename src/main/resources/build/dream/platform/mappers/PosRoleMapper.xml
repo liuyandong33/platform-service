@@ -20,4 +20,8 @@
             (#{roleId}, #{privilegeId})
         </foreach>
     </insert>
+
+    <select id="" resultType="build.dream.common.saas.domains.PosPrivilege">
+        SELECT * FROM pos_privilege WHERE id IN (SELECT privilege_id FROM pos_role_privilege_r WHERE pos_role_id = #{roleId}) AND deleted = 0
+    </select>
 </mapper>

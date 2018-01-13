@@ -10,6 +10,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppRoleMapper;
 import build.dream.platform.mappers.BackgroundRoleMapper;
 import build.dream.platform.mappers.PosRoleMapper;
+import build.dream.platform.models.role.ListRolePrivilegesModel;
 import build.dream.platform.models.role.ListRolesModel;
 import build.dream.platform.models.role.SaveRolePrivilegesModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,19 @@ public class RoleService {
         apiRest.setMessage("查询权限列表成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    @Transactional(readOnly = true)
+    public ApiRest listRolePrivileges(ListRolePrivilegesModel listRolePrivilegesModel) {
+        Object data = null;
+        if (Constants.ROLE_TYPE_BACKGROUND.equals(listRolePrivilegesModel.getType())) {
+            data = backgroundRoleMapper.listRolePrivileges(listRolePrivilegesModel.getRoleId());
+        } else if (Constants.ROLE_TYPE_APP.equals(listRolePrivilegesModel.getType())) {
+            data = backgroundRoleMapper.listRolePrivileges(listRolePrivilegesModel.getRoleId());
+        } else if (Constants.ROLE_TYPE_POS.equals(listRolePrivilegesModel.getType())) {
+            data = backgroundRoleMapper.listRolePrivileges(listRolePrivilegesModel.getRoleId());
+        }
+        return new ApiRest(data, "查询角色权限列表成功！");
     }
 
     @Transactional(rollbackFor = Exception.class)

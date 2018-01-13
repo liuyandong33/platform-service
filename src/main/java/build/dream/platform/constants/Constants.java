@@ -21,4 +21,8 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String PRIVILEGE_TYPE_BACKGROUND = "background";
     public static final String PRIVILEGE_TYPE_APP = "app";
     public static final String PRIVILEGE_TYPE_POS = "pos";
+
+    public static final String ROLE_TYPE_BACKGROUND = "background";
+    public static final String ROLE_TYPE_APP = "app";
+    public static final String ROLE_TYPE_POS = "pos";
 }
