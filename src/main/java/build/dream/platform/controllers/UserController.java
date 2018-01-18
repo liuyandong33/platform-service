@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.services.UserService;
 import org.apache.commons.lang.Validate;
@@ -60,6 +61,28 @@ public class UserController extends BasicController {
             ObtainAllPrivilegesModel obtainAllPrivilegesModel = ApplicationHandler.instantiateObject(ObtainAllPrivilegesModel.class, requestParameters);
             obtainAllPrivilegesModel.validateAndThrow();
             apiRest = userService.obtainAllPrivileges(obtainAllPrivilegesModel);
+        } catch (Exception e) {
+            LogUtils.error("查询权限失败", controllerSimpleName, "findAllAppAuthorities", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 批量删除用户
+     *
+     * @return
+     */
+    @RequestMapping(value = "/batchDeleteUser")
+    @ResponseBody
+    public String batchDeleteUser() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            BatchDeleteUserModel batchDeleteUserModel = ApplicationHandler.instantiateObject(BatchDeleteUserModel.class, requestParameters);
+            batchDeleteUserModel.validateAndThrow();
+
+            apiRest = userService.batchDeleteUser(batchDeleteUserModel);
         } catch (Exception e) {
             LogUtils.error("查询权限失败", controllerSimpleName, "findAllAppAuthorities", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest(e);

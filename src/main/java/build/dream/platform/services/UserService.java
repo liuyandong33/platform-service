@@ -8,8 +8,10 @@ import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
+import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -38,6 +40,8 @@ public class UserService {
     private PosPrivilegeMapper posPrivilegeMapper;
     @Autowired
     private TenantSecretKeyMapper tenantSecretKeyMapper;
+    @Autowired
+    private UniversalMapper universalMapper;
 
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(String loginName) throws IOException {
@@ -101,6 +105,28 @@ public class UserService {
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setMessage("查询权限成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    /**
+     * 批量删除用户
+     *
+     * @param batchDeleteUserModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest batchDeleteUser(BatchDeleteUserModel batchDeleteUserModel) {
+        UpdateModel updateModel = new UpdateModel(true);
+        updateModel.setTableName("system_user");
+        updateModel.addContentValue("deleted", 1);
+        updateModel.addContentValue("last_update_user_id", batchDeleteUserModel.getUserId());
+        updateModel.addContentValue("last_update_remark", "删除用户信息！");
+        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, batchDeleteUserModel.getUserIds());
+        universalMapper.universalUpdate(updateModel);
+
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("批量删除用户成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }
