@@ -84,7 +84,7 @@ public class UserController extends BasicController {
 
             apiRest = userService.batchDeleteUser(batchDeleteUserModel);
         } catch (Exception e) {
-            LogUtils.error("查询权限失败", controllerSimpleName, "findAllAppAuthorities", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
+            LogUtils.error("批量删除用户失败", controllerSimpleName, "findAllAppAuthorities", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
