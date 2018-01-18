@@ -6,7 +6,7 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.user.BatchDeleteUserModel;
-import build.dream.platform.models.user.BatchObtainUserModel;
+import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.services.UserService;
 import org.apache.commons.lang.Validate;
@@ -49,17 +49,17 @@ public class UserController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/batchObtainUser")
+    @RequestMapping(value = "/batchGetUsers")
     @ResponseBody
-    public String batchObtainUser() {
+    public String batchGetUsers() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            BatchObtainUserModel batchObtainUserModel = ApplicationHandler.instantiateObject(BatchObtainUserModel.class, requestParameters);
-            batchObtainUserModel.validateAndThrow();
-            apiRest = userService.batchObtainUser(batchObtainUserModel);
+            BatchGetUsersModel batchGetUsersModel = ApplicationHandler.instantiateObject(BatchGetUsersModel.class, requestParameters);
+            batchGetUsersModel.validateAndThrow();
+            apiRest = userService.batchObtainUser(batchGetUsersModel);
         } catch (Exception e) {
-            LogUtils.error("查询用户失败", controllerSimpleName, "batchObtainUser", e, requestParameters);
+            LogUtils.error("查询用户失败", controllerSimpleName, "batchGetUsers", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.List;
 
-public class BatchObtainUserModel extends BasicModel {
+public class BatchGetUsersModel extends BasicModel {
     @NotNull
     private List<BigInteger> userIds;
 

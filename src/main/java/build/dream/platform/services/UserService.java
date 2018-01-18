@@ -11,7 +11,7 @@ import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.user.BatchDeleteUserModel;
-import build.dream.platform.models.user.BatchObtainUserModel;
+import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,13 +81,13 @@ public class UserService {
     /**
      * 批量获取用户信息
      *
-     * @param batchObtainUserModel
+     * @param batchGetUsersModel
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest batchObtainUser(BatchObtainUserModel batchObtainUserModel) {
+    public ApiRest batchObtainUser(BatchGetUsersModel batchGetUsersModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", "IN", batchObtainUserModel.getUserIds());
+        searchModel.addSearchCondition("id", "IN", batchGetUsersModel.getUserIds());
         List<SystemUser> systemUsers = systemUserMapper.findAll(searchModel);
         return new ApiRest(systemUsers, "批量获取用户信息成功！");
     }
