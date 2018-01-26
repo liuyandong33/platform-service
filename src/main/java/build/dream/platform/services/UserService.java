@@ -1,25 +1,24 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AppPrivilege;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
+import build.dream.platform.models.user.BatchDeleteUserModel;
+import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,16 @@ public class UserService {
     private PosPrivilegeMapper posPrivilegeMapper;
     @Autowired
     private TenantSecretKeyMapper tenantSecretKeyMapper;
+    @Autowired
+    private UniversalMapper universalMapper;
 
+    /**
+     * 获取用户信息
+     *
+     * @param loginName
+     * @return
+     * @throws IOException
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(String loginName) throws IOException {
         SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
@@ -70,24 +78,26 @@ public class UserService {
         return apiRest;
     }
 
+    /**
+     * 批量获取用户信息
+     *
+     * @param batchGetUsersModel
+     * @return
+     */
     @Transactional(readOnly = true)
-    public ApiRest findAllUsers(Map<String, String> parameters) {
-        String userIds = parameters.get("userIds");
+    public ApiRest batchObtainUser(BatchGetUsersModel batchGetUsersModel) {
         SearchModel searchModel = new SearchModel(true);
-        ApiRest apiRest = null;
-        if (StringUtils.isNotBlank(userIds)) {
-            String[] userIdArray = StringUtils.split(userIds, ",");
-            List<BigInteger> bigIntegerUserIds = new ArrayList<BigInteger>();
-            for (String userId : userIdArray) {
-                bigIntegerUserIds.add(BigInteger.valueOf(Long.valueOf(userId)));
-            }
-            searchModel.addSearchCondition("id", "IN", bigIntegerUserIds);
-            List<SystemUser> systemUsers = systemUserMapper.findAll(searchModel);
-            apiRest = new ApiRest(systemUsers, "查询成功！");
-        }
-        return apiRest;
+        searchModel.addSearchCondition("id", "IN", batchGetUsersModel.getUserIds());
+        List<SystemUser> systemUsers = systemUserMapper.findAll(searchModel);
+        return new ApiRest(systemUsers, "批量获取用户信息成功！");
     }
 
+    /**
+     * 获取用户所有权限
+     *
+     * @param obtainAllPrivilegesModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainAllPrivileges(ObtainAllPrivilegesModel obtainAllPrivilegesModel) {
         Object data = null;
@@ -101,6 +111,28 @@ public class UserService {
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setMessage("查询权限成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    /**
+     * 批量删除用户
+     *
+     * @param batchDeleteUserModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest batchDeleteUser(BatchDeleteUserModel batchDeleteUserModel) {
+        UpdateModel updateModel = new UpdateModel(true);
+        updateModel.setTableName("system_user");
+        updateModel.addContentValue("deleted", 1);
+        updateModel.addContentValue("last_update_user_id", batchDeleteUserModel.getUserId());
+        updateModel.addContentValue("last_update_remark", "删除用户信息！");
+        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, batchDeleteUserModel.getUserIds());
+        universalMapper.universalUpdate(updateModel);
+
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("批量删除用户成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }
