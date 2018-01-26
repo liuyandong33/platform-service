@@ -12,6 +12,7 @@ import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
 import build.dream.platform.services.SystemUserService;
 import build.dream.platform.services.TenantSecretKeyService;
+import build.dream.platform.utils.ElemeUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,6 +67,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
+
+            ElemeUtils.startElemeConsumerThread();
         } catch (IOException e) {
             LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
         }
