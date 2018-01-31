@@ -253,7 +253,7 @@ public class OrderService {
         updateModel.addContentValue("deleted", 1);
         updateModel.addContentValue("last_update_user_id", userId);
         updateModel.addContentValue("last_update_remark", "删除订单详情信息！");
-        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo);
+        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
         universalMapper.universalUpdate(updateModel);
 
         ApiRest apiRest = new ApiRest();
