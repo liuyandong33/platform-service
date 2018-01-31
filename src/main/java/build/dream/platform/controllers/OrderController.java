@@ -6,6 +6,7 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.order.BatchDeleteOrdersModel;
+import build.dream.platform.models.order.DeleteOrderModel;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
 import build.dream.platform.models.order.SaveOrderModel;
 import build.dream.platform.services.OrderService;
@@ -85,7 +86,23 @@ public class OrderController extends BasicController {
             batchDeleteOrdersModel.validateAndThrow();
             apiRest = orderService.batchDeleteOrders(batchDeleteOrdersModel);
         } catch (Exception e) {
-            LogUtils.error("删除订单失败", controllerSimpleName, "batchDeleteOrders", e, requestParameters);
+            LogUtils.error("批量删除订单失败", controllerSimpleName, "batchDeleteOrders", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String deleteOrder() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            DeleteOrderModel deleteOrderModel = ApplicationHandler.instantiateObject(DeleteOrderModel.class, requestParameters);
+            deleteOrderModel.validateAndThrow();
+            apiRest = orderService.deleteOrder(deleteOrderModel);
+        } catch (Exception e) {
+            LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrder", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

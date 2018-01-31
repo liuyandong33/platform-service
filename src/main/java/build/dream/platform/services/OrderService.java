@@ -12,6 +12,7 @@ import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.order.BatchDeleteOrdersModel;
+import build.dream.platform.models.order.DeleteOrderModel;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
 import build.dream.platform.models.order.SaveOrderModel;
 import build.dream.platform.utils.OrderUtils;
@@ -227,6 +228,34 @@ public class OrderService {
         orderDetailUpdateModel.addContentValue("last_update_remark", "删除订单详情信息！");
         orderDetailUpdateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
         universalMapper.universalUpdate(orderDetailUpdateModel);
+        ApiRest apiRest = new ApiRest();
+        apiRest.setMessage("删除订单信息成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest deleteOrder(DeleteOrderModel deleteOrderModel) {
+        BigInteger orderInfoId = deleteOrderModel.getOrderInfoId();
+        BigInteger userId = deleteOrderModel.getUserId();
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
+        OrderInfo orderInfo = orderInfoMapper.find(searchModel);
+        Validate.notNull(orderInfo, "订单不存在！");
+
+        orderInfo.setDeleted(true);
+        orderInfo.setLastUpdateUserId(userId);
+        orderInfo.setLastUpdateRemark("删除订单信息！");
+        orderInfoMapper.update(orderInfo);
+
+        UpdateModel updateModel = new UpdateModel(true);
+        updateModel.setTableName("order_detail");
+        updateModel.addContentValue("deleted", 1);
+        updateModel.addContentValue("last_update_user_id", userId);
+        updateModel.addContentValue("last_update_remark", "删除订单详情信息！");
+        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo);
+        universalMapper.universalUpdate(updateModel);
+
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("删除订单信息成功！");
         apiRest.setSuccessful(true);
