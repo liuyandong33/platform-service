@@ -165,7 +165,7 @@ public class SaveGoodsModel extends BasicModel {
     }
 
     @Override
-    public void validateAndThrow() throws NoSuchFieldException {
+    public void validateAndThrow() {
         super.validateAndThrow();
         ApplicationHandler.isTrue(goodsType == 1 || goodsType == 2 || goodsType == 3, "goodsType");
         ApplicationHandler.isTrue(goodsStatus == 1 || goodsStatus == 2, "goodsStatus");

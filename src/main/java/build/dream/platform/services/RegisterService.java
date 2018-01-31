@@ -10,6 +10,7 @@ import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.mappers.TenantSecretKeyMapper;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,9 +79,9 @@ public class RegisterService {
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
         tenantSecretKey.setTenantId(tenant.getId());
         tenantSecretKey.setTenantCode(tenant.getCode());
-        String[] rsaKeys = RSAUtils.generateKeyPair(2048);
-        tenantSecretKey.setPublicKey(rsaKeys[0]);
-        tenantSecretKey.setPrivateKey(rsaKeys[1]);
+        Map<String, byte[]> rsaKeys = RSAUtils.generateKeyPair(2048);
+        tenantSecretKey.setPublicKey(Base64.encodeBase64String(rsaKeys.get("publicKey")));
+        tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get("privateKey")));
         tenantSecretKey.setCreateUserId(userId);
         tenantSecretKey.setLastUpdateUserId(userId);
         tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
@@ -99,20 +100,5 @@ public class RegisterService {
         data.put("branch", initializeBranchApiRest.getData());
         ApiRest apiRest = new ApiRest(data, "注册商户成功！");
         return apiRest;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest test() throws NoSuchAlgorithmException, IOException {
-        TenantSecretKey tenantSecretKey = new TenantSecretKey();
-        tenantSecretKey.setTenantId(BigInteger.ZERO);
-        tenantSecretKey.setTenantCode("61011888");
-        String[] rsaKeys = RSAUtils.generateKeyPair(2048);
-        tenantSecretKey.setPublicKey(rsaKeys[0]);
-        tenantSecretKey.setPrivateKey(rsaKeys[1]);
-        tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY));
-        tenantSecretKey.setCreateUserId(BigInteger.ONE);
-        tenantSecretKey.setLastUpdateUserId(BigInteger.TEN);
-        tenantSecretKeyMapper.insert(tenantSecretKey);
-        return new ApiRest();
     }
 }

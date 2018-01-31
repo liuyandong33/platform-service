@@ -46,4 +46,5 @@ dependencies {
 
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
     compile("javax.servlet:jstl")
+    compile("com.networknt:json-schema-validator:0.1.1")
 }

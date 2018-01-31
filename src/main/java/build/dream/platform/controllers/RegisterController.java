@@ -43,18 +43,4 @@ public class RegisterController extends BasicController {
         }
         return GsonUtils.toJson(apiRest);
     }
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    @ResponseBody
-    public String test() {
-        ApiRest apiRest = null;
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
-            apiRest = registerService.test();
-        } catch (Exception e) {
-            LogUtils.error("注册商户失败", controllerSimpleName, "registerTenant", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
-    }
 }
