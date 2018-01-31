@@ -91,7 +91,7 @@ public class OrderService {
             Goods goods = goodsMap.get(goodsInfo.getGoodsId());
             Validate.notNull(goods, "产品不存在！");
 
-            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsInfo.getGoodsSpecificationId()));
+            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsInfo.getGoodsSpecificationId());
             Validate.notNull(goodsSpecification, "产品规格不存在！");
 
             OrderDetail orderDetail = new OrderDetail();
