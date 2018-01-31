@@ -52,7 +52,7 @@ public class OrderService {
         }
 
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsInfos);
+        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
         List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new LinkedHashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
