@@ -2,12 +2,11 @@ package build.dream.platform.models.order;
 
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
-import org.apache.commons.collections.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SaveOrderModel extends BasicModel {
@@ -20,9 +19,7 @@ public class SaveOrderModel extends BasicModel {
     private BigInteger tenantId;
     private BigInteger agentId;
 
-    private List<OrderDetailModel> orderDetailModels;
-    private List<BigInteger> goodsIds = null;
-    private List<BigInteger> goodsSpecificationIds = null;
+    private List<GoodsInfo> goodsInfos;
 
     public Integer getOrderType() {
         return orderType;
@@ -56,38 +53,38 @@ public class SaveOrderModel extends BasicModel {
         this.agentId = agentId;
     }
 
-    public List<OrderDetailModel> getOrderDetailModels() {
-        return orderDetailModels;
+    public List<GoodsInfo> getGoodsInfos() {
+        return goodsInfos;
     }
 
-    public void setOrderDetailModels(List<OrderDetailModel> orderDetailModels) {
-        this.orderDetailModels = orderDetailModels;
-        goodsIds = new ArrayList<BigInteger>();
-        goodsSpecificationIds = new ArrayList<BigInteger>();
-        for (OrderDetailModel orderDetailModel : orderDetailModels) {
-            goodsIds.add(orderDetailModel.goodsId);
-            goodsSpecificationIds.add(orderDetailModel.goodsSpecificationId);
+    public void setGoodsInfos(List<GoodsInfo> goodsInfos) {
+        this.goodsInfos = goodsInfos;
+    }
+
+    public void setGoodsInfos(String goodsInfos) {
+        ApplicationHandler.validateJson(goodsInfos, Constants.GOODS_INFOS_SCHEMA_FILE_PATH, "goodsInfos");
+        this.goodsInfos = GsonUtils.jsonToList(goodsInfos, GoodsInfo.class);
+    }
+
+    @Override
+    public void validateAndThrow() {
+        super.validateAndThrow();
+        ApplicationHandler.inArray(new Integer[]{Constants.ORDER_TYPE_TENANT_ORDER, Constants.ORDER_TYPE_AGENT_ORDER}, orderType, "orderType");
+        if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
+            ApplicationHandler.notNull(tenantId, "tenantId");
+            for (GoodsInfo goodsInfo : goodsInfos) {
+                ApplicationHandler.notNull(goodsInfo.getBranchId(), "goodsInfos");
+            }
+        }
+        if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
+            ApplicationHandler.notNull(agentId, "agentId");
         }
     }
 
-    public List<BigInteger> getGoodsIds() {
-        return goodsIds;
-    }
-
-    public List<BigInteger> getGoodsSpecificationIds() {
-        return goodsSpecificationIds;
-    }
-
-    public static class OrderDetailModel extends BasicModel {
-        @NotNull
+    public static class GoodsInfo {
         private BigInteger goodsId;
-
-        @NotNull
         private BigInteger goodsSpecificationId;
-
-        @NotNull
-        private Integer amount;
-
+        private Integer quantity;
         private BigInteger branchId;
 
         public BigInteger getGoodsId() {
@@ -106,12 +103,12 @@ public class SaveOrderModel extends BasicModel {
             this.goodsSpecificationId = goodsSpecificationId;
         }
 
-        public Integer getAmount() {
-            return amount;
+        public Integer getQuantity() {
+            return quantity;
         }
 
-        public void setAmount(Integer amount) {
-            this.amount = amount;
+        public void setQuantity(Integer quantity) {
+            this.quantity = quantity;
         }
 
         public BigInteger getBranchId() {
@@ -121,27 +118,5 @@ public class SaveOrderModel extends BasicModel {
         public void setBranchId(BigInteger branchId) {
             this.branchId = branchId;
         }
-
-        public void validateAndThrow(Integer orderType) throws NoSuchFieldException {
-            super.validateAndThrow();
-            if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-                ApplicationHandler.notNull(branchId, "orderDetails");
-            }
-        }
-    }
-
-    @Override
-    public void validateAndThrow() throws NoSuchFieldException {
-        ApplicationHandler.isTrue(CollectionUtils.isNotEmpty(orderDetailModels), "orderDetails");
-        for (OrderDetailModel orderDetailModel : orderDetailModels) {
-            orderDetailModel.validateAndThrow(orderType);
-        }
-        ApplicationHandler.isTrue(orderType == Constants.ORDER_TYPE_TENANT_ORDER || orderType == Constants.ORDER_TYPE_AGENT_ORDER, "orderType");
-        if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-            ApplicationHandler.notNull(tenantId, "tenantId");
-        } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
-            ApplicationHandler.notNull(agentId, "agentId");
-        }
-        super.validateAndThrow();
     }
 }

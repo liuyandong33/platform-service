@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.order.BatchDeleteOrdersModel;
 import build.dream.platform.models.order.ObtainAllOrderInfosModel;
 import build.dream.platform.models.order.SaveOrderModel;
 import build.dream.platform.services.OrderService;
@@ -15,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -33,10 +31,8 @@ public class OrderController extends BasicController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             SaveOrderModel saveOrderModel = ApplicationHandler.instantiateObject(SaveOrderModel.class, requestParameters);
-            String orderDetails = requestParameters.get("orderDetails");
-            ApplicationHandler.notEmpty(orderDetails, "orderDetails");
-            List<SaveOrderModel.OrderDetailModel> orderDetailModels = GsonUtils.jsonToList(orderDetails, SaveOrderModel.OrderDetailModel.class);
-            saveOrderModel.setOrderDetailModels(orderDetailModels);
+            String goodsInfos = requestParameters.get("goodsInfos");
+            saveOrderModel.setGoodsInfos(goodsInfos);
             saveOrderModel.validateAndThrow();
             apiRest = orderService.saveOrder(saveOrderModel);
         } catch (Exception e) {
@@ -79,21 +75,15 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/deleteOrders", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/deleteOrders", method = RequestMethod.POST)
     @ResponseBody
-    public String deleteOrders() {
+    public String batchDeleteOrders() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String orderIds = requestParameters.get("orderIds");
-            ApplicationHandler.notEmpty(orderIds, "orderIds");
-
-            List<BigInteger> bigIntegerOrderIds = new ArrayList<BigInteger>();
-            String[] orderIdArray = orderIds.split(",");
-            for (String orderId : orderIdArray) {
-                bigIntegerOrderIds.add(NumberUtils.createBigInteger(orderId));
-            }
-            apiRest = orderService.deleteOrders(bigIntegerOrderIds);
+            BatchDeleteOrdersModel batchDeleteOrdersModel = ApplicationHandler.instantiateObject(BatchDeleteOrdersModel.class, requestParameters);
+            batchDeleteOrdersModel.validateAndThrow();
+            apiRest = orderService.batchDeleteOrders(batchDeleteOrdersModel);
         } catch (Exception e) {
             LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrders", e, requestParameters);
             apiRest = new ApiRest(e);

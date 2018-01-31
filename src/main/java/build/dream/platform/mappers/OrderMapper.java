@@ -17,5 +17,4 @@ public interface OrderMapper {
     List<Order> findAll(SearchModel searchModel);
     List<Order> findAllPaged(SearchModel searchModel);
     long count(SearchModel searchModel);
-    long deleteAllByIds(@Param("orderIds") List<BigInteger> orderIds, @Param("lastUpdateRemark") String lastUpdateRemark);
 }

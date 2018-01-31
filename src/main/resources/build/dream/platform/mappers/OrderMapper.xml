@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.OrderMapper">
     <insert id="insert" parameterType="build.dream.common.saas.domains.Order" useGeneratedKeys="true" keyProperty="id">
-        ${@build.dream.common.utils.BeanUtils@generateInsertSql("build.dream.common.saas.domains.Order")}
+        ${@build.dream.common.utils.DatabaseUtils@generateInsertSql("build.dream.common.saas.domains.Order")}
     </insert>
 
     <update id="update" parameterType="build.dream.common.saas.domains.Order">
-        ${@build.dream.common.utils.BeanUtils@generateUpdateSql("build.dream.common.saas.domains.Order")}
+        ${@build.dream.common.utils.DatabaseUtils@generateUpdateSql("build.dream.common.saas.domains.Order")}
     </update>
 
     <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.Order">
@@ -24,11 +24,4 @@
     <select id="count" parameterType="build.dream.common.utils.SearchModel" resultType="java.lang.Long">
         SELECT COUNT(1) FROM `order` <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
-
-    <update id="deleteAllByIds">
-        UPDATE `order` SET deleted = 1, last_update_remark = #{lastUpdateRemark} WHERE id IN
-        <foreach collection="orderIds" index="index" item="orderId" open="(" separator="," close=")">
-            #{orderId}
-        </foreach>
-    </update>
 </mapper>

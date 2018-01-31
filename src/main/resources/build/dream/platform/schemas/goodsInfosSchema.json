@@ -1,0 +1,21 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "goodsId": {
+                "type": "integer"
+            },
+            "goodsSpecificationId": {
+                "type": "integer"
+            },
+            "quantity": {
+                "type": "integer"
+            },
+            "branchId": {
+                "type": "integer"
+            }
+        }
+    },
+    "minItems": 1
+}
