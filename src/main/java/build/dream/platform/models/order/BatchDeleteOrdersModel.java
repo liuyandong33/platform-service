@@ -8,16 +8,16 @@ import java.util.List;
 
 public class BatchDeleteOrdersModel extends BasicModel {
     @NotNull
-    private List<BigInteger> orderIds;
+    private List<BigInteger> orderInfoIds;
     @NotNull
     private BigInteger userId;
 
-    public List<BigInteger> getOrderIds() {
-        return orderIds;
+    public List<BigInteger> getOrderInfoIds() {
+        return orderInfoIds;
     }
 
-    public void setOrderIds(List<BigInteger> orderIds) {
-        this.orderIds = orderIds;
+    public void setOrderInfoIds(List<BigInteger> orderInfoIds) {
+        this.orderInfoIds = orderInfoIds;
     }
 
     public BigInteger getUserId() {

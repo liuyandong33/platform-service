@@ -3,6 +3,7 @@ package build.dream.platform.models.order;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 
 public class ObtainAllOrderInfosModel extends BasicModel {
     @NotNull
@@ -10,6 +11,9 @@ public class ObtainAllOrderInfosModel extends BasicModel {
 
     @NotNull
     private Integer rows;
+
+    private BigInteger tenantId;
+    private BigInteger agentId;
 
     public Integer getPage() {
         return page;
@@ -25,5 +29,21 @@ public class ObtainAllOrderInfosModel extends BasicModel {
 
     public void setRows(Integer rows) {
         this.rows = rows;
+    }
+
+    public BigInteger getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(BigInteger tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public BigInteger getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(BigInteger agentId) {
+        this.agentId = agentId;
     }
 }

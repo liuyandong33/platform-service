@@ -48,10 +48,10 @@ public class OrderController extends BasicController {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String orderId = requestParameters.get("orderId");
-            ApplicationHandler.notEmpty(orderId, "orderId");
+            String orderInfoId = requestParameters.get("orderInfoId");
+            ApplicationHandler.notEmpty(orderInfoId, "orderInfoId");
 
-            apiRest = orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderId));
+            apiRest = orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId));
         } catch (Exception e) {
             LogUtils.error("获取订单信息失败", controllerSimpleName, "obtainOrderInfo", e, requestParameters);
             apiRest = new ApiRest(e);
@@ -75,7 +75,7 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/deleteOrders", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST)
     @ResponseBody
     public String batchDeleteOrders() {
         ApiRest apiRest = null;
@@ -85,7 +85,7 @@ public class OrderController extends BasicController {
             batchDeleteOrdersModel.validateAndThrow();
             apiRest = orderService.batchDeleteOrders(batchDeleteOrdersModel);
         } catch (Exception e) {
-            LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrders", e, requestParameters);
+            LogUtils.error("删除订单失败", controllerSimpleName, "batchDeleteOrders", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
