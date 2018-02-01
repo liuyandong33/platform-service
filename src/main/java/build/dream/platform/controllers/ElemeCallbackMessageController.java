@@ -30,9 +30,7 @@ public class ElemeCallbackMessageController extends BasicController {
             apiRest = elemeCallbackMessageService.markHandleFailureMessage(uuid);
         } catch (Exception e) {
             LogUtils.error("标记处理失败消息失败", controllerSimpleName, "markHandleFailureMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
-            apiRest = new ApiRest();
-            apiRest.setError(e.getMessage());
-            apiRest.setSuccessful(false);
+            apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
     }
