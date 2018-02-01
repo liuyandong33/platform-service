@@ -15,7 +15,12 @@
             "branchId": {
                 "type": "integer"
             }
-        }
+        },
+        "required": [
+            "goodsId",
+            "goodsSpecificationId",
+            "quantity"
+        ]
     },
     "minItems": 1
 }
