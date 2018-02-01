@@ -21,7 +21,7 @@ public class ElemeCallbackMessageController extends BasicController {
 
     @RequestMapping(value = "/markHandleFailureMessage")
     @ResponseBody
-    public String saveElemeCallbackMessage() {
+    public String markHandleFailureMessage() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
