@@ -1,0 +1,73 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "oneOf": [
+            {
+                "$ref": "#/definitions/specialPriceSchema"
+            },
+            {
+                "$ref": "#/definitions/discountRateSchema"
+            }
+        ]
+    },
+    "minItems": 1,
+    "definitions": {
+        "specialPriceSchema": {
+            "properties": {
+                "goodsId": {
+                    "type": "integer"
+                },
+                "goodsSpecificationId": {
+                    "type": "integer"
+                },
+                "discountType": {
+                    "enum": [
+                        1
+                    ]
+                },
+                "tenantSpecialPrice": {
+                    "type": "number"
+                },
+                "agentSpecialPrice": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "goodsId",
+                "goodsSpecificationId",
+                "discountType",
+                "tenantSpecialPrice",
+                "agentSpecialPrice"
+            ]
+        },
+        "discountRateSchema": {
+            "properties": {
+                "goodsId": {
+                    "type": "integer"
+                },
+                "goodsSpecificationId": {
+                    "type": "integer"
+                },
+                "discountType": {
+                    "enum": [
+                        2
+                    ]
+                },
+                "tenantDiscountRate": {
+                    "type": "number"
+                },
+                "agentDiscountRate": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "goodsId",
+                "goodsSpecificationId",
+                "discountType",
+                "tenantDiscountRate",
+                "agentDiscountRate"
+            ]
+        }
+    }
+}

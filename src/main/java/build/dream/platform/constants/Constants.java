@@ -27,4 +27,5 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String ROLE_TYPE_POS = "pos";
 
     public static final String GOODS_INFOS_SCHEMA_FILE_PATH = "build/dream/platform/schemas/goodsInfosSchema.json";
+    public static final String SPECIAL_GOODS_ACTIVITY_INFOS_SCHEMA_FILE_PATH = "build/dream/platform/schemas/specialGoodsActivityInfosSchema.json";
 }
