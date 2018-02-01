@@ -29,11 +29,10 @@ public class ElemeConsumerThread implements Runnable {
                     continue;
                 }
 
-                Map<String, String> elemeMessageMap = JacksonUtils.readValue(elemeMessage, Map.class);
-                String callbackRequestBody = elemeMessageMap.get("callbackRequestBody");
-                String uuid = elemeMessageMap.get("uuid");
+                JSONObject elemeMessageJsonObject = JSONObject.fromObject(elemeMessage);
+                JSONObject callbackRequestBodyJsonObject = elemeMessageJsonObject.getJSONObject("callbackRequestBody");
+                String uuid = elemeMessageJsonObject.getString("uuid");
 
-                JSONObject callbackRequestBodyJsonObject = JSONObject.fromObject(callbackRequestBody);
                 ElemeCallbackMessage elemeCallbackMessage = new ElemeCallbackMessage();
                 elemeCallbackMessage.setRequestId(callbackRequestBodyJsonObject.getString("requestId"));
                 elemeCallbackMessage.setType(callbackRequestBodyJsonObject.getInt("type"));
