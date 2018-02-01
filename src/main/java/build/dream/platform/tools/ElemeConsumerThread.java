@@ -3,12 +3,12 @@ package build.dream.platform.tools;
 import build.dream.common.saas.domains.ElemeCallbackMessage;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.CommonUtils;
+import build.dream.common.utils.JacksonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.ElemeCallbackMessageService;
 import build.dream.platform.utils.ElemeUtils;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -23,17 +23,17 @@ public class ElemeConsumerThread implements Runnable {
     public void run() {
         while (true) {
             String elemeMessage = null;
-            String uuid = null;
             try {
-                Map<String, String> elemeMessageBody = ElemeUtils.takeElemeMessage();
-                if (MapUtils.isEmpty(elemeMessageBody)) {
+                elemeMessage = ElemeUtils.takeElemeMessage();
+                if (StringUtils.isBlank(elemeMessage)) {
                     continue;
                 }
 
-                elemeMessage = elemeMessageBody.get("callbackRequestBody");
-                uuid = elemeMessageBody.get("uuid");
+                Map<String, String> elemeMessageMap = JacksonUtils.readValue(elemeMessage, Map.class);
+                String callbackRequestBody = elemeMessageMap.get("callbackRequestBody");
+                String uuid = elemeMessageMap.get("uuid");
 
-                JSONObject callbackRequestBodyJsonObject = JSONObject.fromObject(elemeMessage);
+                JSONObject callbackRequestBodyJsonObject = JSONObject.fromObject(callbackRequestBody);
                 ElemeCallbackMessage elemeCallbackMessage = new ElemeCallbackMessage();
                 elemeCallbackMessage.setRequestId(callbackRequestBodyJsonObject.getString("requestId"));
                 elemeCallbackMessage.setType(callbackRequestBodyJsonObject.getInt("type"));
@@ -54,7 +54,7 @@ public class ElemeConsumerThread implements Runnable {
                 elemeCallbackMessageService.saveElemeCallbackMessage(elemeCallbackMessage);
             } catch (Exception e) {
                 if (StringUtils.isNotBlank(elemeMessage)) {
-                    ElemeUtils.addElemeMessage(elemeMessage, uuid);
+                    ElemeUtils.addElemeMessage(elemeMessage);
                 }
                 LogUtils.error("保存饿了么消息失败", ELEME_CONSUMER_THREAD_SIMPLE_NAME, "run", e);
             }
