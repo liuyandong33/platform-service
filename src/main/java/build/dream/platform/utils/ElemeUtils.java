@@ -6,7 +6,6 @@ import build.dream.common.utils.QueueUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.tools.ElemeConsumerThread;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
