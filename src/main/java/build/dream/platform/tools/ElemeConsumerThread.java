@@ -48,7 +48,7 @@ public class ElemeConsumerThread implements Runnable {
                 elemeCallbackMessage.setTimestamp(NumberUtils.createBigInteger(callbackRequestBodyJsonObject.getString("timestamp")));
                 elemeCallbackMessage.setSignature(callbackRequestBodyJsonObject.getString("signature"));
                 elemeCallbackMessage.setUserId(NumberUtils.createBigInteger(callbackRequestBodyJsonObject.getString("userId")));
-                elemeCallbackMessage.setMessageMd5(uuid);
+                elemeCallbackMessage.setUuid(uuid);
                 elemeCallbackMessage.setHandleResult(Constants.ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_SUCCESS);
 
                 BigInteger userId = CommonUtils.getServiceSystemUserId();

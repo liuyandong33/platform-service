@@ -21,9 +21,9 @@ public class ElemeCallbackMessageService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest markHandleFailureMessage(String messageMd5) {
+    public ApiRest markHandleFailureMessage(String uuid) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("message_md5", Constants.SQL_OPERATION_SYMBOL_EQUALS, messageMd5);
+        searchModel.addSearchCondition("uuid", Constants.SQL_OPERATION_SYMBOL_EQUALS, uuid);
         ElemeCallbackMessage elemeCallbackMessage = elemeCallbackMessageMapper.find(searchModel);
         Validate.notNull(elemeCallbackMessage, "消息不存在！");
         elemeCallbackMessage.setHandleResult(Constants.ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_FAILURE);
