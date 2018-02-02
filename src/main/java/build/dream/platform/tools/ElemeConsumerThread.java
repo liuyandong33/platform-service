@@ -3,7 +3,6 @@ package build.dream.platform.tools;
 import build.dream.common.saas.domains.ElemeCallbackMessage;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.CommonUtils;
-import build.dream.common.utils.JacksonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.ElemeCallbackMessageService;
@@ -13,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import java.math.BigInteger;
-import java.util.Map;
 
 public class ElemeConsumerThread implements Runnable {
     private static final String ELEME_CONSUMER_THREAD_SIMPLE_NAME = "ElemeConsumerThread";
@@ -26,6 +24,14 @@ public class ElemeConsumerThread implements Runnable {
             try {
                 elemeMessage = ElemeUtils.takeElemeMessage();
                 if (StringUtils.isBlank(elemeMessage)) {
+                    continue;
+                }
+
+                if (!ApplicationHandler.isJson(elemeMessage)) {
+                    continue;
+                }
+
+                if (!ApplicationHandler.isRightJson(elemeMessage, Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH)) {
                     continue;
                 }
 

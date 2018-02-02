@@ -28,6 +28,7 @@ public class Constants extends build.dream.common.constants.Constants {
 
     public static final String GOODS_INFOS_SCHEMA_FILE_PATH = "build/dream/platform/schemas/goodsInfosSchema.json";
     public static final String SPECIAL_GOODS_ACTIVITY_INFOS_SCHEMA_FILE_PATH = "build/dream/platform/schemas/specialGoodsActivityInfosSchema.json";
+    public static final String ELEME_MESSAGE_SCHEMA_FILE_PATH = "build/dream/platform/schemas/elemeMessageSchema.json";
 
     public static final Integer ACTIVITY_TYPE_SPECIAL_GOODS = 1;
     public static final Integer ACTIVITY_STATUS_UNEXECUTED = 1;
