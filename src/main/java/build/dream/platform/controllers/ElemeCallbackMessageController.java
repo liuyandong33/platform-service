@@ -26,7 +26,7 @@ public class ElemeCallbackMessageController extends BasicController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             String uuid = requestParameters.get("uuid");
-            ApplicationHandler.notNull(uuid, "uuid");
+            ApplicationHandler.notBlank(uuid, "uuid");
             apiRest = elemeCallbackMessageService.markHandleFailureMessage(uuid);
         } catch (Exception e) {
             LogUtils.error("标记处理失败消息失败", controllerSimpleName, "markHandleFailureMessage", e.getClass().getSimpleName(), e.getMessage(), requestParameters);
