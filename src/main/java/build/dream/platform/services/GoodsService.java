@@ -3,14 +3,15 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
-import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.GoodsMapper;
 import build.dream.platform.mappers.GoodsSpecificationMapper;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
+import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
-import org.apache.commons.collections.CollectionUtils;
+import build.dream.platform.utils.GoodsUtils;
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,54 +29,62 @@ public class GoodsService {
     @Autowired
     private GoodsSpecificationMapper goodsSpecificationMapper;
 
+    /**
+     * 获取商品信息
+     *
+     * @param obtainAllGoodsInfosModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
         SearchModel goodsSearchModel = new SearchModel(true);
-        long total = goodsMapper.count(goodsSearchModel);
+        List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
 
-        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
-        if (total > 0) {
-            PagedSearchModel goodsPagedSearchModel = new PagedSearchModel(true);
-            goodsPagedSearchModel.setPage(obtainAllGoodsInfosModel.getPage());
-            goodsPagedSearchModel.setRows(obtainAllGoodsInfosModel.getRows());
-            List<Goods> goodses = goodsMapper.findAllPaged(goodsPagedSearchModel);
-
-            if (CollectionUtils.isNotEmpty(goodses)) {
-                List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-                for (Goods goods : goodses) {
-                    goodsIds.add(goods.getId());
-                }
-
-                SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
-                List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
-                Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = new HashMap<BigInteger, List<GoodsSpecification>>();
-                for (GoodsSpecification goodsSpecification : goodsSpecifications) {
-                    List<GoodsSpecification> goodsSpecificationList = goodsSpecificationsMap.get(goodsSpecification.getGoodsId());
-                    if (goodsSpecificationList == null) {
-                        goodsSpecificationList = new ArrayList<GoodsSpecification>();
-                        goodsSpecificationsMap.put(goodsSpecification.getGoodsId(), goodsSpecificationList);
-                    }
-                    goodsSpecificationList.add(goodsSpecification);
-                }
-
-                for (Goods goods : goodses) {
-                    Map<String, Object> row = new HashMap<String, Object>();
-                    row.put("goods", goods);
-                    row.put("goodsSpecifications", goodsSpecificationsMap.get(goods.getId()));
-                    rows.add(row);
-                }
+        SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        Map<BigInteger, List<Map<String, Object>>> goodsSpecificationInfoMap = new HashMap<BigInteger, List<Map<String, Object>>>();
+        for (GoodsSpecification goodsSpecification : goodsSpecifications) {
+            List<Map<String, Object>> goodsSpecificationInfos = goodsSpecificationInfoMap.get(goodsSpecification.getGoodsId());
+            if (goodsSpecificationInfos == null) {
+                goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
+                goodsSpecificationInfoMap.put(goodsSpecification.getGoodsId(), goodsSpecificationInfos);
             }
+            goodsSpecificationInfos.add(GoodsUtils.buildGoodsSpecificationInfo(goodsSpecification));
         }
 
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("rows", rows);
-        data.put("total", total);
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setMessage("获取商品信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        List<Map<String, Object>> goodsInfos = new ArrayList<Map<String, Object>>();
+        for (Goods goods : goodses) {
+            Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
+            goodsInfo.put("goodsSpecification", goodsSpecificationInfoMap.get(goods.getId()));
+            goodsInfos.add(goodsInfo);
+        }
+        return new ApiRest(goodsInfos, "获取商品信息成功！");
+    }
+
+    /**
+     * 获取商品信息
+     *
+     * @param obtainGoodsInfoModel
+     * @return
+     */
+    public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
+        BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
+        SearchModel goodsSearchModel = new SearchModel(true);
+        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+        Goods goods = goodsMapper.find(goodsSearchModel);
+        Validate.notNull(goods, "商品不存在！");
+
+        SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+        goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        List<Map<String, Object>> goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
+        for (GoodsSpecification goodsSpecification : goodsSpecifications) {
+            goodsSpecificationInfos.add(GoodsUtils.buildGoodsSpecificationInfo(goodsSpecification));
+        }
+        Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
+        goodsInfo.put("goodsSpecification", goodsSpecificationInfos);
+
+        return new ApiRest(goodsInfo, "获取商品信息成功！");
     }
 
     @Transactional(rollbackFor = Exception.class)

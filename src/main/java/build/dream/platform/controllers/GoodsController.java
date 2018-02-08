@@ -6,6 +6,7 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
+import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
 import build.dream.platform.services.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class GoodsController extends BasicController {
     @Autowired
     private GoodsService goodsService;
 
+    /**
+     * 获取所有商品信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllOrderInfos() {
@@ -34,6 +40,27 @@ public class GoodsController extends BasicController {
             apiRest = goodsService.obtainAllOrderInfos(obtainAllGoodsInfosModel);
         } catch (Exception e) {
             LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllOrderInfos", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 获取商品信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public String obtainGoodsInfo() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            ObtainGoodsInfoModel obtainGoodsInfoModel = ApplicationHandler.instantiateObject(ObtainGoodsInfoModel.class, requestParameters);
+            obtainGoodsInfoModel.validateAndThrow();
+            apiRest = goodsService.obtainGoodsInfo(obtainGoodsInfoModel);
+        } catch (Exception e) {
+            LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainGoodsInfo", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
