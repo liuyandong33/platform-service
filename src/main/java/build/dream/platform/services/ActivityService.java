@@ -7,9 +7,11 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.SpecialGoodsActivity;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.ActivityMapper;
 import build.dream.platform.mappers.GoodsMapper;
 import build.dream.platform.mappers.GoodsSpecificationMapper;
 import build.dream.platform.mappers.SpecialGoodsActivityMapper;
+import build.dream.platform.models.activity.ObtainAllActivitiesModel;
 import build.dream.platform.models.activity.SaveSpecialGoodsActivityModel;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class ActivityService {
     private GoodsSpecificationMapper goodsSpecificationMapper;
     @Autowired
     private SpecialGoodsActivityMapper specialGoodsActivityMapper;
+    @Autowired
+    private ActivityMapper activityMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveSpecialGoodsActivity(SaveSpecialGoodsActivityModel saveSpecialGoodsActivityModel) throws ParseException {
@@ -106,5 +110,14 @@ public class ActivityService {
         apiRest.setMessage("保存特价商品活动成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    @Transactional(readOnly = true)
+    public ApiRest obtainAllActivities(ObtainAllActivitiesModel obtainAllActivitiesModel) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 2);
+        List<Activity> activities = activityMapper.findAll(searchModel);
+
+        return new ApiRest();
     }
 }

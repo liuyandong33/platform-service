@@ -3,6 +3,7 @@ package build.dream.platform.controllers;
 import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.*;
+import build.dream.platform.models.activity.ObtainAllActivitiesModel;
 import build.dream.platform.models.activity.SaveSpecialGoodsActivityModel;
 import build.dream.platform.services.ActivityService;
 import com.google.zxing.WriterException;
@@ -21,6 +22,11 @@ public class ActivityController extends BasicController {
     @Autowired
     private ActivityService activityService;
 
+    /**
+     * 保存特价商品活动
+     *
+     * @return
+     */
     @RequestMapping(value = "/saveSpecialGoodsActivity")
     @ResponseBody
     public String saveSpecialGoodsActivity() {
@@ -63,5 +69,26 @@ public class ActivityController extends BasicController {
         httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(QRCodeUtils.FORMAT));
         httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + fileName + ".png");
         QRCodeUtils.generateQRCode(width, height, text, httpServletResponse.getOutputStream());
+    }
+
+    /**
+     * 获取所有活动
+     *
+     * @return
+     */
+    @RequestMapping(value = "/obtainAllActivities")
+    @ResponseBody
+    public String obtainAllActivities() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            ObtainAllActivitiesModel obtainAllActivitiesModel = ApplicationHandler.instantiateObject(ObtainAllActivitiesModel.class, requestParameters);
+            obtainAllActivitiesModel.validateAndThrow();
+            apiRest = activityService.obtainAllActivities(obtainAllActivitiesModel);
+        } catch (Exception e) {
+            LogUtils.error("获取活动失败", controllerSimpleName, "obtainAllActivities", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
     }
 }
