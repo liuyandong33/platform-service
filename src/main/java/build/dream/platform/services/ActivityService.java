@@ -7,10 +7,7 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.SpecialGoodsActivity;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.ActivityMapper;
-import build.dream.platform.mappers.GoodsMapper;
-import build.dream.platform.mappers.GoodsSpecificationMapper;
-import build.dream.platform.mappers.SpecialGoodsActivityMapper;
+import build.dream.platform.mappers.*;
 import build.dream.platform.models.activity.ObtainAllActivitiesModel;
 import build.dream.platform.models.activity.SaveSpecialGoodsActivityModel;
 import org.apache.commons.lang.Validate;
@@ -33,6 +30,8 @@ public class ActivityService {
     private SpecialGoodsActivityMapper specialGoodsActivityMapper;
     @Autowired
     private ActivityMapper activityMapper;
+    @Autowired
+    private UniversalMapper universalMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveSpecialGoodsActivity(SaveSpecialGoodsActivityModel saveSpecialGoodsActivityModel) throws ParseException {
@@ -118,6 +117,38 @@ public class ActivityService {
         searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 2);
         List<Activity> activities = activityMapper.findAll(searchModel);
 
-        return new ApiRest();
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        for (Activity activity : activities) {
+            Map<String, Object> activityInfo = new HashMap<String, Object>();
+            activityInfo.put("id", activity.getId());
+            activityInfo.put("name", activity.getName());
+            activityInfo.put("startTime", activity.getStartTime());
+            activityInfo.put("endTime", activity.getEndTime());
+            activityInfo.put("type", activity.getType());
+            int type = activity.getType();
+            if (type == 3) {
+                String sql = "SELECT" +
+                            "goods.id AS goods_id, " +
+                            "goods.name AS goods_name, " +
+                            "goods_specification.id AS goods_specification_id, " +
+                            "goods_specification.name AS goods_specification_name, " +
+                            "special_goods_activity.discount_type, " +
+                            "special_goods_activity.tenant_special_price, " +
+                            "special_goods_activity.agent_special_price, " +
+                            "special_goods_activity.tenant_discount_rate, " +
+                            "special_goods_activity.agent_discount_rate " +
+                            "FROM special_goods_activity " +
+                            "INNER JOIN goods ON goods.id = special_goods_activity.goods_id AND goods.deleted = 0 " +
+                            "INNER JOIN goods_specification ON goods_specification.id = special_goods_activity.goods_specification_id AND goods_specification.deleted = 0 " +
+                            "WHERE special_goods_activity.deleted = 0" +
+                            "AND special_goods_activity.activity_id = #{activityId}";
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                parameters.put("sql", sql);
+                parameters.put("activityId", activity.getId());
+                List<Map<String, Object>> specialGoodsActivityInfos = universalMapper.executeQuery(parameters);
+                activityInfo.put("details", specialGoodsActivityInfos);
+            }
+        }
+        return new ApiRest(data, "查询活动成功！");
     }
 }
