@@ -127,27 +127,9 @@ public class ActivityService {
             activityInfo.put("type", activity.getType());
             int type = activity.getType();
             if (type == 3) {
-                String sql = "SELECT" +
-                            "goods.id AS goods_id, " +
-                            "goods.name AS goods_name, " +
-                            "goods_specification.id AS goods_specification_id, " +
-                            "goods_specification.name AS goods_specification_name, " +
-                            "special_goods_activity.discount_type, " +
-                            "special_goods_activity.tenant_special_price, " +
-                            "special_goods_activity.agent_special_price, " +
-                            "special_goods_activity.tenant_discount_rate, " +
-                            "special_goods_activity.agent_discount_rate " +
-                            "FROM special_goods_activity " +
-                            "INNER JOIN goods ON goods.id = special_goods_activity.goods_id AND goods.deleted = 0 " +
-                            "INNER JOIN goods_specification ON goods_specification.id = special_goods_activity.goods_specification_id AND goods_specification.deleted = 0 " +
-                            "WHERE special_goods_activity.deleted = 0" +
-                            "AND special_goods_activity.activity_id = #{activityId}";
-                Map<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put("sql", sql);
-                parameters.put("activityId", activity.getId());
-                List<Map<String, Object>> specialGoodsActivityInfos = universalMapper.executeQuery(parameters);
-                activityInfo.put("details", specialGoodsActivityInfos);
+                activityInfo.put("details", specialGoodsActivityMapper.findSpecialGoodsActivityInfos(activity.getId()));
             }
+            data.add(activityInfo);
         }
         return new ApiRest(data, "查询活动成功！");
     }

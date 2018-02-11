@@ -24,4 +24,22 @@
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SpecialGoodsActivity">
         SELECT ${selectColumns} FROM special_goods_activity <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
+
+    <select id="findSpecialGoodsActivityInfos" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        SELECT
+        goods.id AS goods_id,
+        goods.name AS goods_name,
+        goods_specification.id AS goods_specification_id,
+        goods_specification.name AS goods_specification_name,
+        special_goods_activity.discount_type,
+        special_goods_activity.tenant_special_price,
+        special_goods_activity.agent_special_price,
+        special_goods_activity.tenant_discount_rate,
+        special_goods_activity.agent_discount_rate
+        FROM special_goods_activity
+        INNER JOIN goods ON goods.id = special_goods_activity.goods_id AND goods.deleted = 0
+        INNER JOIN goods_specification ON goods_specification.id = special_goods_activity.goods_specification_id AND goods_specification.deleted = 0
+        WHERE special_goods_activity.deleted = 0
+        AND special_goods_activity.activity_id = #{activityId}
+    </select>
 </mapper>
