@@ -5,10 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.platform.models.order.BatchDeleteOrdersModel;
-import build.dream.platform.models.order.DeleteOrderModel;
-import build.dream.platform.models.order.ObtainAllOrderInfosModel;
-import build.dream.platform.models.order.SaveOrderModel;
+import build.dream.platform.models.order.*;
 import build.dream.platform.services.OrderService;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,11 @@ public class OrderController extends BasicController {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * 保存订单信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
     @ResponseBody
     public String saveOrder() {
@@ -43,6 +45,11 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
+    /**
+     * 获取订单信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET)
     @ResponseBody
     public String obtainOrderInfo() {
@@ -60,6 +67,11 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
+    /**
+     * 分页获取订单信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/obtainAllOrderInfos", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllOrderInfos() {
@@ -76,6 +88,11 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
+    /**
+     * 批量删除订单
+     *
+     * @return
+     */
     @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST)
     @ResponseBody
     public String batchDeleteOrders() {
@@ -92,6 +109,11 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
+    /**
+     * 删除订单
+     *
+     * @return
+     */
     @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST)
     @ResponseBody
     public String deleteOrder() {
@@ -103,6 +125,28 @@ public class OrderController extends BasicController {
             apiRest = orderService.deleteOrder(deleteOrderModel);
         } catch (Exception e) {
             LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrder", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 发起支付
+     *
+     * @return
+     */
+    @RequestMapping(value = "/doPay", method = RequestMethod.GET)
+    @ResponseBody
+    public String doPay() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            DoPayModel doPayModel = ApplicationHandler.instantiateObject(DoPayModel.class, requestParameters);
+            doPayModel.validateAndThrow();
+
+            apiRest = orderService.doPay(doPayModel);
+        } catch (Exception e) {
+            LogUtils.error("发起支付失败", controllerSimpleName, "doPay", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

@@ -5,16 +5,10 @@ import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.OrderDetail;
 import build.dream.common.saas.domains.OrderInfo;
-import build.dream.common.utils.PagedSearchModel;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.SerialNumberGenerator;
-import build.dream.common.utils.UpdateModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
-import build.dream.platform.models.order.BatchDeleteOrdersModel;
-import build.dream.platform.models.order.DeleteOrderModel;
-import build.dream.platform.models.order.ObtainAllOrderInfosModel;
-import build.dream.platform.models.order.SaveOrderModel;
+import build.dream.platform.models.order.*;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
@@ -22,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -41,6 +36,12 @@ public class OrderService {
     @Autowired
     private UniversalMapper universalMapper;
 
+    /**
+     * 保存订单
+     *
+     * @param saveOrderModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveOrder(SaveOrderModel saveOrderModel) {
         BigInteger userId = saveOrderModel.getUserId();
@@ -73,7 +74,7 @@ public class OrderService {
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             orderInfo.setOrderType(Constants.ORDER_TYPE_TENANT_ORDER);
             orderInfo.setTenantId(saveOrderModel.getTenantId());
-            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO",10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
+            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO", 10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
             orderInfo.setOrderType(Constants.ORDER_TYPE_AGENT_ORDER);
             orderInfo.setAgentId(saveOrderModel.getAgentId());
@@ -137,6 +138,12 @@ public class OrderService {
         return apiRest;
     }
 
+    /**
+     * 获取订单信息
+     *
+     * @param orderInfoId
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainOrderInfo(BigInteger orderInfoId) {
         SearchModel orderInfoSearchModel = new SearchModel(true);
@@ -155,6 +162,12 @@ public class OrderService {
         return apiRest;
     }
 
+    /**
+     * 分页获取订单信息
+     *
+     * @param obtainAllOrderInfosModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
         SearchModel orderSearchModel = new SearchModel(true);
@@ -208,6 +221,12 @@ public class OrderService {
         return apiRest;
     }
 
+    /**
+     * 批量删除订单
+     *
+     * @param batchDeleteOrdersModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest batchDeleteOrders(BatchDeleteOrdersModel batchDeleteOrdersModel) {
         List<BigInteger> orderInfoIds = batchDeleteOrdersModel.getOrderInfoIds();
@@ -234,6 +253,12 @@ public class OrderService {
         return apiRest;
     }
 
+    /**
+     * 删除订单
+     *
+     * @param deleteOrderModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest deleteOrder(DeleteOrderModel deleteOrderModel) {
         BigInteger orderInfoId = deleteOrderModel.getOrderInfoId();
@@ -260,5 +285,63 @@ public class OrderService {
         apiRest.setMessage("删除订单信息成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    /**
+     * 发起支付
+     *
+     * @param doPayModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest doPay(DoPayModel doPayModel) throws IOException {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, doPayModel.getOrderInfoId());
+        OrderInfo orderInfo = orderInfoMapper.find(searchModel);
+        Validate.notNull(orderInfo, "订单不存在！");
+
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        requestParameters.put("tenantId", "0");
+        requestParameters.put("branchId", "0");
+        requestParameters.put("userId", doPayModel.getUserId().toString());
+
+        ApiRest apiRest = null;
+        String notifyUrl = SystemPartitionUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
+        int paidScene = doPayModel.getPaidScene();
+        if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_H5 || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
+            requestParameters.put("body", "订单支付");
+            requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
+            requestParameters.put("totalFee", String.valueOf(orderInfo.getPayableAmount().multiply(BigDecimal.valueOf(100)).longValue()));
+            requestParameters.put("spbillCreateIp", ApplicationHandler.getRemoteAddress());
+            requestParameters.put("notifyUrl", notifyUrl);
+
+            String tradeType = null;
+            if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT) {
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_JSAPI;
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_H5) {
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_MWEB;
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_APP) {
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_APP;
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_NATIVE;
+            }
+            requestParameters.put("tradeType", tradeType);
+            apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "weiXinPay", "unifiedOrder", requestParameters);
+        } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE || paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE || paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
+            requestParameters.put("subject", "订单支付");
+            requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
+            requestParameters.put("totalAmount", orderInfo.getPayableAmount().toEngineeringString());
+            requestParameters.put("productCode", orderInfo.getOrderNumber());
+            requestParameters.put("notifyUrl", notifyUrl);
+            if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
+                apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "alipay", "alipayTradeWapPay", requestParameters);
+            } else if (paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE) {
+                apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "alipay", "alipayTradePagePay", requestParameters);
+            } else if (paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
+                apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "alipay", "alipayTradeAppPay", requestParameters);
+            }
+        }
+        Validate.isTrue(apiRest.isSuccessful(), apiRest.getError());
+        return new ApiRest(apiRest.getData(), "发起支付成功！");
     }
 }
