@@ -45,7 +45,7 @@ public class ActivityController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "generateQRCode")
+    @RequestMapping(value = "/generateQRCode")
     @ResponseBody
     public void generateQRCode() throws IOException, WriterException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
@@ -57,7 +57,7 @@ public class ActivityController extends BasicController {
         QRCodeUtils.generateQRCode(width, height, text, httpServletResponse.getOutputStream());
     }
 
-    @RequestMapping(value = "downloadQRCode")
+    @RequestMapping(value = "/downloadQRCode")
     @ResponseBody
     public void downloadQRCode() throws IOException, WriterException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
