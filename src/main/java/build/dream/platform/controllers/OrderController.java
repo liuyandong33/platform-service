@@ -50,7 +50,7 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
     public String obtainOrderInfo() {
         ApiRest apiRest = null;
