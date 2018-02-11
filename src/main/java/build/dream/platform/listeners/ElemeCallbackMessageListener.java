@@ -44,7 +44,7 @@ public class ElemeCallbackMessageListener implements MessageListener {
             elemeCallbackMessage.setTimestamp(NumberUtils.createBigInteger(callbackRequestBodyJsonObject.getString("timestamp")));
             elemeCallbackMessage.setSignature(callbackRequestBodyJsonObject.getString(""));
             elemeCallbackMessage.setUserId(NumberUtils.createBigInteger(callbackRequestBodyJsonObject.getString("userId")));
-            elemeCallbackMessage.setMessageMd5(uuid);
+            elemeCallbackMessage.setUuid(uuid);
             elemeCallbackMessage.setHandleResult(Constants.ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_SUCCESS);
 
             BigInteger userId = null;

@@ -44,4 +44,6 @@ dependencies {
     compile("org.springframework.session:spring-session-data-redis")
     compile("com.networknt:json-schema-validator:0.1.13")
     compile("com.google.zxing:core:3.3.2")
+
+    compile("org.apache.tomcat.embed:tomcat-embed-jasper")
 }

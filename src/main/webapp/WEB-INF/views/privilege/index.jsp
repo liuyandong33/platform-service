@@ -9,82 +9,17 @@
 <html>
 <head>
     <title>Title</title>
-    <link type="text/css" rel="stylesheet" href="../libraries/zTree_v3-v3.5.16/css/metroStyle/metroStyle.css">
     <script type="text/javascript" src="../libraries/jquery/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="../libraries/zTree_v3-v3.5.16/js/jquery.ztree.all-3.5.js"></script>
     <script type="text/javascript">
-        var interval = undefined;
-        var zTreeObj = undefined;
-        var privileges = undefined;
-        $(function () {
-            var setting = {
-                view: {
-                    selectedMulti: false,
-                    expandSpeed: "fast"
-                },
-                data: {
-                    simpleData: {
-                        enable: true,
-                        idKey: "id",
-                        pIdKey: "pId",
-                        rootId: ""
-                    },
-                    key: {
-                        name: 'name'
-                    }
-                },
-                check: {
-                    enable: true,
-                    chkStyle: "checkbox"
-                }
-            };
-
-            $.get("../privilege/listAppPrivileges", {}, function (result) {
-                if (result["successful"]) {
-                    var treeNodes = result["data"];
-                    zTreeObj = $.fn.zTree.init($("#tree"), setting, treeNodes);
-                    zTreeObj.expandAll(true);
-                    var selectedNode = zTreeObj.getNodeByParam("id", "17", null);
-                    if (selectedNode && !selectedNode["isParent"]) {
-                        zTreeObj.checkNode(selectedNode, true, true);
-                    }
-                }
-            }, "json");
-
-            startPolling();
-            renderGoodsNode(privileges);
-        });
-
-        function startPolling() {
-            var i = 0;
-            interval = window.setInterval(function () {
-                console.log(i++);
-            }, 500);
-        }
-
-        function stopPolling() {
-            if (interval) {
-                window.clearInterval(interval);
-            }
-        }
-        
-        function saveRole() {
-            var checkedNodes = zTreeObj.getCheckedNodes(true);
-            var checkedNodeIds = [];
-            var length = checkedNodes.length;
-            for (var index = 0; index < length; index++) {
-                checkedNodeIds.push(checkedNodes[index]["id"]);
-            }
-            alert(checkedNodeIds.join(","));
-        }
-        
-        function renderGoodsNode(privileges) {
-
+        function submit() {
+            var form = $('<form method="post" id="form" action="../privilege/index"><input type="text" name="name" value="name"><input type="password" name="password" value="password"></form>');
+            form.css({"display": "none"});
+            form.appendTo("body");
+            form.submit();
         }
     </script>
 </head>
 <body>
-<div id="tree" class="ztree"></div>
-<button onclick="saveRole();">保存</button>
+<button onclick="submit();">aa</button>
 </body>
 </html>
