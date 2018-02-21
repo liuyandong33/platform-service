@@ -15,7 +15,6 @@ public class DoPayModel extends BasicModel {
     @NotNull
     private BigInteger userId;
 
-    @NotNull
     private Integer paidScene;
 
     public BigInteger getOrderInfoId() {

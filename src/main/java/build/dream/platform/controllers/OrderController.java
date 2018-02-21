@@ -135,7 +135,7 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/doPay", method = RequestMethod.GET)
+    @RequestMapping(value = "/doPay", method = RequestMethod.POST)
     @ResponseBody
     public String doPay() {
         ApiRest apiRest = null;

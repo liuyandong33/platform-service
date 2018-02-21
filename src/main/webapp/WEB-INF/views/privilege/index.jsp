@@ -12,10 +12,25 @@
     <script type="text/javascript" src="../libraries/jquery/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
         function doPay() {
-            var form = $('<form method="post" id="form" action="../privilege/index"><input type="text" name="name" value="name"><input type="password" name="password" value="password"></form>');
-            form.css({"display": "none"});
-            form.appendTo("body");
-            form.submit();
+            var paidScene = 7;
+            $.post("../order/doPay", {orderInfoId: 1, userId: 1, paidScene: paidScene}, function (result) {
+                if (result["successful"]) {
+                    var data = result["data"];
+                    if (paidScene == 1) {
+
+                    } else if (paidScene == 2) {
+
+                    } else if (paidScene == 7 || paidScene == 8) {
+                        var index = data.lastIndexOf("<script>");
+                        var form = $(data.substring(0, index));
+                        form.css({"display": "none"});
+                        form.appendTo("body");
+                        form.submit();
+                    }
+                } else {
+                    alert(result["error"]);
+                }
+            }, "json");
         }
     </script>
 </head>
