@@ -37,4 +37,5 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer ACTIVITY_STATUS_EXPIRED = 3;
 
     public static final String SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION = "synchronize.branch.info.job.cron.expression";
+    public static final String LAST_PULL_TIME = "lastPullTime";
 }

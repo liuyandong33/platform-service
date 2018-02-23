@@ -1,11 +1,13 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.SystemParameter;
 import build.dream.common.saas.domains.SystemPartition;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.SystemParameterMapper;
 import build.dream.platform.mappers.SystemPartitionMapper;
 import build.dream.platform.mappers.UniversalMapper;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,6 +27,8 @@ public class BranchService {
     private UniversalMapper universalMapper;
     @Autowired
     private SystemPartitionMapper systemPartitionMapper;
+    @Autowired
+    private SystemParameterMapper systemParameterMapper;
 
     /**
      * 同步门店信息
@@ -47,13 +51,21 @@ public class BranchService {
         }
 
         String deploymentEnvironment = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUALS, deploymentEnvironment);
-        searchModel.addSearchCondition("service_name", Constants.SQL_OPERATION_SYMBOL_IN, new String[]{Constants.SERVICE_NAME_CATERING, Constants.SERVICE_NAME_RETAIL});
-        List<SystemPartition> systemPartitions = systemPartitionMapper.findAll(searchModel);
+        SearchModel systemPartitionSearchModel = new SearchModel(true);
+        systemPartitionSearchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUALS, deploymentEnvironment);
+        systemPartitionSearchModel.addSearchCondition("service_name", Constants.SQL_OPERATION_SYMBOL_IN, new String[]{Constants.SERVICE_NAME_CATERING, Constants.SERVICE_NAME_RETAIL});
+        List<SystemPartition> systemPartitions = systemPartitionMapper.findAll(systemPartitionSearchModel);
+
+        SearchModel systemParameterSearchModel = new SearchModel(true);
+        systemParameterSearchModel.addSearchCondition("parameter_name", Constants.SQL_OPERATION_SYMBOL_EQUALS, Constants.LAST_PULL_TIME);
+        SystemParameter systemParameter = systemParameterMapper.find(systemParameterSearchModel);
+        if (systemParameter == null) {
+
+        }
+
         for (SystemPartition systemPartition : systemPartitions) {
             Map<String, String> pullBranchInfosRequestParameters = new HashMap<String, String>();
-            pullBranchInfosRequestParameters.put("lastPullTime", "");
+            pullBranchInfosRequestParameters.put("lastPullTime", systemParameter.getParameterValue());
             pullBranchInfosRequestParameters.put("reacquire", "");
             ApiRest pullBranchInfosApiRest = ProxyUtils.doGetWithRequestParameters(systemPartition.getPartitionCode(), systemPartition.getServiceName(), "branch", "pullBranchInfos", pullBranchInfosRequestParameters);
             Validate.isTrue(pullBranchInfosApiRest.isSuccessful(), pullBranchInfosApiRest.getError());
