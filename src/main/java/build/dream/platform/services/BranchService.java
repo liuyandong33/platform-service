@@ -68,20 +68,21 @@ public class BranchService {
         String reacquire = null;
 
         Date date = new Date();
+        BigInteger userId = CommonUtils.getServiceSystemUserId();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (lastPullTimeSystemParameter == null) {
             lastPullTimeSystemParameter = new SystemParameter();
             lastPullTimeSystemParameter.setParameterName(Constants.LAST_PULL_TIME);
             lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
-            lastPullTimeSystemParameter.setCreateUserId(BigInteger.ZERO);
-            lastPullTimeSystemParameter.setLastUpdateUserId(BigInteger.ZERO);
+            lastPullTimeSystemParameter.setCreateUserId(userId);
+            lastPullTimeSystemParameter.setLastUpdateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateRemark("保存最后拉取时间！");
             systemParameterMapper.insert(lastPullTimeSystemParameter);
             reacquire = "true";
         } else {
             lastPullTime = lastPullTimeSystemParameter.getParameterValue();
             lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
-            lastPullTimeSystemParameter.setLastUpdateUserId(BigInteger.ZERO);
+            lastPullTimeSystemParameter.setLastUpdateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateRemark("同步门店信息定时任务执行，修改最后拉取时间！");
             systemParameterMapper.update(lastPullTimeSystemParameter);
             reacquire = "false";
