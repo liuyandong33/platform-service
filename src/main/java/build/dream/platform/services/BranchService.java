@@ -63,6 +63,8 @@ public class BranchService {
 
         }
 
+        String lastPullTime = null;
+        String reacquire = null;
         for (SystemPartition systemPartition : systemPartitions) {
             Map<String, String> pullBranchInfosRequestParameters = new HashMap<String, String>();
             pullBranchInfosRequestParameters.put("lastPullTime", systemParameter.getParameterValue());
