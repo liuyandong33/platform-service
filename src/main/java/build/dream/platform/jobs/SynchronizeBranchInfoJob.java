@@ -1,14 +1,23 @@
 package build.dream.platform.jobs;
 
-import build.dream.common.utils.LogUtils;
+import build.dream.platform.services.BranchService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
 
 public class SynchronizeBranchInfoJob implements Job {
     private static final String SYNCHRONIZE_BRANCH_INFO_JOB_SIMPLE_NAME = "SynchronizeBranchInfoJob";
+    @Autowired
+    private BranchService branchService;
 
     @Override
     public void execute(JobExecutionContext context) {
-        LogUtils.info(SYNCHRONIZE_BRANCH_INFO_JOB_SIMPLE_NAME);
+        try {
+            branchService.synchronizeBranchInfo();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

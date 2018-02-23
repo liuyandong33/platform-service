@@ -4,4 +4,8 @@
     <select id="findAllByDeploymentEnvironment" resultType="build.dream.common.saas.domains.SystemPartition">
         SELECT * FROM system_partition WHERE deployment_environment = #{deploymentEnvironment} AND deleted = 0
     </select>
+
+    <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemPartition">
+        SELECT * FROM system_partition <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
 </mapper>
