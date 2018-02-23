@@ -1,5 +1,6 @@
 package build.dream.platform.jobs;
 
+import build.dream.common.utils.LogUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
@@ -8,6 +9,6 @@ public class SynchronizeBranchInfoJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println(SYNCHRONIZE_BRANCH_INFO_JOB_SIMPLE_NAME);
+        LogUtils.info(SYNCHRONIZE_BRANCH_INFO_JOB_SIMPLE_NAME);
     }
 }
