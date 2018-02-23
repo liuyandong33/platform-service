@@ -26,6 +26,11 @@ public class BranchService {
     @Autowired
     private SystemPartitionMapper systemPartitionMapper;
 
+    /**
+     * 同步门店信息
+     *
+     * @throws IOException
+     */
     @Transactional(rollbackFor = Exception.class)
     public void synchronizeBranchInfo() throws IOException {
         String sql = "SELECT COUNT(1) AS count FROM information_schema.TABLES WHERE table_name = #{tableName} AND table_schema = #{tableSchema};";

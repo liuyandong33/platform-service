@@ -17,6 +17,8 @@ public class JobScheduler {
 
     public void scheduler() throws IOException, SchedulerException {
         Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+        // 启动同步门店信息定时任务
         String synchronizeBranchInfoJobCronExpression = ConfigurationUtils.getConfiguration(Constants.SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION);
         if (StringUtils.isNotBlank(synchronizeBranchInfoJobCronExpression)) {
             JobDetail synchronizeBranchInfoJobDetail = JobBuilder.newJob(SynchronizeBranchInfoJob.class).withIdentity("synchronizeBranchInfoJob", "platformJobGroup").build();
