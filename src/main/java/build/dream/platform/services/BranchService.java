@@ -3,6 +3,7 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.SystemParameter;
 import build.dream.common.saas.domains.SystemPartition;
+import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,17 +62,35 @@ public class BranchService {
 
         SearchModel systemParameterSearchModel = new SearchModel(true);
         systemParameterSearchModel.addSearchCondition("parameter_name", Constants.SQL_OPERATION_SYMBOL_EQUALS, Constants.LAST_PULL_TIME);
-        SystemParameter systemParameter = systemParameterMapper.find(systemParameterSearchModel);
-        if (systemParameter == null) {
-
-        }
+        SystemParameter lastPullTimeSystemParameter = systemParameterMapper.find(systemParameterSearchModel);
 
         String lastPullTime = null;
         String reacquire = null;
+
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (lastPullTimeSystemParameter == null) {
+            lastPullTimeSystemParameter = new SystemParameter();
+            lastPullTimeSystemParameter.setParameterName(Constants.LAST_PULL_TIME);
+            lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
+            lastPullTimeSystemParameter.setCreateUserId(BigInteger.ZERO);
+            lastPullTimeSystemParameter.setLastUpdateUserId(BigInteger.ZERO);
+            lastPullTimeSystemParameter.setLastUpdateRemark("保存最后拉取时间！");
+            systemParameterMapper.insert(lastPullTimeSystemParameter);
+            reacquire = "true";
+        } else {
+            lastPullTime = lastPullTimeSystemParameter.getParameterValue();
+            lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
+            lastPullTimeSystemParameter.setLastUpdateUserId(BigInteger.ZERO);
+            lastPullTimeSystemParameter.setLastUpdateRemark("同步门店信息定时任务执行，修改最后拉取时间！");
+            systemParameterMapper.update(lastPullTimeSystemParameter);
+            reacquire = "false";
+        }
+
         for (SystemPartition systemPartition : systemPartitions) {
             Map<String, String> pullBranchInfosRequestParameters = new HashMap<String, String>();
-            pullBranchInfosRequestParameters.put("lastPullTime", systemParameter.getParameterValue());
-            pullBranchInfosRequestParameters.put("reacquire", "");
+            pullBranchInfosRequestParameters.put("lastPullTime", lastPullTime);
+            pullBranchInfosRequestParameters.put("reacquire", reacquire);
             ApiRest pullBranchInfosApiRest = ProxyUtils.doGetWithRequestParameters(systemPartition.getPartitionCode(), systemPartition.getServiceName(), "branch", "pullBranchInfos", pullBranchInfosRequestParameters);
             Validate.isTrue(pullBranchInfosApiRest.isSuccessful(), pullBranchInfosApiRest.getError());
             Map<String, Object> data = (Map<String, Object>) pullBranchInfosApiRest.getData();
