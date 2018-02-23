@@ -69,6 +69,7 @@ public class BranchService {
 
         Date date = new Date();
         BigInteger userId = CommonUtils.getServiceSystemUserId();
+        userId = BigInteger.ZERO;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (lastPullTimeSystemParameter == null) {
             lastPullTimeSystemParameter = new SystemParameter();
@@ -78,6 +79,7 @@ public class BranchService {
             lastPullTimeSystemParameter.setLastUpdateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateRemark("保存最后拉取时间！");
             systemParameterMapper.insert(lastPullTimeSystemParameter);
+            lastPullTime = "1970-01-01 00:00:00";
             reacquire = "true";
         } else {
             lastPullTime = lastPullTimeSystemParameter.getParameterValue();
@@ -116,8 +118,7 @@ public class BranchService {
                     insertBranchSql.append(branchInfo.get("tenantCode"));
                     insertBranchSql.append("', '");
                     insertBranchSql.append(branchInfo.get("createTime"));
-                    insertBranchSql.append("', ");
-                    insertBranchSql.append("), ");
+                    insertBranchSql.append("'), ");
                 }
                 insertBranchSql.deleteCharAt(insertBranchSql.length() - 1);
                 insertBranchSql.deleteCharAt(insertBranchSql.length() - 1);
