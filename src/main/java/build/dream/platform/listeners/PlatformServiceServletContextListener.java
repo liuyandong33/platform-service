@@ -7,6 +7,7 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.mappers.CommonMapper;
 import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
@@ -35,6 +36,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private SystemUserService systemUserService;
     @Autowired
     private TenantSecretKeyService tenantSecretKeyService;
+    @Autowired
+    private JobScheduler jobScheduler;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -69,7 +72,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
 
             ElemeUtils.startElemeConsumerThread();
-        } catch (IOException e) {
+
+            jobScheduler.scheduler();
+        } catch (Exception e) {
             LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
         }
     }

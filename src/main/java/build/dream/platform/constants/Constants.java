@@ -35,4 +35,6 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer ACTIVITY_STATUS_EXECUTING = 2;
     public static final Integer ACTIVITY_STATUS_TERMINATED = 3;
     public static final Integer ACTIVITY_STATUS_EXPIRED = 3;
+
+    public static final String SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION = "synchronize.branch.info.job.cron.expression";
 }
