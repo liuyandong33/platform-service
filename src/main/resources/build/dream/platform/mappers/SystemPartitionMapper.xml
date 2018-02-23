@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.SystemPartitionMapper">
-    <select id="findAllByDeploymentEnvironment" resultType="build.dream.common.saas.domains.SystemPartition">
-        SELECT * FROM system_partition WHERE deployment_environment = #{deploymentEnvironment} AND deleted = 0
-    </select>
-
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemPartition">
         SELECT * FROM system_partition <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
