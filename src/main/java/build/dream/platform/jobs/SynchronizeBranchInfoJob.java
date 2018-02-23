@@ -16,7 +16,7 @@ public class SynchronizeBranchInfoJob implements Job {
     public void execute(JobExecutionContext context) {
         try {
             branchService.synchronizeBranchInfo();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
