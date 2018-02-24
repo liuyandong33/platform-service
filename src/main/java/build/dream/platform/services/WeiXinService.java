@@ -7,16 +7,11 @@ import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.WeiXinOpenPlatformApplicationMapper;
 import build.dream.platform.mappers.WeiXinPublicAccountMapper;
-import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.FindWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.SaveWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
+import build.dream.platform.models.weixin.*;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigInteger;
 
 @Service
 public class WeiXinService {
@@ -117,10 +112,10 @@ public class WeiXinService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findWeiXinPublicAccount(BigInteger tenantId, BigInteger branchId) {
+    public ApiRest findWeiXinPublicAccount(FindWeiXinPublicAccountModel findWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
-        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, branchId);
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinPublicAccountModel.getTenantId());
+        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinPublicAccountModel.getBranchId());
         WeiXinPublicAccount weiXinPublicAccount = weiXinPublicAccountMapper.find(searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinPublicAccount);

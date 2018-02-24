@@ -7,6 +7,7 @@ import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.FindWeiXinOpenPlatformApplicationModel;
+import build.dream.platform.models.weixin.FindWeiXinPublicAccountModel;
 import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
 import build.dream.platform.services.WeiXinService;
 import org.apache.commons.lang.math.NumberUtils;
@@ -78,13 +79,10 @@ public class WeiXinController extends BasicController {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String tenantId = requestParameters.get("tenantId");
-            ApplicationHandler.notEmpty(tenantId, "tenantId");
+            FindWeiXinPublicAccountModel findWeiXinPublicAccountModel = ApplicationHandler.instantiateObject(FindWeiXinPublicAccountModel.class, requestParameters);
+            findWeiXinPublicAccountModel.validateAndThrow();
 
-            String branchId = requestParameters.get("branchId");
-            ApplicationHandler.notEmpty(branchId, "branchId");
-
-            apiRest = weiXinService.findWeiXinPublicAccount(NumberUtils.createBigInteger(tenantId), NumberUtils.createBigInteger(branchId));
+            apiRest = weiXinService.findWeiXinPublicAccount(findWeiXinPublicAccountModel);
         } catch (Exception e) {
             LogUtils.error("查询微信公众号失败", controllerSimpleName, "findWeiXinPublicAccount", e, requestParameters);
             apiRest = new ApiRest(e);
