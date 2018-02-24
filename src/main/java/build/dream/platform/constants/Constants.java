@@ -39,4 +39,5 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION = "synchronize.branch.info.job.cron.expression";
     public static final String LAST_PULL_TIME = "lastPullTime";
     public static final String REACQUIRE = "reacquire";
+    public static final String KEY_SYNCHRONIZE_BRANCH_INFO_JOB_EXECUTE_SIGN = "_synchronize_branch_info_job_execute_sign";
 }
