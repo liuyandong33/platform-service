@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.services.RegisterService;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,9 @@ public class RegisterController extends BasicController {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            Validate.notNull(requestParameters.get("name"), "商户名称不能为空！");
-            Validate.notNull(requestParameters.get("mobile"), "手机号码不能为空！");
-            Validate.notNull(requestParameters.get("email"), "邮箱不能为空！");
-            Validate.notNull(requestParameters.get("linkman"), "联系人不能为空！");
-            Validate.notNull(requestParameters.get("business"), "业态不能为空！");
-            Validate.notNull(requestParameters.get("provinceCode"), "省编码不能为空！");
-            Validate.notNull(requestParameters.get("cityCode"), "市编码不能为空！");
-            Validate.notNull(requestParameters.get("districtCode"), "区编码不能为空！");
-            Validate.notNull(requestParameters.get("password"), "密码不能为空！");
-            apiRest = registerService.registerTenant(requestParameters);
+            RegisterTenantModel registerTenantModel = ApplicationHandler.instantiateObject(RegisterTenantModel.class, requestParameters);
+            registerTenantModel.validateAndThrow();
+            apiRest = registerService.registerTenant(registerTenantModel);
         } catch (Exception e) {
             LogUtils.error("注册商户失败", controllerSimpleName, "registerTenant", e, requestParameters);
             apiRest = new ApiRest(e);

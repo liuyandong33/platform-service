@@ -10,6 +10,7 @@ import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.mappers.TenantSecretKeyMapper;
+import build.dream.platform.models.register.RegisterTenantModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.Validate;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,13 +36,18 @@ public class RegisterService {
     private TenantSecretKeyMapper tenantSecretKeyMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest registerTenant(Map<String, String> parameters) throws NoSuchFieldException, InstantiationException, ParseException, IllegalAccessException, IOException, NoSuchAlgorithmException {
-        Tenant tenant = ApplicationHandler.instantiateObject(Tenant.class, parameters);
+    public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException {
+        Tenant tenant = new Tenant();
+        tenant.setName(registerTenantModel.getName());
+        tenant.setLinkman(registerTenantModel.getLinkman());
+
+        String business = registerTenantModel.getBusiness();
+        tenant.setBusiness(business);
+
         String partitionCode = null;
-        String business = tenant.getBusiness();
-        if ("1".equals(business)) {
+        if (Constants.BUSINESS_CATERING.equals(business)) {
             partitionCode = ConfigurationUtils.getConfiguration(Constants.CATERING_CURRENT_PARTITION_CODE);
-        } else if ("2".equals(business)) {
+        } else if (Constants.BUSINESS_RETAIL.equals(business)) {
             partitionCode = ConfigurationUtils.getConfiguration(Constants.RETAIL_CURRENT_PARTITION_CODE);
         }
         Integer currentPartitionQuantity = sequenceMapper.nextValue(partitionCode);
@@ -60,7 +65,7 @@ public class RegisterService {
         systemUser.setEmail(tenant.getEmail());
         systemUser.setLoginName(tenant.getCode());
         systemUser.setUserType(Constants.USER_TYPE_TENANT);
-        systemUser.setPassword(DigestUtils.md5Hex(parameters.get("password")));
+        systemUser.setPassword(DigestUtils.md5Hex(registerTenantModel.getPassword()));
         systemUser.setTenantId(tenant.getId());
         systemUser.setAccountNonExpired(true);
         systemUser.setAccountNonLocked(true);
@@ -91,7 +96,18 @@ public class RegisterService {
         Map<String, String> initializeBranchRequestParameters = new HashMap<String, String>();
         initializeBranchRequestParameters.put("tenantId", tenant.getId().toString());
         initializeBranchRequestParameters.put("tenantCode", tenant.getCode());
+        initializeBranchRequestParameters.put("provinceCode", registerTenantModel.getProvinceCode());
+        initializeBranchRequestParameters.put("provinceName", registerTenantModel.getProvinceName());
+        initializeBranchRequestParameters.put("cityCode", registerTenantModel.getCityCode());
+        initializeBranchRequestParameters.put("cityName", registerTenantModel.getCityName());
+        initializeBranchRequestParameters.put("districtCode", registerTenantModel.getDistrictCode());
+        initializeBranchRequestParameters.put("districtName", registerTenantModel.getDistrictName());
+        initializeBranchRequestParameters.put("address", registerTenantModel.getAddress());
+        initializeBranchRequestParameters.put("longitude", registerTenantModel.getLongitude());
+        initializeBranchRequestParameters.put("latitude", registerTenantModel.getLatitude());
         initializeBranchRequestParameters.put("userId", tenant.getUserId().toString());
+        initializeBranchRequestParameters.put("linkman", registerTenantModel.getLinkman());
+        initializeBranchRequestParameters.put("contactPhone", registerTenantModel.getContactPhone());
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
