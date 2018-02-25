@@ -39,7 +39,6 @@ public class RegisterService {
     public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException {
         Tenant tenant = new Tenant();
         tenant.setName(registerTenantModel.getName());
-        tenant.setLinkman(registerTenantModel.getLinkman());
 
         String business = registerTenantModel.getBusiness();
         tenant.setBusiness(business);
@@ -58,14 +57,15 @@ public class RegisterService {
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         tenant.setCreateUserId(userId);
         tenant.setLastUpdateUserId(userId);
+        tenantMapper.insert(tenant);
 
         SystemUser systemUser = new SystemUser();
-        systemUser.setName(tenant.getLinkman());
-        systemUser.setMobile(tenant.getMobile());
-        systemUser.setEmail(tenant.getEmail());
+        systemUser.setName(registerTenantModel.getLinkman());
+        systemUser.setMobile(registerTenantModel.getMobile());
+        systemUser.setEmail(registerTenantModel.getEmail());
         systemUser.setLoginName(tenant.getCode());
-        systemUser.setUserType(Constants.USER_TYPE_TENANT);
         systemUser.setPassword(DigestUtils.md5Hex(registerTenantModel.getPassword()));
+        systemUser.setUserType(Constants.USER_TYPE_TENANT);
         systemUser.setTenantId(tenant.getId());
         systemUser.setAccountNonExpired(true);
         systemUser.setAccountNonLocked(true);
@@ -74,12 +74,6 @@ public class RegisterService {
         systemUser.setCreateUserId(userId);
         systemUser.setLastUpdateUserId(userId);
         systemUserMapper.insert(systemUser);
-
-        tenant.setUserId(systemUser.getId());
-        tenantMapper.insert(tenant);
-
-        systemUser.setTenantId(tenant.getId());
-        systemUserMapper.update(systemUser);
 
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
         tenantSecretKey.setTenantId(tenant.getId());
@@ -105,7 +99,7 @@ public class RegisterService {
         initializeBranchRequestParameters.put("address", registerTenantModel.getAddress());
         initializeBranchRequestParameters.put("longitude", registerTenantModel.getLongitude());
         initializeBranchRequestParameters.put("latitude", registerTenantModel.getLatitude());
-        initializeBranchRequestParameters.put("userId", tenant.getUserId().toString());
+        initializeBranchRequestParameters.put("userId", systemUser.getId().toString());
         initializeBranchRequestParameters.put("linkman", registerTenantModel.getLinkman());
         initializeBranchRequestParameters.put("contactPhone", registerTenantModel.getContactPhone());
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);

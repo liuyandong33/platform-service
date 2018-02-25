@@ -7,67 +7,119 @@ import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class RegisterTenantModel extends BasicModel {
     private static final String[] businesses = {Constants.BUSINESS_CATERING, Constants.BUSINESS_RETAIL};
 
+    /**
+     * 商户名称
+     */
     @NotNull
     @Length(max = 20)
     private String name;
 
+    /**
+     * 联系人电话
+     */
+    @NotNull
+    @Length(max = 20)
+    private String mobile;
+
+    /**
+     * 联系人邮箱
+     */
+    @NotNull
+    @Length(max = 20)
+    private String email;
+
+    /**
+     * 联系人姓名
+     */
     @NotNull
     @Length(max = 20)
     private String linkman;
 
+    /**
+     * 商户业态，1-餐饮，2-零售
+     */
     private String business;
 
+    /**
+     * 总部门店省编码
+     */
     @NotNull
     @Length(max = 10)
     private String provinceCode;
 
+    /**
+     * 总部门店省名称
+     */
     @NotNull
     @Length(max = 10)
     private String provinceName;
 
+    /**
+     * 总部门店市编码
+     */
     @NotNull
     @Length(max = 10)
     private String cityCode;
 
+    /**
+     * 总部门店市名称
+     */
     @NotNull
     @Length(max = 10)
     private String cityName;
 
+    /**
+     * 总部门店区编码
+     */
     @NotNull
     @Length(max = 10)
     private String districtCode;
 
+    /**
+     * 总部门店区名称
+     */
     @NotNull
     @Length(max = 10)
     private String districtName;
 
+    /**
+     * 总部门店详细地址
+     */
     @NotNull
     @Length(max = 255)
     private String address;
 
+    /**
+     * 总部门店经度
+     */
     @NotNull
     @Length(max = 20)
     private String longitude;
 
+    /**
+     * 总部门店纬度
+     */
     @NotNull
     @Length(max = 20)
     private String latitude;
 
+    /**
+     * 总部门店联系电话
+     */
     @NotNull
     @Length(max = 20)
     private String contactPhone;
 
+    /**
+     * 总部门店账号密码
+     */
     @NotNull
     @Length(max = 20)
     private String password;
-
-    @NotNull
-    private BigInteger userId;
 
     public static String[] getBusinesses() {
         return businesses;
@@ -79,6 +131,22 @@ public class RegisterTenantModel extends BasicModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getLinkman() {
@@ -183,14 +251,6 @@ public class RegisterTenantModel extends BasicModel {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public BigInteger getUserId() {
-        return userId;
-    }
-
-    public void setUserId(BigInteger userId) {
-        this.userId = userId;
     }
 
     @Override
