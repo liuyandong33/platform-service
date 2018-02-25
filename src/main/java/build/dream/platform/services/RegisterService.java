@@ -53,6 +53,7 @@ public class RegisterService {
         Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
         tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("tenant_code")));
+        tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         tenant.setCreateUserId(userId);

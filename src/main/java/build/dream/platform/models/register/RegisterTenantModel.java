@@ -9,7 +9,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 
 public class RegisterTenantModel extends BasicModel {
-    private static final String[] businesses = {Constants.BUSINESS_CATERING, Constants.BUSINESS_RETAIL};
+    private static final String[] BUSINESSES = {Constants.BUSINESS_CATERING, Constants.BUSINESS_RETAIL};
+    private static final Integer[] TENANT_TYPES = {1, 2};
 
     /**
      * 商户名称
@@ -121,9 +122,10 @@ public class RegisterTenantModel extends BasicModel {
     @Length(max = 20)
     private String password;
 
-    public static String[] getBusinesses() {
-        return businesses;
-    }
+    /**
+     * 商户类型，1-标准版商户，2-单机版商户
+     */
+    private Integer tenantType;
 
     public String getName() {
         return name;
@@ -253,14 +255,23 @@ public class RegisterTenantModel extends BasicModel {
         this.password = password;
     }
 
+    public Integer getTenantType() {
+        return tenantType;
+    }
+
+    public void setTenantType(Integer tenantType) {
+        this.tenantType = tenantType;
+    }
+
     @Override
     public boolean validate() {
-        return super.validate() && ArrayUtils.contains(businesses, business);
+        return super.validate() && ArrayUtils.contains(BUSINESSES, business) && ArrayUtils.contains(TENANT_TYPES, tenantType);
     }
 
     @Override
     public void validateAndThrow() {
         super.validateAndThrow();
-        ApplicationHandler.inArray(businesses, business, "business");
+        ApplicationHandler.inArray(BUSINESSES, business, "business");
+        ApplicationHandler.inArray(TENANT_TYPES, tenantType, "tenantType");
     }
 }
