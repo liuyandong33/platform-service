@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
 import build.dream.platform.services.OrderService;
 import org.apache.commons.lang.math.NumberUtils;
@@ -150,5 +151,19 @@ public class OrderController extends BasicController {
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
+    }
+
+    @RequestMapping(value = "/alipayCallback", method = RequestMethod.POST)
+    @ResponseBody
+    public String alipayCallback() {
+        String result = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            result = orderService.handleCallback("", 1);
+        } catch (Exception e) {
+            LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
+            result = Constants.FAILURE;
+        }
+        return result;
     }
 }

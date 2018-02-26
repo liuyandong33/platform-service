@@ -1,14 +1,12 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.Goods;
-import build.dream.common.saas.domains.GoodsSpecification;
-import build.dream.common.saas.domains.OrderDetail;
-import build.dream.common.saas.domains.OrderInfo;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.order.*;
+import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
@@ -343,5 +341,30 @@ public class OrderService {
         }
         Validate.isTrue(apiRest.isSuccessful(), apiRest.getError());
         return new ApiRest(apiRest.getData(), "发起支付成功！");
+    }
+
+    public String handleCallback(String orderNumber, int paidType) {
+        SearchModel orderInfoSearchModel = new SearchModel(true);
+        orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
+        OrderInfo orderInfo = orderInfoMapper.find(orderInfoSearchModel);
+        Validate.notNull(orderInfo, "订单不存在！");
+
+        SearchModel orderDetailSearchModel = new SearchModel(true);
+        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
+        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+
+        List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
+        for (OrderDetail orderDetail : orderDetails) {
+            ActivationCodeInfo activationCodeInfo = new ActivationCodeInfo();
+            activationCodeInfo.setAgentId(orderInfo.getAgentId());
+            activationCodeInfo.setOrderId(orderInfo.getId());
+            activationCodeInfo.setStatus(1);
+            activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
+            activationCodeInfo.setCreateUserId(BigInteger.ZERO);
+            activationCodeInfo.setLastUpdateUserId(BigInteger.ZERO);
+            activationCodeInfo.setLastUpdateRemark("处理支付回调，生成激活码！");
+            activationCodeInfos.add(activationCodeInfo);
+        }
+        return Constants.SUCCESS;
     }
 }
