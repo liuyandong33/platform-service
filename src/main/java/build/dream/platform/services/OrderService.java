@@ -33,6 +33,8 @@ public class OrderService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private UniversalMapper universalMapper;
+    @Autowired
+    private ActivationCodeInfoMapper activationCodeInfoMapper;
 
     /**
      * 保存订单
@@ -353,17 +355,28 @@ public class OrderService {
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
         List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
 
-        List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
-        for (OrderDetail orderDetail : orderDetails) {
-            ActivationCodeInfo activationCodeInfo = new ActivationCodeInfo();
-            activationCodeInfo.setAgentId(orderInfo.getAgentId());
-            activationCodeInfo.setOrderId(orderInfo.getId());
-            activationCodeInfo.setStatus(1);
-            activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
-            activationCodeInfo.setCreateUserId(BigInteger.ZERO);
-            activationCodeInfo.setLastUpdateUserId(BigInteger.ZERO);
-            activationCodeInfo.setLastUpdateRemark("处理支付回调，生成激活码！");
-            activationCodeInfos.add(activationCodeInfo);
+        int orderStatus = orderInfo.getOrderStatus();
+        if (orderStatus == Constants.ORDER_TYPE_TENANT_ORDER) {
+
+        } else if (orderStatus == Constants.ORDER_TYPE_AGENT_ORDER) {
+            List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
+            for (OrderDetail orderDetail : orderDetails) {
+                int quantity = orderDetail.getQuantity();
+                for (int index = 0; index < quantity; index++) {
+                    ActivationCodeInfo activationCodeInfo = new ActivationCodeInfo();
+                    activationCodeInfo.setAgentId(orderInfo.getAgentId());
+                    activationCodeInfo.setOrderId(orderInfo.getId());
+                    activationCodeInfo.setStatus(1);
+                    activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
+                    activationCodeInfo.setCreateUserId(BigInteger.ZERO);
+                    activationCodeInfo.setLastUpdateUserId(BigInteger.ZERO);
+                    activationCodeInfo.setLastUpdateRemark("处理支付回调，生成激活码！");
+                    activationCodeInfo.setGoodsId(orderDetail.getGoodsId());
+                    activationCodeInfo.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
+                    activationCodeInfos.add(activationCodeInfo);
+                }
+            }
+            activationCodeInfoMapper.insertAll(activationCodeInfos);
         }
         return Constants.SUCCESS;
     }
