@@ -345,6 +345,14 @@ public class OrderService {
         return new ApiRest(apiRest.getData(), "发起支付成功！");
     }
 
+    /**
+     * 处理订单支付回调
+     *
+     * @param orderNumber
+     * @param paidType
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
     public String handleCallback(String orderNumber, int paidType) {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
@@ -366,7 +374,7 @@ public class OrderService {
                     ActivationCodeInfo activationCodeInfo = new ActivationCodeInfo();
                     activationCodeInfo.setAgentId(orderInfo.getAgentId());
                     activationCodeInfo.setOrderId(orderInfo.getId());
-                    activationCodeInfo.setStatus(1);
+                    activationCodeInfo.setStatus(Constants.ACTIVATION_CODE_STATUS_NOT_USED);
                     activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
                     activationCodeInfo.setCreateUserId(BigInteger.ZERO);
                     activationCodeInfo.setLastUpdateUserId(BigInteger.ZERO);
