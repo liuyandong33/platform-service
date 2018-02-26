@@ -44,4 +44,7 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer ACTIVATION_CODE_STATUS_NOT_USED = 1;
     public static final Integer ACTIVATION_CODE_STATUS_NOT_ALREADY_USED = 2;
     public static final Integer ACTIVATION_CODE_STATUS_NOT_EXPIRED = 3;
+
+    public static final Integer SALE_FLOW_TYPE_TENANT_FLOW = 1;
+    public static final Integer SALE_FLOW_TYPE_AGENT_FLOW = 2;
 }

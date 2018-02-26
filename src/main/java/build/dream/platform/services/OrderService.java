@@ -35,6 +35,8 @@ public class OrderService {
     private UniversalMapper universalMapper;
     @Autowired
     private ActivationCodeInfoMapper activationCodeInfoMapper;
+    @Autowired
+    private SaleFlowMapper saleFlowMapper;
 
     /**
      * 保存订单
@@ -363,9 +365,27 @@ public class OrderService {
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
         List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
 
+        BigInteger orderId = orderInfo.getId();
+        Date occurrenceTime = new Date();
+
+        List<SaleFlow> saleFlows = new ArrayList<SaleFlow>();
         int orderStatus = orderInfo.getOrderStatus();
         if (orderStatus == Constants.ORDER_TYPE_TENANT_ORDER) {
 
+            for (OrderDetail orderDetail : orderDetails) {
+                SaleFlow saleFlow = new SaleFlow();
+                saleFlow.setOrderId(orderId);
+                saleFlow.setType(Constants.SALE_FLOW_TYPE_TENANT_FLOW);
+                saleFlow.setTenantId(orderInfo.getTenantId());
+                saleFlow.setBranchId(orderDetail.getBranchId());
+                saleFlow.setOccurrenceTime(occurrenceTime);
+                saleFlow.setGoodsId(orderDetail.getGoodsId());
+                saleFlow.setGoodsName(orderDetail.getGoodsName());
+                saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
+                saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
+                saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlows.add(saleFlow);
+            }
         } else if (orderStatus == Constants.ORDER_TYPE_AGENT_ORDER) {
             List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
             for (OrderDetail orderDetail : orderDetails) {
@@ -383,8 +403,20 @@ public class OrderService {
                     activationCodeInfo.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                     activationCodeInfos.add(activationCodeInfo);
                 }
+                SaleFlow saleFlow = new SaleFlow();
+                saleFlow.setOrderId(orderId);
+                saleFlow.setType(Constants.SALE_FLOW_TYPE_AGENT_FLOW);
+                saleFlow.setAgentId(orderInfo.getAgentId());
+                saleFlow.setOccurrenceTime(occurrenceTime);
+                saleFlow.setGoodsId(orderDetail.getGoodsId());
+                saleFlow.setGoodsName(orderDetail.getGoodsName());
+                saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
+                saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
+                saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlows.add(saleFlow);
             }
             activationCodeInfoMapper.insertAll(activationCodeInfos);
+            saleFlowMapper.insertAll(saleFlows);
         }
         return Constants.SUCCESS;
     }
