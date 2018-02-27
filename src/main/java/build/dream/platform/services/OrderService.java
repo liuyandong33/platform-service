@@ -37,6 +37,8 @@ public class OrderService {
     private ActivationCodeInfoMapper activationCodeInfoMapper;
     @Autowired
     private SaleFlowMapper saleFlowMapper;
+    @Autowired
+    private TenantGoodsMapper tenantGoodsMapper;
 
     /**
      * 保存订单
@@ -386,8 +388,29 @@ public class OrderService {
         List<SaleFlow> saleFlows = new ArrayList<SaleFlow>();
         int orderType = orderInfo.getOrderType();
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-
+            BigInteger tenantId = orderInfo.getTenantId();
             for (OrderDetail orderDetail : orderDetails) {
+                BigInteger branchId = orderDetail.getBranchId();
+                BigInteger goodsId = orderDetail.getGoodsId();
+                SearchModel tenantGoodsSearchModel = new SearchModel(true);
+                tenantGoodsSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+                tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, branchId);
+                tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+                TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
+                if (tenantGoods == null) {
+                    tenantGoods.setLastUpdateUserId(userId);
+                    tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
+                    tenantGoodsMapper.update(tenantGoods);
+                } else {
+                    tenantGoods = new TenantGoods();
+                    tenantGoods.setTenantId(tenantId);
+                    tenantGoods.setBranchId(branchId);
+                    tenantGoods.setGoodsId(goodsId);
+                    tenantGoods.setCreateUserId(userId);
+                    tenantGoods.setLastUpdateUserId(userId);
+                    tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
+                    tenantGoodsMapper.insert(tenantGoods);
+                }
                 SaleFlow saleFlow = new SaleFlow();
                 saleFlow.setOrderId(orderId);
                 saleFlow.setType(Constants.SALE_FLOW_TYPE_TENANT_FLOW);
