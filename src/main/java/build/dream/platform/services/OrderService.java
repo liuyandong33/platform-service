@@ -10,6 +10,7 @@ import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -398,6 +399,7 @@ public class OrderService {
                 tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
                 TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
                 if (tenantGoods == null) {
+                    tenantGoods.setExpireTime(new Date());
                     tenantGoods.setLastUpdateUserId(userId);
                     tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
                     tenantGoodsMapper.update(tenantGoods);
@@ -406,6 +408,7 @@ public class OrderService {
                     tenantGoods.setTenantId(tenantId);
                     tenantGoods.setBranchId(branchId);
                     tenantGoods.setGoodsId(goodsId);
+                    tenantGoods.setExpireTime(new Date());
                     tenantGoods.setCreateUserId(userId);
                     tenantGoods.setLastUpdateUserId(userId);
                     tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
