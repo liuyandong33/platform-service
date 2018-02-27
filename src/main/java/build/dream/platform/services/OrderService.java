@@ -7,6 +7,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.order.*;
 import build.dream.platform.utils.ActivationCodeUtils;
+import build.dream.platform.utils.GoodsUtils;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
@@ -397,9 +398,15 @@ public class OrderService {
                 tenantGoodsSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
                 tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, branchId);
                 tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+
+                SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
+                goodsSpecificationSearchModel.addSearchCondition("goods_specification_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
+                GoodsSpecification goodsSpecification = goodsSpecificationMapper.find(goodsSpecificationSearchModel);
+
                 TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
-                if (tenantGoods == null) {
-                    tenantGoods.setExpireTime(new Date());
+                if (tenantGoods != null) {
+                    tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(tenantGoods.getExpireTime(), goodsSpecification));
                     tenantGoods.setLastUpdateUserId(userId);
                     tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
                     tenantGoodsMapper.update(tenantGoods);
@@ -408,7 +415,7 @@ public class OrderService {
                     tenantGoods.setTenantId(tenantId);
                     tenantGoods.setBranchId(branchId);
                     tenantGoods.setGoodsId(goodsId);
-                    tenantGoods.setExpireTime(new Date());
+                    tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification));
                     tenantGoods.setCreateUserId(userId);
                     tenantGoods.setLastUpdateUserId(userId);
                     tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
