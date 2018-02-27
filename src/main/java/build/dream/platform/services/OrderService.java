@@ -399,27 +399,36 @@ public class OrderService {
                 tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, branchId);
                 tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
 
+                SearchModel goodsSearchModel = new SearchModel(true);
+                goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
+                Goods goods = goodsMapper.find(goodsSearchModel);
+
                 SearchModel goodsSpecificationSearchModel = new SearchModel(true);
                 goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
                 goodsSpecificationSearchModel.addSearchCondition("goods_specification_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
                 GoodsSpecification goodsSpecification = goodsSpecificationMapper.find(goodsSpecificationSearchModel);
 
-                TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
-                if (tenantGoods != null) {
-                    tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(tenantGoods.getExpireTime(), goodsSpecification));
-                    tenantGoods.setLastUpdateUserId(userId);
-                    tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
-                    tenantGoodsMapper.update(tenantGoods);
-                } else {
-                    tenantGoods = new TenantGoods();
-                    tenantGoods.setTenantId(tenantId);
-                    tenantGoods.setBranchId(branchId);
-                    tenantGoods.setGoodsId(goodsId);
-                    tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification));
-                    tenantGoods.setCreateUserId(userId);
-                    tenantGoods.setLastUpdateUserId(userId);
-                    tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
-                    tenantGoodsMapper.insert(tenantGoods);
+                int meteringMode = goods.getMeteringMode();
+                if (meteringMode == 1) {
+                    TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
+                    if (tenantGoods != null) {
+                        tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(tenantGoods.getExpireTime(), goodsSpecification));
+                        tenantGoods.setLastUpdateUserId(userId);
+                        tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
+                        tenantGoodsMapper.update(tenantGoods);
+                    } else {
+                        tenantGoods = new TenantGoods();
+                        tenantGoods.setTenantId(tenantId);
+                        tenantGoods.setBranchId(branchId);
+                        tenantGoods.setGoodsId(goodsId);
+                        tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification));
+                        tenantGoods.setCreateUserId(userId);
+                        tenantGoods.setLastUpdateUserId(userId);
+                        tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
+                        tenantGoodsMapper.insert(tenantGoods);
+                    }
+                } else if (meteringMode == 2) {
+
                 }
                 SaleFlow saleFlow = new SaleFlow();
                 saleFlow.setOrderId(orderId);
