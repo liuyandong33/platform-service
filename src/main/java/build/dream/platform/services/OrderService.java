@@ -355,11 +355,26 @@ public class OrderService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public String handleCallback(String orderNumber, int paidType) {
+    public String handleCallback(String orderNumber, int paidType) throws IOException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
         OrderInfo orderInfo = orderInfoMapper.find(orderInfoSearchModel);
         Validate.notNull(orderInfo, "订单不存在！");
+
+        int orderStatus = orderInfo.getOrderStatus();
+        if (orderStatus == Constants.ORDER_STATUS_PAID) {
+            return Constants.SUCCESS;
+        }
+
+        Validate.isTrue(orderStatus == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
+
+        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        userId = BigInteger.ZERO;
+
+        orderInfo.setOrderStatus(Constants.ORDER_STATUS_PAID);
+        orderInfo.setLastUpdateUserId(userId);
+        orderInfo.setLastUpdateRemark("处理支付回调，修改订单状态！");
+        orderInfoMapper.update(orderInfo);
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
@@ -369,8 +384,8 @@ public class OrderService {
         Date occurrenceTime = new Date();
 
         List<SaleFlow> saleFlows = new ArrayList<SaleFlow>();
-        int orderStatus = orderInfo.getOrderStatus();
-        if (orderStatus == Constants.ORDER_TYPE_TENANT_ORDER) {
+        int orderType = orderInfo.getOrderType();
+        if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
 
             for (OrderDetail orderDetail : orderDetails) {
                 SaleFlow saleFlow = new SaleFlow();
@@ -384,9 +399,12 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlow.setCreateUserId(userId);
+                saleFlow.setLastUpdateUserId(userId);
+                saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
                 saleFlows.add(saleFlow);
             }
-        } else if (orderStatus == Constants.ORDER_TYPE_AGENT_ORDER) {
+        } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
             List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
             for (OrderDetail orderDetail : orderDetails) {
                 int quantity = orderDetail.getQuantity();
@@ -396,8 +414,8 @@ public class OrderService {
                     activationCodeInfo.setOrderId(orderInfo.getId());
                     activationCodeInfo.setStatus(Constants.ACTIVATION_CODE_STATUS_NOT_USED);
                     activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
-                    activationCodeInfo.setCreateUserId(BigInteger.ZERO);
-                    activationCodeInfo.setLastUpdateUserId(BigInteger.ZERO);
+                    activationCodeInfo.setCreateUserId(userId);
+                    activationCodeInfo.setLastUpdateUserId(userId);
                     activationCodeInfo.setLastUpdateRemark("处理支付回调，生成激活码！");
                     activationCodeInfo.setGoodsId(orderDetail.getGoodsId());
                     activationCodeInfo.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
@@ -413,11 +431,14 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlow.setCreateUserId(userId);
+                saleFlow.setLastUpdateUserId(userId);
+                saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
                 saleFlows.add(saleFlow);
             }
             activationCodeInfoMapper.insertAll(activationCodeInfos);
-            saleFlowMapper.insertAll(saleFlows);
         }
+        saleFlowMapper.insertAll(saleFlows);
         return Constants.SUCCESS;
     }
 }

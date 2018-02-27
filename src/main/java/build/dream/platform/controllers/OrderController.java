@@ -153,13 +153,13 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/alipayCallback", method = RequestMethod.POST)
+    @RequestMapping(value = "/alipayCallback", method = RequestMethod.GET)
     @ResponseBody
     public String alipayCallback() {
         String result = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            result = orderService.handleCallback("", 1);
+            result = orderService.handleCallback("123456", 1);
         } catch (Exception e) {
             LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
             result = Constants.FAILURE;
