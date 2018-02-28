@@ -5,6 +5,8 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.TenantGoods;
 import org.apache.commons.lang.time.DateUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,10 +35,10 @@ public class GoodsUtils {
         return goodsSpecificationInfo;
     }
 
-    public static Date obtainExpireTime(Date expireTime, GoodsSpecification goodsSpecification) {
+    public static Date obtainExpireTime(Date expireTime, GoodsSpecification goodsSpecification) throws ParseException {
         Date date = null;
         if (expireTime == null) {
-            date = new Date();
+            date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00");
         } else {
             date = expireTime;
         }
