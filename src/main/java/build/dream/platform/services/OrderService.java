@@ -315,7 +315,7 @@ public class OrderService {
         ApiRest apiRest = null;
         String notifyUrl = SystemPartitionUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
         int paidScene = doPayModel.getPaidScene();
-        if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_H5 || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
+        if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_H5 || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_MINI_PROGRAM) {
             requestParameters.put("body", "订单支付");
             requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
             requestParameters.put("totalFee", String.valueOf(orderInfo.getPayableAmount().multiply(BigDecimal.valueOf(100)).longValue()));
@@ -331,6 +331,8 @@ public class OrderService {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_APP;
             } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_NATIVE;
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_MINI_PROGRAM) {
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_MINI_PROGRAM;
             }
             requestParameters.put("tradeType", tradeType);
             apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "weiXinPay", "unifiedOrder", requestParameters);
