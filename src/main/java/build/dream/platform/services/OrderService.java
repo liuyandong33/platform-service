@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -359,7 +360,7 @@ public class OrderService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public String handleCallback(String orderNumber, int paidType) throws IOException {
+    public String handleCallback(String orderNumber, int paidType) throws IOException, ParseException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
         OrderInfo orderInfo = orderInfoMapper.find(orderInfoSearchModel);
