@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -339,7 +340,7 @@ public class OrderService {
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE || paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE || paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
             requestParameters.put("subject", "订单支付");
             requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
-            requestParameters.put("totalAmount", orderInfo.getPayableAmount().toEngineeringString());
+            requestParameters.put("totalAmount", new DecimalFormat("0.00").format(orderInfo.getTotalAmount()));
             requestParameters.put("productCode", orderInfo.getOrderNumber());
             requestParameters.put("notifyUrl", notifyUrl);
             if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
