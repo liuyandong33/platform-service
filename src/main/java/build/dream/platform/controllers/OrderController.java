@@ -183,7 +183,7 @@ public class OrderController extends BasicController {
         String result = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            result = orderService.handleCallback("TO201801312304350000000001", Constants.PAID_TYPE_WEI_XIN);
+            result = orderService.handleCallback("TO201801312304350000000002", Constants.PAID_TYPE_WEI_XIN);
         } catch (Exception e) {
             LogUtils.error("处理微信支付回调失败", controllerSimpleName, "weiXinPayCallback", e, requestParameters);
             result = Constants.FAILURE;
