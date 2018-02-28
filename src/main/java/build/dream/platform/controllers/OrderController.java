@@ -153,6 +153,11 @@ public class OrderController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
+    /**
+     * 支付宝支付回调
+     *
+     * @return
+     */
     @RequestMapping(value = "/alipayCallback", method = RequestMethod.GET)
     @ResponseBody
     public String alipayCallback() {
@@ -162,6 +167,25 @@ public class OrderController extends BasicController {
             result = orderService.handleCallback("TO201801312304350000000001", Constants.PAID_TYPE_ALIPAY);
         } catch (Exception e) {
             LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
+            result = Constants.FAILURE;
+        }
+        return result;
+    }
+
+    /**
+     * 微信支付回调
+     *
+     * @return
+     */
+    @RequestMapping(value = "/weiXinPayCallback", method = RequestMethod.GET)
+    @ResponseBody
+    public String weiXinPayCallback() {
+        String result = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            result = orderService.handleCallback("TO201801312304350000000001", Constants.PAID_TYPE_WEI_XIN);
+        } catch (Exception e) {
+            LogUtils.error("处理微信支付回调失败", controllerSimpleName, "weiXinPayCallback", e, requestParameters);
             result = Constants.FAILURE;
         }
         return result;
