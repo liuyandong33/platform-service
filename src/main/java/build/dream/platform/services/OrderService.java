@@ -376,6 +376,8 @@ public class OrderService {
         userId = BigInteger.ZERO;
 
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_PAID);
+        orderInfo.setPaidAmount(orderInfo.getPayableAmount());
+        orderInfo.setPaidType(paidType);
         orderInfo.setLastUpdateUserId(userId);
         orderInfo.setLastUpdateRemark("处理支付回调，修改订单状态！");
         orderInfoMapper.update(orderInfo);
