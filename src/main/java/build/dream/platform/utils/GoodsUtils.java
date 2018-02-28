@@ -43,7 +43,7 @@ public class GoodsUtils {
         }
         int renewalTime = goodsSpecification.getRenewalTime();
         if (renewalTime == 1) {
-            date = DateUtils.addYears(expireTime, renewalTime);
+            date = DateUtils.addYears(date, renewalTime);
         }
         return date;
     }

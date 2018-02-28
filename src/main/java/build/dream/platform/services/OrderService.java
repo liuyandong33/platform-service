@@ -411,7 +411,7 @@ public class OrderService {
 
                 SearchModel goodsSpecificationSearchModel = new SearchModel(true);
                 goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
-                goodsSpecificationSearchModel.addSearchCondition("goods_specification_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
+                goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
                 GoodsSpecification goodsSpecification = goodsSpecificationMapper.find(goodsSpecificationSearchModel);
 
                 int meteringMode = goods.getMeteringMode();
@@ -447,6 +447,7 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlow.setPaidType(paidType);
                 saleFlow.setCreateUserId(userId);
                 saleFlow.setLastUpdateUserId(userId);
                 saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
@@ -479,6 +480,7 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
+                saleFlow.setPaidType(paidType);
                 saleFlow.setCreateUserId(userId);
                 saleFlow.setLastUpdateUserId(userId);
                 saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");

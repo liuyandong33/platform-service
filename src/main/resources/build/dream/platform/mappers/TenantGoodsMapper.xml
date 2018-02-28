@@ -10,11 +10,11 @@
     </update>
 
     <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.TenantGoods">
-        SELECT ${selectColumns} FROM app_authority <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+        SELECT ${selectColumns} FROM tenant_goods <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
 
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.TenantGoods">
-        SELECT ${selectColumns} FROM app_authority <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+        SELECT ${selectColumns} FROM tenant_goods <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
 
     <select id="findAllGoodses" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">

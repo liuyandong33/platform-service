@@ -159,7 +159,7 @@ public class OrderController extends BasicController {
         String result = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            result = orderService.handleCallback("123456", Constants.PAID_TYPE_ALIPAY);
+            result = orderService.handleCallback("TO201801312304350000000001", Constants.PAID_TYPE_ALIPAY);
         } catch (Exception e) {
             LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
             result = Constants.FAILURE;
