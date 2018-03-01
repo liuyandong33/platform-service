@@ -13,6 +13,10 @@
         SELECT * FROM system_user WHERE (login_name = #{loginName} OR email = #{loginName} OR mobile = #{loginName}) AND deleted = 0
     </select>
 
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
+        SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
+
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
         SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>

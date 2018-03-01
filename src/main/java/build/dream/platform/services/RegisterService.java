@@ -5,6 +5,7 @@ import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
+import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -39,7 +40,18 @@ public class RegisterService {
     private TenantGoodsMapper tenantGoodsMapper;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private AgentMapper agentMapper;
 
+    /**
+     * 注册商户
+     *
+     * @param registerTenantModel
+     * @return
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws ParseException
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException, ParseException {
         String business = registerTenantModel.getBusiness();
@@ -141,5 +153,60 @@ public class RegisterService {
         data.put("branch", branchInfo);
         ApiRest apiRest = new ApiRest(data, "注册商户成功！");
         return apiRest;
+    }
+
+    private boolean mobileIsUnique(String mobile) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUALS, mobile);
+        SystemUser systemUser = systemUserMapper.find(searchModel);
+        return systemUser == null;
+    }
+
+    private boolean emailIsUnique(String email) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUALS, email);
+        SystemUser systemUser = systemUserMapper.find(searchModel);
+        return systemUser == null;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest registerAgent(RegisterAgentModel registerAgentModel) throws IOException {
+        String mobile = registerAgentModel.getMobile();
+        String email = registerAgentModel.getEmail();
+        Validate.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
+        Validate.isTrue(emailIsUnique(email), "邮箱已经注册！");
+
+        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        userId = BigInteger.ZERO;
+
+        Agent agent = new Agent();
+        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("agent_code")));
+        agent.setName(registerAgentModel.getName());
+        agent.setCreateUserId(userId);
+        agent.setLastUpdateUserId(userId);
+        agent.setLastUpdateRemark("新增代理商信息！");
+        agentMapper.insert(agent);
+
+        SystemUser systemUser = new SystemUser();
+        systemUser.setName(registerAgentModel.getLinkman());
+        systemUser.setMobile(mobile);
+        systemUser.setEmail(email);
+        systemUser.setLoginName(agent.getCode());
+        systemUser.setPassword(DigestUtils.md5Hex(registerAgentModel.getPassword()));
+        systemUser.setUserType(Constants.USER_TYPE_TENANT);
+        systemUser.setAgentId(agent.getId());
+        systemUser.setAccountNonExpired(true);
+        systemUser.setAccountNonLocked(true);
+        systemUser.setCredentialsNonExpired(true);
+        systemUser.setEnabled(true);
+        systemUser.setCreateUserId(userId);
+        systemUser.setLastUpdateUserId(userId);
+        systemUser.setLastUpdateRemark("新增代理商登录账号！");
+        systemUserMapper.insert(systemUser);
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("user", systemUser);
+        data.put("agent", agent);
+        return new ApiRest(data, "注册代理商成功！");
     }
 }
