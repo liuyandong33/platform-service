@@ -164,7 +164,10 @@ public class OrderController extends BasicController {
         String result = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            result = orderService.handleCallback("TO201801312304350000000001", Constants.PAID_TYPE_ALIPAY);
+            String orderNumber = requestParameters.get("out_trade_no");
+            ApplicationHandler.notBlank(orderNumber, "out_trade_no");
+
+            result = orderService.handleCallback(orderNumber, Constants.PAID_TYPE_ALIPAY);
         } catch (Exception e) {
             LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
             result = Constants.FAILURE;
@@ -183,7 +186,10 @@ public class OrderController extends BasicController {
         String result = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            result = orderService.handleCallback("TO201801312304350000000002", Constants.PAID_TYPE_WEI_XIN);
+            String orderNumber = requestParameters.get("out_trade_no");
+            ApplicationHandler.notBlank(orderNumber, "out_trade_no");
+
+            result = orderService.handleCallback(orderNumber, Constants.PAID_TYPE_WEI_XIN);
         } catch (Exception e) {
             LogUtils.error("处理微信支付回调失败", controllerSimpleName, "weiXinPayCallback", e, requestParameters);
             result = Constants.FAILURE;
