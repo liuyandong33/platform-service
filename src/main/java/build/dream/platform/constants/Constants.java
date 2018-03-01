@@ -47,4 +47,6 @@ public class Constants extends build.dream.common.constants.Constants {
 
     public static final Integer SALE_FLOW_TYPE_TENANT_FLOW = 1;
     public static final Integer SALE_FLOW_TYPE_AGENT_FLOW = 2;
+
+    public static final String BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS = "basic.services.goods.free.trial.days";
 }

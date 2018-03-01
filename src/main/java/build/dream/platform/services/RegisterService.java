@@ -1,10 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.SystemUser;
-import build.dream.common.saas.domains.Tenant;
-import build.dream.common.saas.domains.TenantGoods;
-import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
@@ -12,7 +9,9 @@ import build.dream.platform.models.register.RegisterTenantModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +37,22 @@ public class RegisterService {
     private TenantSecretKeyMapper tenantSecretKeyMapper;
     @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
+    @Autowired
+    private GoodsMapper goodsMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException {
+    public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException, ParseException {
+        String business = registerTenantModel.getBusiness();
+
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("type", Constants.SQL_OPERATION_SYMBOL_EQUALS, 1);
+        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 1);
+        searchModel.addSearchCondition("business", Constants.SQL_OPERATION_SYMBOL_EQUALS, business);
+        Goods goods = goodsMapper.find(searchModel);
+        Validate.notNull(goods, "未查询到基础服务商品！");
+
         Tenant tenant = new Tenant();
         tenant.setName(registerTenantModel.getName());
-
-        String business = registerTenantModel.getBusiness();
         tenant.setBusiness(business);
 
         String partitionCode = null;
@@ -111,11 +121,15 @@ public class RegisterService {
         Map<String, Object> branchInfo = BeanUtils.beanToMap(initializeBranchApiRest.getData());
         BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
 
+        String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(Constants.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
+        if (StringUtils.isBlank(basicServicesGoodsFreeTrialDays)) {
+            basicServicesGoodsFreeTrialDays = "30";
+        }
         TenantGoods tenantGoods = new TenantGoods();
         tenantGoods.setTenantId(tenant.getId());
         tenantGoods.setBranchId(branchId);
-        tenantGoods.setGoodsId(BigInteger.ZERO);
-        tenantGoods.setExpireTime(new Date());
+        tenantGoods.setGoodsId(goods.getId());
+        tenantGoods.setExpireTime(DateUtils.addDays(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00"), Integer.valueOf(basicServicesGoodsFreeTrialDays)));
         tenantGoods.setCreateUserId(userId);
         tenantGoods.setLastUpdateUserId(userId);
         tenantGoods.setLastUpdateRemark("注册商户，创建使用商品！");
