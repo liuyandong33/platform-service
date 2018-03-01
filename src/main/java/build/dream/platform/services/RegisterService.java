@@ -193,7 +193,7 @@ public class RegisterService {
         systemUser.setEmail(email);
         systemUser.setLoginName(agent.getCode());
         systemUser.setPassword(DigestUtils.md5Hex(registerAgentModel.getPassword()));
-        systemUser.setUserType(Constants.USER_TYPE_TENANT);
+        systemUser.setUserType(Constants.USER_TYPE_AGENT);
         systemUser.setAgentId(agent.getId());
         systemUser.setAccountNonExpired(true);
         systemUser.setAccountNonLocked(true);

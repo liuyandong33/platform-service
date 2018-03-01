@@ -2,6 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.constants.SessionConstants;
+import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.BackgroundPrivilege;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
@@ -10,6 +11,7 @@ import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.AgentMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
@@ -32,6 +34,8 @@ public class LoginService {
     private TenantMapper tenantMapper;
     @Autowired
     private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
+    @Autowired
+    private AgentMapper agentMapper;
 
     @Transactional(readOnly = true)
     public ApiRest login(String loginName, String password, String sessionId) {
@@ -55,6 +59,15 @@ public class LoginService {
             sessionMap.put(SessionConstants.KEY_TENANT_CODE, tenant.getCode());
             sessionMap.put(SessionConstants.KEY_TENANT_NAME, tenant.getName());
             sessionMap.put(SessionConstants.KEY_PARTITION_CODE, tenant.getPartitionCode());
+        } else if (userType == Constants.USER_TYPE_AGENT) {
+            SearchModel searchModel = new SearchModel(true);
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getAgentId());
+            Agent agent = agentMapper.find(searchModel);
+            Validate.notNull(agent, "代理商不存在！");
+
+            sessionMap.put(SessionConstants.KEY_AGENT_ID, agent.getId().toString());
+            sessionMap.put(SessionConstants.KEY_AGENT_CODE, agent.getCode());
+            sessionMap.put(SessionConstants.KEY_AGENT_NAME, agent.getName());
         }
         List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(systemUser.getId());
         List<String> authorityCodes = new ArrayList<String>();

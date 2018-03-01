@@ -4,4 +4,8 @@
     <insert id="insert" parameterType="build.dream.common.saas.domains.Agent" useGeneratedKeys="true" keyProperty="id">
         ${@build.dream.common.utils.DatabaseUtils@generateInsertSql("build.dream.common.saas.domains.Agent")}
     </insert>
+
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.Agent">
+        SELECT * FROM agent <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
 </mapper>

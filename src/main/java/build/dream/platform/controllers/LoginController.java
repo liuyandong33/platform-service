@@ -6,7 +6,6 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.services.LoginService;
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +26,13 @@ public class LoginController extends BasicController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             String loginName = requestParameters.get("loginName");
-            Validate.notNull(loginName, ApplicationHandler.obtainParameterErrorMessage("loginName"));
+            ApplicationHandler.notBlank(loginName, "loginName");
 
             String password = requestParameters.get("password");
-            Validate.notNull(password, ApplicationHandler.obtainParameterErrorMessage("password"));
+            ApplicationHandler.notBlank(password, "password");
 
             String sessionId = requestParameters.get("sessionId");
-            Validate.notNull(password, ApplicationHandler.obtainParameterErrorMessage("sessionId"));
+            ApplicationHandler.notBlank(sessionId, "sessionId");
             apiRest = loginService.login(loginName, password, sessionId);
         } catch (Exception e) {
             LogUtils.error("登录失败", controllerSimpleName, "login", e, requestParameters);
