@@ -3,16 +3,15 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
+import build.dream.common.saas.domains.TenantGoods;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.SequenceMapper;
-import build.dream.platform.mappers.SystemUserMapper;
-import build.dream.platform.mappers.TenantMapper;
-import build.dream.platform.mappers.TenantSecretKeyMapper;
+import build.dream.platform.mappers.*;
 import build.dream.platform.models.register.RegisterTenantModel;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +34,8 @@ public class RegisterService {
     private SequenceMapper sequenceMapper;
     @Autowired
     private TenantSecretKeyMapper tenantSecretKeyMapper;
+    @Autowired
+    private TenantGoodsMapper tenantGoodsMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException {
@@ -105,10 +107,24 @@ public class RegisterService {
         initializeBranchRequestParameters.put("contactPhone", registerTenantModel.getContactPhone());
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
+
+        Map<String, Object> branchInfo = BeanUtils.beanToMap(initializeBranchApiRest.getData());
+        BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
+
+        TenantGoods tenantGoods = new TenantGoods();
+        tenantGoods.setTenantId(tenant.getId());
+        tenantGoods.setBranchId(branchId);
+        tenantGoods.setGoodsId(BigInteger.ZERO);
+        tenantGoods.setExpireTime(new Date());
+        tenantGoods.setCreateUserId(userId);
+        tenantGoods.setLastUpdateUserId(userId);
+        tenantGoods.setLastUpdateRemark("注册商户，创建使用商品！");
+        tenantGoodsMapper.insert(tenantGoods);
+
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
-        data.put("branch", initializeBranchApiRest.getData());
+        data.put("branch", branchInfo);
         ApiRest apiRest = new ApiRest(data, "注册商户成功！");
         return apiRest;
     }
