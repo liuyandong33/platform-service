@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.tenant.ObtainTenantInfoModel;
 import build.dream.platform.services.TenantService;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,16 +21,16 @@ public class TenantController extends BasicController {
     @Autowired
     private TenantService tenantService;
 
-    @RequestMapping(value = "/findTenantInfoById")
+    @RequestMapping(value = "/obtainTenantInfo")
     @ResponseBody
-    public String findTenantInfoById() {
+    public String obtainTenantInfo() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String tenantId = requestParameters.get("tenantId");
-            ApplicationHandler.notEmpty(tenantId, "tenantId");
+            ObtainTenantInfoModel obtainTenantInfoModel = ApplicationHandler.instantiateObject(ObtainTenantInfoModel.class, requestParameters);
+            obtainTenantInfoModel.validateAndThrow();
 
-            apiRest = tenantService.findTenantInfoById(NumberUtils.createBigInteger(tenantId));
+            apiRest = tenantService.obtainTenantInfo(obtainTenantInfoModel);
         } catch (Exception e) {
             LogUtils.error("查询商户信息失败", controllerSimpleName, "findTenantInfoById", e, requestParameters);
             apiRest = new ApiRest(e);

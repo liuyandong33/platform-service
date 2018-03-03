@@ -6,6 +6,8 @@ import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.TenantMapper;
+import build.dream.platform.models.tenant.ObtainTenantInfoModel;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +27,17 @@ public class TenantService {
     private TenantGoodsMapper tenantGoodsMapper;
 
     @Transactional(readOnly = true)
-    public ApiRest findTenantInfoById(BigInteger tenantId) {
+    public ApiRest obtainTenantInfo(ObtainTenantInfoModel obtainTenantInfoModel) {
+        BigInteger tenantId = obtainTenantInfoModel.getTenantId();
+        String tenantCode = obtainTenantInfoModel.getTenantCode();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+        if (tenantId != null) {
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+        }
+        if (StringUtils.isNotBlank(tenantCode)) {
+            searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantCode);
+        }
         Tenant tenant = tenantMapper.find(searchModel);
 
         ApiRest apiRest = new ApiRest();
