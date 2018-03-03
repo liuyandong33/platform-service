@@ -15,6 +15,6 @@ public interface TenantGoodsMapper {
     long update(TenantGoods tenantGoods);
     TenantGoods find(SearchModel searchModel);
     List<TenantGoods> findAll(SearchModel searchModel);
-    List<Map<String, Object>> findAllGoodses(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId);
-    Map<String, Object> findGoods(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId, @Param("goodsId") BigInteger goodsId);
+    List<Map<String, Object>> findAllGoodsInfos(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId);
+    Map<String, Object> findGoodsInfo(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId, @Param("goodsId") BigInteger goodsId);
 }

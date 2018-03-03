@@ -6,6 +6,8 @@ import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.TenantMapper;
+import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
+import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -49,21 +51,21 @@ public class TenantService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findAllGoodses(BigInteger tenantId, BigInteger branchId) {
-        List<Map<String, Object>> allGoodses = tenantGoodsMapper.findAllGoodses(tenantId, branchId);
+    public ApiRest findAllGoodsInfos(FindAllGoodsInfosModel findAllGoodsInfosModel) {
+        List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(findAllGoodsInfosModel.getTenantId(), findAllGoodsInfosModel.getBranchId());
         ApiRest apiRest = new ApiRest();
-        apiRest.setData(allGoodses);
+        apiRest.setData(goodsInfos);
         apiRest.setMessage("查询产品购买信息成功！");
         apiRest.setSuccessful(true);
         return apiRest;
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findGoods(BigInteger tenantId, BigInteger branchId, BigInteger goodsId) {
-        Map<String, Object> goods = tenantGoodsMapper.findGoods(tenantId, branchId, goodsId);
-        Validate.notEmpty(goods, "未检索到产品购买信息！");
+    public ApiRest findGoodsInfo(FindGoodsInfoModel findGoodsInfoModel) {
+        Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(findGoodsInfoModel.getTenantId(), findGoodsInfoModel.getBranchId(), findGoodsInfoModel.getGoodsId());
+        Validate.notEmpty(goodsInfo, "未检索到产品购买信息！");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("goods", goods);
+        data.put("goods", goodsInfo);
         data.put("currentTime", new Date());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);

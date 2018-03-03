@@ -5,9 +5,10 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
+import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
 import build.dream.platform.services.TenantService;
-import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,44 +39,35 @@ public class TenantController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/findAllGoodses")
+    @RequestMapping(value = "/findAllGoodsInfos")
     @ResponseBody
-    public String findAllGoodses() {
+    public String findAllGoodsInfos() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String tenantId = requestParameters.get("tenantId");
-            ApplicationHandler.notEmpty(tenantId, "tenantId");
+            FindAllGoodsInfosModel findAllGoodsInfosModel = ApplicationHandler.instantiateObject(FindAllGoodsInfosModel.class, requestParameters);
+            findAllGoodsInfosModel.validateAndThrow();
 
-            String branchId = requestParameters.get("branchId");
-            ApplicationHandler.notEmpty(branchId, "branchId");
-
-            apiRest = tenantService.findAllGoodses(NumberUtils.createBigInteger(tenantId), NumberUtils.createBigInteger(branchId));
+            apiRest = tenantService.findAllGoodsInfos(findAllGoodsInfosModel);
         } catch (Exception e) {
-            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findAllGoodses", e, requestParameters);
+            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findAllGoodsInfos", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/findGoods")
+    @RequestMapping(value = "/findGoodsInfo")
     @ResponseBody
-    public String findGoods() {
+    public String findGoodsInfo() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String tenantId = requestParameters.get("tenantId");
-            ApplicationHandler.notEmpty(tenantId, "tenantId");
+            FindGoodsInfoModel findGoodsInfoModel = ApplicationHandler.instantiateObject(FindGoodsInfoModel.class, requestParameters);
+            findGoodsInfoModel.validateAndThrow();
 
-            String branchId = requestParameters.get("branchId");
-            ApplicationHandler.notEmpty(branchId, "branchId");
-
-            String goodsId = requestParameters.get("goodsId");
-            ApplicationHandler.notEmpty(goodsId, "goodsId");
-
-            apiRest = tenantService.findGoods(NumberUtils.createBigInteger(tenantId), NumberUtils.createBigInteger(branchId), NumberUtils.createBigInteger(goodsId));
+            apiRest = tenantService.findGoodsInfo(findGoodsInfoModel);
         } catch (Exception e) {
-            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findGoods", e, requestParameters);
+            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findGoodsInfo", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
