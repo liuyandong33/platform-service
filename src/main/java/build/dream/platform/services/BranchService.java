@@ -166,6 +166,13 @@ public class BranchService {
         }
     }
 
+    /**
+     * 禁用门店产品
+     *
+     * @throws ParseException
+     * @throws IOException
+     */
+    @Transactional(readOnly = true)
     public void disableGoods() throws ParseException, IOException {
         Date expireTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00");
         List<Map<String, Object>> expiredBranches = tenantGoodsMapper.findAllExpiredBranches(expireTime);
