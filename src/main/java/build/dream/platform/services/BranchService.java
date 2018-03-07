@@ -10,8 +10,10 @@ import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.SystemParameterMapper;
 import build.dream.platform.mappers.SystemPartitionMapper;
+import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.UniversalMapper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +36,8 @@ public class BranchService {
     private SystemPartitionMapper systemPartitionMapper;
     @Autowired
     private SystemParameterMapper systemParameterMapper;
+    @Autowired
+    private TenantGoodsMapper tenantGoodsMapper;
 
     /**
      * 同步门店信息
@@ -158,6 +163,24 @@ public class BranchService {
                     }
                 }
             }
+        }
+    }
+
+    public void disableGoods() throws ParseException, IOException {
+        Date expireTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00");
+        List<Map<String, Object>> expiredBranches = tenantGoodsMapper.findAllExpiredBranches(expireTime);
+        for (Map<String, Object> expiredBranch : expiredBranches) {
+            String business = MapUtils.getString(expiredBranch, "business");
+            String partitionCode = MapUtils.getString(expiredBranch, "partitionCode");
+            String tenantId = MapUtils.getString(expiredBranch, "tenantId");
+            String branchId = MapUtils.getString(expiredBranch, "branchId");
+            String goodsId = MapUtils.getString(expiredBranch, "goodsId");
+            Map<String, String> disableGoodsRequestParameters = new HashMap<String, String>();
+            disableGoodsRequestParameters.put("tenantId", tenantId);
+            disableGoodsRequestParameters.put("branchId", branchId);
+            disableGoodsRequestParameters.put("goodsId", goodsId);
+            ApiRest disableGoodsApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, CommonUtils.getServiceName(business), "branch", "disableGoods", disableGoodsRequestParameters);
+            Validate.isTrue(disableGoodsApiRest.isSuccessful(), disableGoodsApiRest.getError());
         }
     }
 }

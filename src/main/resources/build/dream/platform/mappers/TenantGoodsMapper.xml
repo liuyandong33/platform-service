@@ -42,4 +42,18 @@
         WHERE tenant_goods.tenant_id = #{tenantId}
         AND tenant_goods.goods_id = #{goodsId}
     </select>
+    
+    <select id="findAllExpiredBranches" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        SELECT
+        tenant.id AS tenant_id,
+        tenant.code AS tenant_code,
+        tenant.business,
+        tenant.partition_code,
+        tenant_goods.branch_id,
+        tenant_goods.goods_id
+        FROM tenant_goods
+        LEFT OUTER JOIN tenant ON tenant.id = tenant_goods.tenant_id
+        WHERE tenant_goods.deleted = 0
+        AND tenant_goods.expire_time = #{expireTime}
+    </select>
 </mapper>

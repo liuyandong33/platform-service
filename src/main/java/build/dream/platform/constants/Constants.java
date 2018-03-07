@@ -40,6 +40,8 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String LAST_PULL_TIME = "lastPullTime";
     public static final String REACQUIRE = "reacquire";
     public static final String KEY_SYNCHRONIZE_BRANCH_INFO_JOB_EXECUTE_SIGN = "_synchronize_branch_info_job_execute_sign";
+    public static final String DISABLE_BRANCH_GOODS_JOB_CRON_EXPRESSION = "disable.branch.goods.job.cron.expression";
+    public static final String KEY_DISABLE_BRANCH_GOODS_JOB_EXECUTE_SIGN = "_disable_branch_goods_job_execute_sign";
 
     public static final Integer ACTIVATION_CODE_STATUS_NOT_USED = 1;
     public static final Integer ACTIVATION_CODE_STATUS_NOT_ALREADY_USED = 2;
