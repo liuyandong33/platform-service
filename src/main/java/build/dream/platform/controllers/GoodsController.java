@@ -42,7 +42,6 @@ public class GoodsController extends BasicController {
             LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllGoodsInfos", e, requestParameters);
             apiRest = new ApiRest(e);
         }
-        apiRest.sign();
         return GsonUtils.toJson(apiRest);
     }
 
