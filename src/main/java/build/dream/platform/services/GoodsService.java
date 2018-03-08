@@ -93,13 +93,90 @@ public class GoodsService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveGoods(SaveGoodsModel saveGoodsModel) {
+        BigInteger goodsTypeId = saveGoodsModel.getGoodsTypeId();
+        BigInteger goodsId = saveGoodsModel.getId();
+        BigInteger userId = saveGoodsModel.getUserId();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveGoodsModel.getGoodsTypeId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsTypeId);
         GoodsType goodsType = goodsTypeMapper.find(searchModel);
         Validate.notNull(goodsType, "商品类型不存在！");
         if (goodsType.isSingle()) {
-            
+            SearchModel countSearchModel = new SearchModel(true);
+            countSearchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsTypeId);
+            if (goodsId != null) {
+                searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUALS, goodsId);
+            }
+            long count = goodsMapper.count(searchModel);
+            Validate.isTrue(count == 0, "商品类型【" + goodsType.getName() + "】下只能创建一个商品！");
         }
-        return null;
+        Goods goods = null;
+        if (goodsId != null) {
+            SearchModel goodsSearchModel = new SearchModel(true);
+            goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+            goods = goodsMapper.find(goodsSearchModel);
+            Validate.notNull(goods, "商品不存在！");
+            goods.setName(saveGoodsModel.getName());
+            goods.setGoodsTypeId(saveGoodsModel.getGoodsTypeId());
+            goods.setStatus(saveGoodsModel.getStatus());
+            goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
+            goods.setBusiness(saveGoodsModel.getBusiness());
+            goods.setLastUpdateUserId(userId);
+            goods.setLastUpdateRemark("修改商品信息！");
+            goodsMapper.update(goods);
+
+            List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+            List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
+            for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
+                if (goodsSpecificationModel.getId() != null) {
+                    goodsSpecificationIds.add(goodsSpecificationModel.getId());
+                }
+            }
+            SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+            goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
+            goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+            List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+            Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
+            for (GoodsSpecification goodsSpecification : goodsSpecifications) {
+                goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
+            }
+
+            for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
+                if (goodsSpecificationModel.getId() != null) {
+                    GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationModel.getId());
+                    Validate.notNull(goodsSpecification, "商品规格不存在！");
+                    goodsSpecification.setName(goodsSpecificationModel.getName());
+                    goodsSpecification.setAllowTenantBuy(goodsSpecificationModel.isAllowTenantBuy());
+                    goodsSpecification.setAllowAgentBuy(goodsSpecificationModel.isAllowAgentBuy());
+                    goodsSpecification.setRenewalTime(goodsSpecificationModel.getRenewalTime());
+                    goodsSpecification.setTenantPrice(goodsSpecificationModel.getTenantPrice());
+                    goodsSpecification.setAgentPrice(goodsSpecificationModel.getAgentPrice());
+                    goodsSpecification.setLastUpdateUserId(userId);
+                    goodsSpecification.setLastUpdateRemark("修改商品规格！");
+                    goodsSpecificationMapper.update(goodsSpecification);
+                } else {
+                    GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
+                    goodsSpecificationMapper.insert(goodsSpecification);
+                }
+            }
+        } else {
+            goods = new Goods();
+            goods.setName(saveGoodsModel.getName());
+            goods.setGoodsTypeId(saveGoodsModel.getGoodsTypeId());
+            goods.setStatus(saveGoodsModel.getStatus());
+            goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
+            goods.setBusiness(saveGoodsModel.getBusiness());
+            goods.setCreateUserId(userId);
+            goods.setLastUpdateUserId(userId);
+            goods.setLastUpdateRemark("新增商品信息！");
+            goodsMapper.insert(goods);
+
+            List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
+            for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
+                GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
+                goodsSpecificationMapper.insert(goodsSpecification);
+            }
+        }
+        return new ApiRest(goods, "保存商品信息成功！");
     }
 }

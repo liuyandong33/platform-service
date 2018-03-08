@@ -2,8 +2,11 @@ package build.dream.platform.utils;
 
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
+import build.dream.platform.models.goods.SaveGoodsModel;
 import org.apache.commons.lang.time.DateUtils;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,5 +49,20 @@ public class GoodsUtils {
             date = DateUtils.addYears(date, renewalTime);
         }
         return date;
+    }
+
+    public static GoodsSpecification buildGoodsSpecification(String name, BigInteger goodsId, boolean allowTenantBuy, boolean allowAgentBuy, Integer renewalTime, BigDecimal tenantPrice, BigDecimal agentPrice, BigInteger userId) {
+        GoodsSpecification goodsSpecification = new GoodsSpecification();
+        goodsSpecification.setName(name);
+        goodsSpecification.setGoodsId(goodsId);
+        goodsSpecification.setAllowTenantBuy(allowTenantBuy);
+        goodsSpecification.setAllowAgentBuy(allowAgentBuy);
+        goodsSpecification.setRenewalTime(renewalTime);
+        goodsSpecification.setTenantPrice(tenantPrice);
+        goodsSpecification.setAgentPrice(agentPrice);
+        goodsSpecification.setCreateUserId(userId);
+        goodsSpecification.setLastUpdateUserId(userId);
+        goodsSpecification.setLastUpdateRemark("新增商品规格！");
+        return goodsSpecification;
     }
 }

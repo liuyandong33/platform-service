@@ -24,9 +24,18 @@ public class SaveGoodsModel extends BasicModel {
     private Integer status;
 
     @NotNull
+    private String photoUrl;
+
+    @NotNull
     private Integer meteringMode;
 
+    @NotNull
+    private String business;
+
     private List<GoodsSpecificationModel> goodsSpecificationModels;
+
+    @NotNull
+    private BigInteger userId;
 
     public BigInteger getId() {
         return id;
@@ -60,12 +69,28 @@ public class SaveGoodsModel extends BasicModel {
         this.status = status;
     }
 
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
     public Integer getMeteringMode() {
         return meteringMode;
     }
 
     public void setMeteringMode(Integer meteringMode) {
         this.meteringMode = meteringMode;
+    }
+
+    public String getBusiness() {
+        return business;
+    }
+
+    public void setBusiness(String business) {
+        this.business = business;
     }
 
     public List<GoodsSpecificationModel> getGoodsSpecificationModels() {
@@ -76,14 +101,20 @@ public class SaveGoodsModel extends BasicModel {
         this.goodsSpecificationModels = goodsSpecificationModels;
     }
 
+    public BigInteger getUserId() {
+        return userId;
+    }
+
+    public void setUserId(BigInteger userId) {
+        this.userId = userId;
+    }
+
     public static class GoodsSpecificationModel extends BasicModel {
         private BigInteger id;
 
         @NotNull
         @Length(max = 20)
         private String name;
-
-        private BigInteger goodsId;
 
         @NotNull
         private Boolean allowTenantBuy;
@@ -116,15 +147,7 @@ public class SaveGoodsModel extends BasicModel {
             this.name = name;
         }
 
-        public BigInteger getGoodsId() {
-            return goodsId;
-        }
-
-        public void setGoodsId(BigInteger goodsId) {
-            this.goodsId = goodsId;
-        }
-
-        public Boolean getAllowTenantBuy() {
+        public Boolean isAllowTenantBuy() {
             return allowTenantBuy;
         }
 
@@ -174,5 +197,6 @@ public class SaveGoodsModel extends BasicModel {
         for (GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
             goodsSpecificationModel.validateAndThrow();
         }
+        ApplicationHandler.isTrue(Constants.BUSINESS_CATERING.equals(business) || Constants.BUSINESS_RETAIL.equals(business), "business");
     }
 }
