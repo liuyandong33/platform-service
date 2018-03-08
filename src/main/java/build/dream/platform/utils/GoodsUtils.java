@@ -15,7 +15,7 @@ public class GoodsUtils {
         Map<String, Object> goodsInfo = new HashMap<String, Object>();
         goodsInfo.put("id", goods.getId());
         goodsInfo.put("name", goods.getName());
-        goodsInfo.put("type", goods.getType());
+        goodsInfo.put("goodsTypeId", goods.getGoodsTypeId());
         goodsInfo.put("status", goods.getStatus());
         goodsInfo.put("photoUrl", goods.getPhotoUrl());
         goodsInfo.put("meteringMode", goods.getMeteringMode());
