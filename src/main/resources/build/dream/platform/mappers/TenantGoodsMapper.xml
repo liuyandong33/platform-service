@@ -50,9 +50,11 @@
         tenant.business,
         tenant.partition_code,
         tenant_goods.branch_id,
-        tenant_goods.goods_id
+        tenant_goods.goods_id,
+        goods.goods_type_id
         FROM tenant_goods
         LEFT OUTER JOIN tenant ON tenant.id = tenant_goods.tenant_id
+        LEFT OUTER JOIN goods ON goods.id = tenant_goods.goods_id
         WHERE tenant_goods.deleted = 0
         AND tenant_goods.expire_time = #{expireTime}
     </select>

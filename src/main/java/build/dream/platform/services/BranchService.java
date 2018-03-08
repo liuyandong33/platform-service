@@ -182,10 +182,12 @@ public class BranchService {
             String tenantId = MapUtils.getString(expiredBranch, "tenantId");
             String branchId = MapUtils.getString(expiredBranch, "branchId");
             String goodsId = MapUtils.getString(expiredBranch, "goodsId");
+            String goodsTypeId = MapUtils.getString(expiredBranch, "goodsTypeId");
             Map<String, String> disableGoodsRequestParameters = new HashMap<String, String>();
             disableGoodsRequestParameters.put("tenantId", tenantId);
             disableGoodsRequestParameters.put("branchId", branchId);
             disableGoodsRequestParameters.put("goodsId", goodsId);
+            disableGoodsRequestParameters.put("goodsTypeId", goodsTypeId);
             ApiRest disableGoodsApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, CommonUtils.getServiceName(business), "branch", "disableGoods", disableGoodsRequestParameters);
             Validate.isTrue(disableGoodsApiRest.isSuccessful(), disableGoodsApiRest.getError());
         }
