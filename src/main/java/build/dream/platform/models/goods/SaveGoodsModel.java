@@ -2,6 +2,7 @@ package build.dream.platform.models.goods;
 
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
+import build.dream.platform.constants.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.validator.constraints.Length;
 
@@ -17,10 +18,10 @@ public class SaveGoodsModel extends BasicModel {
     private String name;
 
     @NotNull
-    private Integer goodsType;
+    private BigInteger goodsTypeId;
 
     @NotNull
-    private Integer goodsStatus;
+    private Integer status;
 
     @NotNull
     private Integer meteringMode;
@@ -43,20 +44,20 @@ public class SaveGoodsModel extends BasicModel {
         this.name = name;
     }
 
-    public Integer getGoodsType() {
-        return goodsType;
+    public BigInteger getGoodsTypeId() {
+        return goodsTypeId;
     }
 
-    public void setGoodsType(Integer goodsType) {
-        this.goodsType = goodsType;
+    public void setGoodsTypeId(BigInteger goodsTypeId) {
+        this.goodsTypeId = goodsTypeId;
     }
 
-    public Integer getGoodsStatus() {
-        return goodsStatus;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setGoodsStatus(Integer goodsStatus) {
-        this.goodsStatus = goodsStatus;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     public Integer getMeteringMode() {
@@ -167,9 +168,8 @@ public class SaveGoodsModel extends BasicModel {
     @Override
     public void validateAndThrow() {
         super.validateAndThrow();
-        ApplicationHandler.isTrue(goodsType == 1 || goodsType == 2 || goodsType == 3, "goodsType");
-        ApplicationHandler.isTrue(goodsStatus == 1 || goodsStatus == 2, "goodsStatus");
-        ApplicationHandler.isTrue(meteringMode == 1 || meteringMode == 2, "meteringMode");
+        ApplicationHandler.isTrue(status == Constants.GOODS_STATUS_NORMAL || status == Constants.GOODS_STATUS_STOP_SALE, "status");
+        ApplicationHandler.isTrue(meteringMode == Constants.GOODS_METERING_MODE_BY_TIME || meteringMode == Constants.GOODS_METERING_MODE_BY_QUANTITY, "meteringMode");
         ApplicationHandler.isTrue(CollectionUtils.isNotEmpty(goodsSpecificationModels), "goodsSpecifications");
         for (GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
             goodsSpecificationModel.validateAndThrow();
