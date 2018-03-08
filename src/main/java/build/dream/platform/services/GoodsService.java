@@ -3,10 +3,12 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
+import build.dream.common.saas.domains.GoodsType;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.GoodsMapper;
 import build.dream.platform.mappers.GoodsSpecificationMapper;
+import build.dream.platform.mappers.GoodsTypeMapper;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
@@ -28,6 +30,8 @@ public class GoodsService {
     private GoodsMapper goodsMapper;
     @Autowired
     private GoodsSpecificationMapper goodsSpecificationMapper;
+    @Autowired
+    private GoodsTypeMapper goodsTypeMapper;
 
     /**
      * 获取商品信息
@@ -89,6 +93,13 @@ public class GoodsService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveGoods(SaveGoodsModel saveGoodsModel) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveGoodsModel.getGoodsTypeId());
+        GoodsType goodsType = goodsTypeMapper.find(searchModel);
+        Validate.notNull(goodsType, "商品类型不存在！");
+        if (goodsType.isSingle()) {
+            
+        }
         return null;
     }
 }
