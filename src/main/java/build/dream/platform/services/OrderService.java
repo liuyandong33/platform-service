@@ -42,6 +42,8 @@ public class OrderService {
     private SaleFlowMapper saleFlowMapper;
     @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
+    @Autowired
+    private TenantMapper tenantMapper;
 
     /**
      * 保存订单
@@ -396,6 +398,12 @@ public class OrderService {
         int orderType = orderInfo.getOrderType();
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             BigInteger tenantId = orderInfo.getTenantId();
+            SearchModel tenantSearchModel = new SearchModel(true);
+            tenantSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+            Tenant tenant = tenantMapper.find(tenantSearchModel);
+            String partitionCode = tenant.getPartitionCode();
+            String serviceName = CommonUtils.getServiceName(tenant.getBusiness());
+
             for (OrderDetail orderDetail : orderDetails) {
                 BigInteger branchId = orderDetail.getBranchId();
                 BigInteger goodsId = orderDetail.getGoodsId();
@@ -432,6 +440,13 @@ public class OrderService {
                         tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
                         tenantGoodsMapper.insert(tenantGoods);
                     }
+                    Map<String, String> renewCallbackRequestParameters = new HashMap<String, String>();
+                    renewCallbackRequestParameters.put("tenantId", tenantId.toString());
+                    renewCallbackRequestParameters.put("branchId", branchId.toString());
+                    renewCallbackRequestParameters.put("goodsId", goodsId.toString());
+                    renewCallbackRequestParameters.put("goodsTypeId", goods.getGoodsTypeId().toString());
+                    ApiRest renewCallbackApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "renewCallback", renewCallbackRequestParameters);
+                    Validate.isTrue(renewCallbackApiRest.isSuccessful(), renewCallbackApiRest.getError());
                 } else if (meteringMode == 2) {
 
                 }

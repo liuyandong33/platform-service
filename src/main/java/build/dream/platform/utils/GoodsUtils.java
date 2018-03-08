@@ -39,7 +39,8 @@ public class GoodsUtils {
 
     public static Date obtainExpireTime(Date expireTime, GoodsSpecification goodsSpecification) throws ParseException {
         Date date = null;
-        if (expireTime == null) {
+        Date currentDate = new Date();
+        if (expireTime == null || expireTime.before(currentDate)) {
             date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00");
         } else {
             date = expireTime;
