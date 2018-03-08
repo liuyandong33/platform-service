@@ -40,7 +40,7 @@ public class GoodsService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest obtainAllOrderInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
+    public ApiRest obtainAllGoodsInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
         SearchModel goodsSearchModel = new SearchModel(true);
         List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
 

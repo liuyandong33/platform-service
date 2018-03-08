@@ -31,17 +31,18 @@ public class GoodsController extends BasicController {
      */
     @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET)
     @ResponseBody
-    public String obtainAllOrderInfos() {
+    public String obtainAllGoodsInfos() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             ObtainAllGoodsInfosModel obtainAllGoodsInfosModel = ApplicationHandler.instantiateObject(ObtainAllGoodsInfosModel.class, requestParameters);
             obtainAllGoodsInfosModel.validateAndThrow();
-            apiRest = goodsService.obtainAllOrderInfos(obtainAllGoodsInfosModel);
+            apiRest = goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel);
         } catch (Exception e) {
-            LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllOrderInfos", e, requestParameters);
+            LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllGoodsInfos", e, requestParameters);
             apiRest = new ApiRest(e);
         }
+        apiRest.sign();
         return GsonUtils.toJson(apiRest);
     }
 
