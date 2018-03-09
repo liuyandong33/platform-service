@@ -10,6 +10,7 @@ import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.GoodsUtils;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class OrderService {
     private TenantGoodsMapper tenantGoodsMapper;
     @Autowired
     private TenantMapper tenantMapper;
+    @Autowired
+    private GoodsTypeMapper goodsTypeMapper;
 
     /**
      * 保存订单
@@ -440,13 +443,18 @@ public class OrderService {
                         tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
                         tenantGoodsMapper.insert(tenantGoods);
                     }
-                    Map<String, String> renewCallbackRequestParameters = new HashMap<String, String>();
-                    renewCallbackRequestParameters.put("tenantId", tenantId.toString());
-                    renewCallbackRequestParameters.put("branchId", branchId.toString());
-                    renewCallbackRequestParameters.put("goodsId", goodsId.toString());
-                    renewCallbackRequestParameters.put("goodsTypeId", goods.getGoodsTypeId().toString());
-                    ApiRest renewCallbackApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "renewCallback", renewCallbackRequestParameters);
-                    Validate.isTrue(renewCallbackApiRest.isSuccessful(), renewCallbackApiRest.getError());
+
+                    SearchModel goodsTypeSearchModel = new SearchModel(true);
+                    goodsTypeSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goods.getGoodsTypeId());
+                    GoodsType goodsType = goodsTypeMapper.find(goodsTypeSearchModel);
+                    if (StringUtils.isNotBlank(goodsType.getRenewSql())) {
+                        Map<String, String> renewCallbackRequestParameters = new HashMap<String, String>();
+                        renewCallbackRequestParameters.put("tenantId", tenantId.toString());
+                        renewCallbackRequestParameters.put("branchId", branchId.toString());
+                        renewCallbackRequestParameters.put("renewSql", goodsType.getRenewSql());
+                        ApiRest renewCallbackApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "renewCallback", renewCallbackRequestParameters);
+                        Validate.isTrue(renewCallbackApiRest.isSuccessful(), renewCallbackApiRest.getError());
+                    }
                 } else if (meteringMode == 2) {
 
                 }
