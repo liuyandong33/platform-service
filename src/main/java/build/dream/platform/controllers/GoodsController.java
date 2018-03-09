@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
@@ -40,6 +41,27 @@ public class GoodsController extends BasicController {
             apiRest = goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel);
         } catch (Exception e) {
             LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllGoodsInfos", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 分页查询商品列表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/listGoodsInfos", method = RequestMethod.GET)
+    @ResponseBody
+    public String listGoodsInfos() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            ListGoodsInfosModel listGoodsInfosModel = ApplicationHandler.instantiateObject(ListGoodsInfosModel.class, requestParameters);
+            listGoodsInfosModel.validateAndThrow();
+            apiRest = goodsService.listGoodsInfos(listGoodsInfosModel);
+        } catch (Exception e) {
+            LogUtils.error("分页查询商品列表失败", controllerSimpleName, "listGoodsInfos", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

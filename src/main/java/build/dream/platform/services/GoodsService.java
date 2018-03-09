@@ -4,15 +4,19 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.GoodsType;
+import build.dream.common.utils.PagedSearchModel;
+import build.dream.common.utils.SearchCondition;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.GoodsMapper;
 import build.dream.platform.mappers.GoodsSpecificationMapper;
 import build.dream.platform.mappers.GoodsTypeMapper;
+import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
 import build.dream.platform.utils.GoodsUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +67,36 @@ public class GoodsService {
             goodsInfos.add(goodsInfo);
         }
         return new ApiRest(goodsInfos, "获取商品信息成功！");
+    }
+
+    /**
+     * 分页查询商品列表
+     *
+     * @param listGoodsInfosModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest listGoodsInfos(ListGoodsInfosModel listGoodsInfosModel) {
+        List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
+        String searchString = listGoodsInfosModel.getSearchString();
+        if (StringUtils.isNotBlank(searchString)) {
+            searchConditions.add(new SearchCondition("name", Constants.SQL_OPERATION_SYMBOL_LIKE, "%" + searchString + "%"));
+        }
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.setSearchConditions(searchConditions);
+        long total = goodsMapper.count(searchModel);
+        List<Goods> goodses = new ArrayList<Goods>();
+        if (total > 0) {
+            PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
+            pagedSearchModel.setSearchConditions(searchConditions);
+            pagedSearchModel.setPage(listGoodsInfosModel.getPage());
+            pagedSearchModel.setRows(listGoodsInfosModel.getRows());
+            goodses = goodsMapper.findAllPaged(pagedSearchModel);
+        }
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("total", total);
+        data.put("rows", goodses);
+        return new ApiRest(data, "分页查询商品列表成功！");
     }
 
     /**
