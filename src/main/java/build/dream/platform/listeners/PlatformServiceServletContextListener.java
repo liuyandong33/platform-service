@@ -15,6 +15,7 @@ import build.dream.platform.services.SystemUserService;
 import build.dream.platform.services.TenantSecretKeyService;
 import build.dream.platform.utils.ElemeUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
@@ -67,7 +68,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
                 tenantPublicKeys.put(tenantSecretKey.getTenantId().toString(), tenantSecretKey.getPublicKey());
             }
             CacheUtils.delete(Constants.KEY_TENANT_PUBLIC_KEYS);
-            CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
+            if (MapUtils.isNotEmpty(tenantPublicKeys)) {
+                CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
+            }
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
 
