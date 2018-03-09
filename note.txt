@@ -1,0 +1,5 @@
+ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("javascript");
+scriptEngine.eval("function execute(goodsJson) {var goodsInfo = JSON.parse(goodsJson);goodsInfo.id = 100;return JSON.stringify(goodsInfo);}");
+Invocable invocable = (Invocable) scriptEngine;
+String goodsJson = (String) invocable.invokeFunction("execute", GsonUtils.toJson(goods));
