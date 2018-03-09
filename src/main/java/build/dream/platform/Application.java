@@ -8,7 +8,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @ServletComponentScan
-//@EnableRedisHttpSession
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class Application extends SpringBootServletInitializer {
     @Override
