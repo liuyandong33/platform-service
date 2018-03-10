@@ -158,7 +158,7 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/alipayCallback", method = RequestMethod.GET)
+    @RequestMapping(value = "/alipayCallback", method = RequestMethod.POST)
     @ResponseBody
     public String alipayCallback() {
         String result = null;
@@ -180,7 +180,7 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/weiXinPayCallback", method = RequestMethod.GET)
+    @RequestMapping(value = "/weiXinPayCallback", method = RequestMethod.POST)
     @ResponseBody
     public String weiXinPayCallback() {
         String result = null;
