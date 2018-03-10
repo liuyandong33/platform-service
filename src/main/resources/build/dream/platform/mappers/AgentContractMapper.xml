@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.AgentContractMapper">
+    <insert id="insert" parameterType="build.dream.common.saas.domains.AgentContract" useGeneratedKeys="true" keyProperty="id">
+        ${@build.dream.common.utils.DatabaseUtils@generateInsertSql("build.dream.common.saas.domains.AgentContract")}
+    </insert>
+
+    <update id="update" parameterType="build.dream.common.saas.domains.AgentContract">
+        ${@build.dream.common.utils.DatabaseUtils@generateUpdateSql("build.dream.common.saas.domains.AgentContract")}
+    </update>
+
+    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AgentContract">
+        SELECT ${selectColumns} FROM agent_contract <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
+
+    <select id="count" parameterType="build.dream.common.utils.SearchModel" resultType="long">
+        SELECT COUNT(1) FROM agent_contract <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
+
+    <select id="findAllPaged" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AgentContract">
+        SELECT ${selectColumns} FROM agent_contract <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include> <include refid="build.dream.platform.mappers.CommonMapper.paginationSql"></include>
+    </select>
+</mapper>
