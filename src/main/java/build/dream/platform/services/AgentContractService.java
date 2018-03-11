@@ -3,13 +3,11 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.AgentContract;
+import build.dream.common.saas.domains.AgentContractPriceInfo;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.AgentContractMapper;
-import build.dream.platform.mappers.AgentMapper;
-import build.dream.platform.mappers.SequenceMapper;
-import build.dream.platform.mappers.UniversalMapper;
+import build.dream.platform.mappers.*;
 import build.dream.platform.models.agentcontract.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -31,6 +29,8 @@ public class AgentContractService {
     private UniversalMapper universalMapper;
     @Autowired
     private AgentMapper agentMapper;
+    @Autowired
+    private AgentContractPriceInfoMapper agentContractPriceInfoMapper;
 
     /**
      * 保存代理商合同
@@ -214,9 +214,14 @@ public class AgentContractService {
         AgentContract agentContract = agentContractMapper.find(agentContractSearchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
 
+        SearchModel agentContractPriceInfoSearchModel = new SearchModel(true);
+        agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContract.getId());
+        List<AgentContractPriceInfo> agentContractPriceInfos = agentContractPriceInfoMapper.findAll(agentContractPriceInfoSearchModel);
+
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("agent", agent);
         data.put("agentContract", agentContract);
+        data.put("agentContractPriceInfos", agentContractPriceInfos);
 
         return new ApiRest(data, "获取代理商合同信息成功！");
     }
