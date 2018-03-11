@@ -1,11 +1,13 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.AgentContract;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AgentContractMapper;
+import build.dream.platform.mappers.AgentMapper;
 import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.mappers.UniversalMapper;
 import build.dream.platform.models.agentcontract.*;
@@ -27,6 +29,8 @@ public class AgentContractService {
     private SequenceMapper sequenceMapper;
     @Autowired
     private UniversalMapper universalMapper;
+    @Autowired
+    private AgentMapper agentMapper;
 
     /**
      * 保存代理商合同
@@ -199,11 +203,21 @@ public class AgentContractService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainAgentContractInfo(ObtainAgentContractInfoModel obtainAgentContractInfoModel) {
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentContractId());
-        AgentContract agentContract = agentContractMapper.find(searchModel);
+        SearchModel agentSearchModel = new SearchModel(true);
+        agentSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentId());
+        Agent agent = agentMapper.find(agentSearchModel);
+        Validate.notNull(agent, "代理商不存在！");
+
+        SearchModel agentContractSearchModel = new SearchModel(true);
+        agentContractSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentContractId());
+        agentContractSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentId());
+        AgentContract agentContract = agentContractMapper.find(agentContractSearchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
 
-        return new ApiRest(agentContract, "获取代理商合同信息成功！");
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("agent", agent);
+        data.put("agentContract", agentContract);
+
+        return new ApiRest(data, "获取代理商合同信息成功！");
     }
 }
