@@ -12,6 +12,7 @@ import java.util.Map;
 @Mapper
 public interface AgentContractPriceInfoMapper {
     long insertAll(List<AgentContractPriceInfo> agentContractPriceInfos);
+    long update(AgentContractPriceInfo agentContractPriceInfo);
     List<AgentContractPriceInfo> findAll(SearchModel searchModel);
     List<Map<String, Object>> findAllAgentContractPriceInfos(@Param("agentContractId") BigInteger agentContractId);
 }

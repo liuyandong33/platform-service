@@ -77,9 +77,18 @@ public class SaveAgentContractModel extends BasicModel {
     }
 
     public static class ContractPriceInfo {
+        private BigInteger id;
         private BigInteger goodsId;
         private BigInteger goodsSpecificationId;
         private BigDecimal contractPrice;
+
+        public BigInteger getId() {
+            return id;
+        }
+
+        public void setId(BigInteger id) {
+            this.id = id;
+        }
 
         public BigInteger getGoodsId() {
             return goodsId;

@@ -9,6 +9,10 @@
         </foreach>
     </insert>
 
+    <update id="update" parameterType="build.dream.common.saas.domains.AgentContractPriceInfo">
+        ${@build.dream.common.utils.DatabaseUtils@generateUpdateSql("build.dream.common.saas.domains.AgentContractPriceInfo")}
+    </update>
+
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AgentContractPriceInfo">
         SELECT ${selectColumns} FROM agent_contract_price_info <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>

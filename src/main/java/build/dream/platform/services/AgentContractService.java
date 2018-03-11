@@ -110,6 +110,29 @@ public class AgentContractService {
             Validate.notNull(agentContract, "代理商合同不存在！");
             Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_UNAUDITED, "只有未审核状态的代理商合同才能修改！");
 
+            List<BigInteger> agentContractPriceInfoIds = new ArrayList<BigInteger>();
+            List<SaveAgentContractModel.ContractPriceInfo> contractPriceInfos = saveAgentContractModel.getContractPriceInfos();
+            for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
+                agentContractPriceInfoIds.add(contractPriceInfo.getId());
+            }
+            SearchModel agentContractPriceInfoSearchModel = new SearchModel(true);
+            agentContractPriceInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, agentContractPriceInfoIds);
+            agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContract.getId());
+            List<AgentContractPriceInfo> agentContractPriceInfos = agentContractPriceInfoMapper.findAll(agentContractPriceInfoSearchModel);
+            Map<BigInteger, AgentContractPriceInfo> agentContractPriceInfoMap = new HashMap<BigInteger, AgentContractPriceInfo>();
+            for (AgentContractPriceInfo agentContractPriceInfo : agentContractPriceInfos) {
+                agentContractPriceInfoMap.put(agentContractPriceInfo.getId(), agentContractPriceInfo);
+            }
+
+            for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
+                AgentContractPriceInfo agentContractPriceInfo = agentContractPriceInfoMap.get(contractPriceInfo.getId());
+                Validate.notNull(agentContractPriceInfo, "代理商合同价格信息不存在！");
+                agentContractPriceInfo.setContractPrice(contractPriceInfo.getContractPrice());
+                agentContractPriceInfo.setLastUpdateUserId(userId);
+                agentContractPriceInfo.setLastUpdateRemark("修改合同价格信息！");
+                agentContractPriceInfoMapper.update(agentContractPriceInfo);
+            }
+
             agentContract.setStartTime(saveAgentContractModel.getStartTime());
             agentContract.setEndTime(saveAgentContractModel.getEndTime());
             agentContract.setLastUpdateUserId(userId);
