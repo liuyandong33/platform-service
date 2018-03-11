@@ -6,7 +6,9 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.agentcontract.AuditAgentContractModel;
+import build.dream.platform.models.agentcontract.ListAgentContractsModel;
 import build.dream.platform.models.agentcontract.SaveAgentContractModel;
+import build.dream.platform.models.agentcontract.TerminateAgentContractModel;
 import build.dream.platform.services.AgentContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,7 +59,49 @@ public class AgentContractController extends BasicController {
             auditAgentContractModel.validateAndThrow();
             apiRest = agentContractService.auditAgentContract(auditAgentContractModel);
         } catch (Exception e) {
-            LogUtils.error("审核代理商合同", controllerSimpleName, "auditAgentContract", e, requestParameters);
+            LogUtils.error("审核代理商合同失败", controllerSimpleName, "auditAgentContract", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 终止代理商合同
+     *
+     * @return
+     */
+    @RequestMapping(value = "/terminateAgentContract")
+    @ResponseBody
+    public String terminateAgentContract() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            TerminateAgentContractModel terminateAgentContractModel = ApplicationHandler.instantiateObject(TerminateAgentContractModel.class, requestParameters);
+            terminateAgentContractModel.validateAndThrow();
+            apiRest = agentContractService.terminateAgentContract(terminateAgentContractModel);
+        } catch (Exception e) {
+            LogUtils.error("终止代理商合同失败", controllerSimpleName, "terminateAgentContract", e, requestParameters);
+            apiRest = new ApiRest(e);
+        }
+        return GsonUtils.toJson(apiRest);
+    }
+
+    /**
+     * 分页查询代理商合同失败
+     *
+     * @return
+     */
+    @RequestMapping(value = "/listAgentContracts")
+    @ResponseBody
+    public String listAgentContracts() {
+        ApiRest apiRest = null;
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            ListAgentContractsModel listAgentContractsModel = ApplicationHandler.instantiateObject(ListAgentContractsModel.class, requestParameters);
+            listAgentContractsModel.validateAndThrow();
+            apiRest = agentContractService.listAgentContracts(listAgentContractsModel);
+        } catch (Exception e) {
+            LogUtils.error("查询代理商合同列表失败", controllerSimpleName, "listAgentContracts", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);
