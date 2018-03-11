@@ -8,10 +8,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AgentContractMapper;
 import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.mappers.UniversalMapper;
-import build.dream.platform.models.agentcontract.AuditAgentContractModel;
-import build.dream.platform.models.agentcontract.ListAgentContractsModel;
-import build.dream.platform.models.agentcontract.SaveAgentContractModel;
-import build.dream.platform.models.agentcontract.TerminateAgentContractModel;
+import build.dream.platform.models.agentcontract.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,5 +189,21 @@ public class AgentContractService {
         data.put("rows", rows);
 
         return new ApiRest(data, "查询代理商合同列表成功！");
+    }
+
+    /**
+     * 获取代理商合同信息
+     *
+     * @param obtainAgentContractInfoModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest obtainAgentContractInfo(ObtainAgentContractInfoModel obtainAgentContractInfoModel) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentContractId());
+        AgentContract agentContract = agentContractMapper.find(searchModel);
+        Validate.notNull(agentContract, "代理商合同不存在！");
+
+        return new ApiRest(agentContract, "获取代理商合同信息成功！");
     }
 }
