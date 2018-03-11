@@ -14,7 +14,6 @@ public class SaveAgentContractModel extends BasicModel {
     private Date startTime;
     @NotNull
     private Date endTime;
-    private Integer status;
     @NotNull
     private BigInteger userId;
 
@@ -48,14 +47,6 @@ public class SaveAgentContractModel extends BasicModel {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
     }
 
     public BigInteger getUserId() {
