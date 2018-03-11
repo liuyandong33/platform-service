@@ -1,9 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.Agent;
-import build.dream.common.saas.domains.AgentContract;
-import build.dream.common.saas.domains.AgentContractPriceInfo;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,6 +30,10 @@ public class AgentContractService {
     private AgentMapper agentMapper;
     @Autowired
     private AgentContractPriceInfoMapper agentContractPriceInfoMapper;
+    @Autowired
+    private GoodsMapper goodsMapper;
+    @Autowired
+    private GoodsSpecificationMapper goodsSpecificationMapper;
 
     /**
      * 保存代理商合同
@@ -53,7 +56,52 @@ public class AgentContractService {
             agentContract.setCreateUserId(userId);
             agentContract.setLastUpdateUserId(userId);
             agentContract.setLastUpdateRemark("新增代理商合同！");
+
+            List<SaveAgentContractModel.ContractPriceInfo> contractPriceInfos = saveAgentContractModel.getContractPriceInfos();
+            List<BigInteger> goodsIds = new ArrayList<BigInteger>();
+            List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+            for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
+                goodsIds.add(contractPriceInfo.getGoodsId());
+                goodsSpecificationIds.add(contractPriceInfo.getGoodsSpecificationId());
+            }
+            SearchModel goodsSearchModel = new SearchModel(true);
+            goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
+            List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
+
+            SearchModel goodsSpecificationSearchModel = new SearchModel(true);
+            goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
+            List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+
+            Map<BigInteger, Goods> goodsMap = new HashMap<BigInteger, Goods>();
+            Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
+            for (Goods goods : goodses) {
+                goodsMap.put(goods.getId(), goods);
+            }
+            for (GoodsSpecification goodsSpecification : goodsSpecifications) {
+                goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
+            }
             agentContractMapper.insert(agentContract);
+            List<AgentContractPriceInfo> agentContractPriceInfos = new ArrayList<AgentContractPriceInfo>();
+            for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
+                Goods goods = goodsMap.get(contractPriceInfo.getGoodsId());
+                Validate.notNull(goods, "商品不存在！");
+                GoodsSpecification goodsSpecification = goodsSpecificationMap.get(contractPriceInfo.getGoodsSpecificationId());
+                Validate.notNull(goodsSpecification, "商品规格不存在！");
+
+                BigDecimal contractPrice = contractPriceInfo.getContractPrice();
+                Validate.isTrue(contractPrice.compareTo(BigDecimal.ZERO) >= 0 && contractPrice.compareTo(goodsSpecification.getAgentPrice()) <= 0, "商品【" + goods.getName() + "-" + goodsSpecification.getName() + "】的合同价格错误！");
+
+                AgentContractPriceInfo agentContractPriceInfo = new AgentContractPriceInfo();
+                agentContractPriceInfo.setAgentContractId(agentContract.getId());
+                agentContractPriceInfo.setGoodsId(goods.getId());
+                agentContractPriceInfo.setGoodsSpecificationId(goodsSpecification.getId());
+                agentContractPriceInfo.setContractPrice(contractPrice);
+                agentContractPriceInfo.setCreateUserId(userId);
+                agentContractPriceInfo.setLastUpdateUserId(userId);
+                agentContractPriceInfo.setLastUpdateRemark("保存代理商合同价格信息！");
+                agentContractPriceInfos.add(agentContractPriceInfo);
+            }
+            agentContractPriceInfoMapper.insertAll(agentContractPriceInfos);
         } else {
             SearchModel searchModel = new SearchModel();
             searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContractId);
@@ -214,9 +262,7 @@ public class AgentContractService {
         AgentContract agentContract = agentContractMapper.find(agentContractSearchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
 
-        SearchModel agentContractPriceInfoSearchModel = new SearchModel(true);
-        agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContract.getId());
-        List<AgentContractPriceInfo> agentContractPriceInfos = agentContractPriceInfoMapper.findAll(agentContractPriceInfoSearchModel);
+        List<Map<String, Object>> agentContractPriceInfos = agentContractPriceInfoMapper.findAllAgentContractPriceInfos(agentContract.getId());
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("agent", agent);

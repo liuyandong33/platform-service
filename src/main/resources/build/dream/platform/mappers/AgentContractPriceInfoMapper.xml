@@ -12,4 +12,20 @@
     <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AgentContractPriceInfo">
         SELECT ${selectColumns} FROM agent_contract_price_info <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
+
+    <select id="findAllAgentContractPriceInfos" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        SELECT
+        agent_contract_price_info.id,
+        agent_contract_price_info.goods_id,
+        goods.name AS goods_name,
+        agent_contract_price_info.goods_specification_id,
+        goods_specification.name AS goods_specification_name,
+        goods_specification.agent_price,
+        agent_contract_price_info.contract_price
+        FROM agent_contract_price_info
+        LEFT OUTER JOIN goods ON goods.id = agent_contract_price_info.goods_id
+        LEFT OUTER JOIN goods_specification ON goods_specification.id = agent_contract_price_info.goods_specification_id
+        WHERE agent_contract_price_info.agent_contract_id = #{agentContractId}
+        AND agent_contract_price_info.deleted = 0;
+    </select>
 </mapper>

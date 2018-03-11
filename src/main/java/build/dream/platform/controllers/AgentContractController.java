@@ -33,6 +33,8 @@ public class AgentContractController extends BasicController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             SaveAgentContractModel saveAgentContractModel = ApplicationHandler.instantiateObject(SaveAgentContractModel.class, requestParameters);
+            String contractPriceInfos = requestParameters.get("contractPriceInfos");
+            saveAgentContractModel.setContractPriceInfos(contractPriceInfos);
             saveAgentContractModel.validateAndThrow();
             apiRest = agentContractService.saveAgentContract(saveAgentContractModel);
         } catch (Exception e) {

@@ -1,10 +1,15 @@
 package build.dream.platform.models.agentcontract;
 
 import build.dream.common.models.BasicModel;
+import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.GsonUtils;
+import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 public class SaveAgentContractModel extends BasicModel {
     private BigInteger agentContractId;
@@ -16,6 +21,7 @@ public class SaveAgentContractModel extends BasicModel {
     private Date endTime;
     @NotNull
     private BigInteger userId;
+    private List<ContractPriceInfo> contractPriceInfos;
 
     public BigInteger getAgentContractId() {
         return agentContractId;
@@ -55,5 +61,48 @@ public class SaveAgentContractModel extends BasicModel {
 
     public void setUserId(BigInteger userId) {
         this.userId = userId;
+    }
+
+    public List<ContractPriceInfo> getContractPriceInfos() {
+        return contractPriceInfos;
+    }
+
+    public void setContractPriceInfos(List<ContractPriceInfo> contractPriceInfos) {
+        this.contractPriceInfos = contractPriceInfos;
+    }
+
+    public void setContractPriceInfos(String contractPriceInfos) {
+        ApplicationHandler.validateJson(contractPriceInfos, Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH, "contractPriceInfos");
+        this.contractPriceInfos = GsonUtils.jsonToList(contractPriceInfos, ContractPriceInfo.class);
+    }
+
+    public static class ContractPriceInfo {
+        private BigInteger goodsId;
+        private BigInteger goodsSpecificationId;
+        private BigDecimal contractPrice;
+
+        public BigInteger getGoodsId() {
+            return goodsId;
+        }
+
+        public void setGoodsId(BigInteger goodsId) {
+            this.goodsId = goodsId;
+        }
+
+        public BigInteger getGoodsSpecificationId() {
+            return goodsSpecificationId;
+        }
+
+        public void setGoodsSpecificationId(BigInteger goodsSpecificationId) {
+            this.goodsSpecificationId = goodsSpecificationId;
+        }
+
+        public BigDecimal getContractPrice() {
+            return contractPrice;
+        }
+
+        public void setContractPrice(BigDecimal contractPrice) {
+            this.contractPrice = contractPrice;
+        }
     }
 }

@@ -1,0 +1,23 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "goodsId": {
+                "type": "integer"
+            },
+            "goodsSpecificationId": {
+                "type": "integer"
+            },
+            "contractPrice": {
+                "type": "number"
+            }
+        },
+        "required": [
+            "goodsId",
+            "goodsSpecificationId",
+            "contractPrice"
+        ]
+    },
+    "minItems": 1
+}
