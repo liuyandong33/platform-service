@@ -62,15 +62,15 @@ public class UserService {
         TenantSecretKey tenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel);
         Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
 
-        Map<String, String> findBranchInfoRequestParameters = new HashMap<String, String>();
-        findBranchInfoRequestParameters.put("tenantId", tenant.getId().toString());
-        findBranchInfoRequestParameters.put("userId", systemUser.getId().toString());
-        ApiRest findBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "findBranchInfo", findBranchInfoRequestParameters);
-        Validate.isTrue(findBranchInfoApiRest.isSuccessful(), findBranchInfoApiRest.getError());
+        Map<String, String> obtainBranchInfoRequestParameters = new HashMap<String, String>();
+        obtainBranchInfoRequestParameters.put("tenantId", tenant.getId().toString());
+        obtainBranchInfoRequestParameters.put("userId", systemUser.getId().toString());
+        ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
+        Validate.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
-        data.put("branch", findBranchInfoApiRest.getData());
+        data.put("branch", obtainBranchInfoApiRest.getData());
         data.put("tenantSecretKey", tenantSecretKey);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
