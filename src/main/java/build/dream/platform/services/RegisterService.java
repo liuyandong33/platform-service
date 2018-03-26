@@ -80,6 +80,7 @@ public class RegisterService {
         tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
+        userId = BigInteger.ZERO;
         tenant.setCreateUserId(userId);
         tenant.setLastUpdateUserId(userId);
         tenantMapper.insert(tenant);
@@ -107,7 +108,7 @@ public class RegisterService {
         String publicKey = Base64.encodeBase64String(rsaKeys.get("publicKey"));
         tenantSecretKey.setPublicKey(publicKey);
         tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get("privateKey")));
-        tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.KEY_PLATFORM_PUBLIC_KEY));
+        tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY));
         tenantSecretKey.setCreateUserId(userId);
         tenantSecretKey.setLastUpdateUserId(userId);
         tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
@@ -129,6 +130,7 @@ public class RegisterService {
         initializeBranchRequestParameters.put("userId", systemUser.getId().toString());
         initializeBranchRequestParameters.put("linkman", registerTenantModel.getLinkman());
         initializeBranchRequestParameters.put("contactPhone", registerTenantModel.getContactPhone());
+        initializeBranchRequestParameters.put("smartRestaurantStatus", Constants.SMART_RESTAURANT_STATUS_DISABLED.toString());
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
 
