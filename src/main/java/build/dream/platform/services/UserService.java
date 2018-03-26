@@ -1,9 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.SystemUser;
-import build.dream.common.saas.domains.Tenant;
-import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,27 +50,34 @@ public class UserService {
     public ApiRest obtainUserInfo(String loginName) throws IOException {
         SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
         Validate.notNull(systemUser, "用户不存在！");
+        BigInteger userId = systemUser.getId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getTenantId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, userId);
         Tenant tenant = tenantMapper.find(searchModel);
         Validate.notNull(tenant, "商户不存在！");
+        BigInteger tenantId = tenant.getId();
 
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenant.getId());
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
         TenantSecretKey tenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel);
         Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
 
+        List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
+        List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
+
         Map<String, String> obtainBranchInfoRequestParameters = new HashMap<String, String>();
-        obtainBranchInfoRequestParameters.put("tenantId", tenant.getId().toString());
-        obtainBranchInfoRequestParameters.put("userId", systemUser.getId().toString());
+        obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString());
+        obtainBranchInfoRequestParameters.put("userId", userId.toString());
         ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
         Validate.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
-        data.put("branch", obtainBranchInfoApiRest.getData());
         data.put("tenantSecretKey", tenantSecretKey);
+        data.put("appPrivileges", appPrivileges);
+        data.put("posPrivileges", posPrivileges);
+        data.put("branch", obtainBranchInfoApiRest.getData());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
