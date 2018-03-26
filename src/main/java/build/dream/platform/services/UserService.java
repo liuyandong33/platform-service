@@ -80,7 +80,7 @@ public class UserService {
         data.put("appPrivileges", appPrivileges);
         data.put("posPrivileges", posPrivileges);
         data.put("backgroundPrivileges", backgroundPrivileges);
-        data.put("branch", new Branch());
+        data.put("branch", obtainBranchInfoApiRest.getData());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
