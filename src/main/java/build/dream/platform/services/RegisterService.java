@@ -57,7 +57,7 @@ public class RegisterService {
         String business = registerTenantModel.getBusiness();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("type", Constants.SQL_OPERATION_SYMBOL_EQUALS, 1);
+        searchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, BigInteger.ONE);
         searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 1);
         searchModel.addSearchCondition("business", Constants.SQL_OPERATION_SYMBOL_EQUALS, business);
         Goods goods = goodsMapper.find(searchModel);
@@ -104,8 +104,10 @@ public class RegisterService {
         tenantSecretKey.setTenantId(tenant.getId());
         tenantSecretKey.setTenantCode(tenant.getCode());
         Map<String, byte[]> rsaKeys = RSAUtils.generateKeyPair(2048);
-        tenantSecretKey.setPublicKey(Base64.encodeBase64String(rsaKeys.get("publicKey")));
+        String publicKey = Base64.encodeBase64String(rsaKeys.get("publicKey"));
+        tenantSecretKey.setPublicKey(publicKey);
         tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get("privateKey")));
+        tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.KEY_PLATFORM_PUBLIC_KEY));
         tenantSecretKey.setCreateUserId(userId);
         tenantSecretKey.setLastUpdateUserId(userId);
         tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
@@ -146,6 +148,8 @@ public class RegisterService {
         tenantGoods.setLastUpdateUserId(userId);
         tenantGoods.setLastUpdateRemark("注册商户，创建使用商品！");
         tenantGoodsMapper.insert(tenantGoods);
+
+        CacheUtils.hset(Constants.KEY_TENANT_PUBLIC_KEYS, tenant.getId().toString(), publicKey);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);

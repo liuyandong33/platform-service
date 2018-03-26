@@ -11,6 +11,7 @@ import build.dream.platform.mappers.*;
 import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
+import build.dream.platform.models.user.ObtainUserInfoModel;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,13 +43,13 @@ public class UserService {
     /**
      * 获取用户信息
      *
-     * @param loginName
+     * @param obtainUserInfoModel
      * @return
      * @throws IOException
      */
     @Transactional(readOnly = true)
-    public ApiRest obtainUserInfo(String loginName) throws IOException {
-        SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
+    public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) throws IOException {
+        SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(obtainUserInfoModel.getLoginName());
         Validate.notNull(systemUser, "用户不存在！");
         BigInteger userId = systemUser.getId();
 

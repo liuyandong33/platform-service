@@ -8,6 +8,7 @@ import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
+import build.dream.platform.models.user.ObtainUserInfoModel;
 import build.dream.platform.services.UserService;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,9 @@ public class UserController extends BasicController {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            String loginName = requestParameters.get("loginName");
-            Validate.notNull(loginName, "参数(loginName)不能为空！");
-            apiRest = userService.obtainUserInfo(loginName);
+            ObtainUserInfoModel obtainUserInfoModel = ApplicationHandler.instantiateObject(ObtainUserInfoModel.class, requestParameters);
+            obtainUserInfoModel.validateAndThrow();
+            apiRest = userService.obtainUserInfo(obtainUserInfoModel);
         } catch (Exception e) {
             LogUtils.error("获取用户信息失败", controllerSimpleName, "obtainUserInfo", e, requestParameters);
             apiRest = new ApiRest(e);
