@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.erp.catering.domains.Branch;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CommonUtils;
 import build.dream.common.utils.ProxyUtils;
@@ -65,6 +66,7 @@ public class UserService {
 
         List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
         List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
+        List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId);
 
         Map<String, String> obtainBranchInfoRequestParameters = new HashMap<String, String>();
         obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString());
@@ -77,7 +79,8 @@ public class UserService {
         data.put("tenantSecretKey", tenantSecretKey);
         data.put("appPrivileges", appPrivileges);
         data.put("posPrivileges", posPrivileges);
-        data.put("branch", obtainBranchInfoApiRest.getData());
+        data.put("backgroundPrivileges", backgroundPrivileges);
+        data.put("branch", new Branch());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
