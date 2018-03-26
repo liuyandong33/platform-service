@@ -14,5 +14,6 @@ public interface SystemUserMapper {
     SystemUser findByLoginNameOrEmailOrMobile(@Param("loginName") String loginName);
     SystemUser find(SearchModel searchModel);
     List<SystemUser> findAll(SearchModel searchModel);
+    long count(SearchModel searchModel);
     List<SystemUser> findAllPaged(SearchModel searchModel);
 }

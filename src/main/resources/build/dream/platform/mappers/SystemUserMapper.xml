@@ -21,6 +21,10 @@
         SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </select>
 
+    <select id="count" parameterType="build.dream.common.utils.SearchModel" resultType="long">
+        SELECT COUNT(1) FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
+    </select>
+
     <select id="findAllPaged" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.SystemUser">
         SELECT * FROM system_user <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include> <include refid="build.dream.platform.mappers.CommonMapper.paginationSql"></include>
     </select>

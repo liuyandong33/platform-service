@@ -54,6 +54,15 @@ public class RegisterService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException, ParseException {
+        String mobile = registerTenantModel.getMobile();
+        String email = registerTenantModel.getEmail();
+        SearchModel mobileCountSearchModel = new SearchModel(true);
+        mobileCountSearchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUALS, mobile);
+        Validate.isTrue(systemUserMapper.count(mobileCountSearchModel) == 0, "手机号码已注册！");
+
+        SearchModel emailCountSearchModel = new SearchModel(true);
+        emailCountSearchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUALS, email);
+        Validate.isTrue(systemUserMapper.count(emailCountSearchModel) == 0, "邮箱已注册！");
         String business = registerTenantModel.getBusiness();
 
         SearchModel searchModel = new SearchModel(true);
