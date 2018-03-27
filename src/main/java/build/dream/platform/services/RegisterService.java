@@ -89,7 +89,6 @@ public class RegisterService {
         tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
-        userId = BigInteger.ZERO;
         tenant.setCreateUserId(userId);
         tenant.setLastUpdateUserId(userId);
         tenantMapper.insert(tenant);
