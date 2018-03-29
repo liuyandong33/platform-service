@@ -74,7 +74,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
 
-            ElemeUtils.startElemeConsumerThread();
+//            ElemeUtils.startElemeConsumerThread();
 
             // 启动所有定时任务
             jobScheduler.scheduler();
