@@ -11,16 +11,10 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfiguration {
-    @Bean(name = "primaryDataSource")
+    @Bean(name = "dataSource")
     @Primary
-    @ConfigurationProperties(prefix = "datasource.primary")
+    @ConfigurationProperties(prefix = "datasource")
     public DataSource primaryDataSource() {
         return DataSourceBuilder.create().type(DruidDataSource.class).build();
     }
-
-    /*@Bean(name = "secondaryDataSource")
-    @ConfigurationProperties(prefix = "datasource.secondary")
-    public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().type(DruidDataSource.class).build();
-    }*/
 }
