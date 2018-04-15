@@ -14,7 +14,7 @@ public class DataSourceConfiguration {
     @Bean(name = "dataSource")
     @Primary
     @ConfigurationProperties(prefix = "datasource")
-    public DataSource primaryDataSource() {
+    public DataSource dataSource() {
         return DataSourceBuilder.create().type(DruidDataSource.class).build();
     }
 }
