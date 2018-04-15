@@ -13,6 +13,7 @@ import build.dream.platform.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -28,7 +29,7 @@ public class UserController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainUserInfo")
+    @RequestMapping(value = "/obtainUserInfo", method = RequestMethod.GET)
     @ResponseBody
     public String obtainUserInfo() {
         ApiRest apiRest = null;
@@ -49,7 +50,7 @@ public class UserController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/batchGetUsers")
+    @RequestMapping(value = "/batchGetUsers", method = RequestMethod.GET)
     @ResponseBody
     public String batchGetUsers() {
         ApiRest apiRest = null;
@@ -70,7 +71,7 @@ public class UserController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainAllPrivileges")
+    @RequestMapping(value = "/obtainAllPrivileges", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllPrivileges() {
         ApiRest apiRest = null;
@@ -91,7 +92,7 @@ public class UserController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/batchDeleteUser")
+    @RequestMapping(value = "/batchDeleteUser", method = RequestMethod.POST)
     @ResponseBody
     public String batchDeleteUser() {
         ApiRest apiRest = null;
