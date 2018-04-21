@@ -81,12 +81,10 @@ public class WeiXinService {
     public ApiRest saveWeiXinPublicAccount(SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveWeiXinPublicAccountModel.getTenantId());
-        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveWeiXinPublicAccountModel.getBranchId());
         WeiXinPublicAccount weiXinPublicAccount = weiXinPublicAccountMapper.find(searchModel);
         if (weiXinPublicAccount == null) {
             weiXinPublicAccount = new WeiXinPublicAccount();
             weiXinPublicAccount.setTenantId(saveWeiXinPublicAccountModel.getTenantId());
-            weiXinPublicAccount.setBranchId(saveWeiXinPublicAccountModel.getBranchId());
             weiXinPublicAccount.setName(saveWeiXinPublicAccountModel.getName());
             weiXinPublicAccount.setAppId(saveWeiXinPublicAccountModel.getAppId());
             weiXinPublicAccount.setAppSecret(saveWeiXinPublicAccountModel.getAppSecret());
@@ -112,10 +110,9 @@ public class WeiXinService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findWeiXinPublicAccount(FindWeiXinPublicAccountModel findWeiXinPublicAccountModel) {
+    public ApiRest obtainWeiXinPublicAccount(ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinPublicAccountModel.getTenantId());
-        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinPublicAccountModel.getBranchId());
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainWeiXinPublicAccountModel.getTenantId());
         WeiXinPublicAccount weiXinPublicAccount = weiXinPublicAccountMapper.find(searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinPublicAccount);

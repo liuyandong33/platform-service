@@ -7,7 +7,7 @@ import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.FindWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.FindWeiXinPublicAccountModel;
+import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
 import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
 import build.dream.platform.services.WeiXinService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,18 +72,18 @@ public class WeiXinController extends BasicController {
         return GsonUtils.toJson(apiRest);
     }
 
-    @RequestMapping(value = "/findWeiXinPublicAccount")
+    @RequestMapping(value = "/obtainWeiXinPublicAccount")
     @ResponseBody
-    public String findWeiXinPublicAccount() {
+    public String obtainWeiXinPublicAccount() {
         ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
-            FindWeiXinPublicAccountModel findWeiXinPublicAccountModel = ApplicationHandler.instantiateObject(FindWeiXinPublicAccountModel.class, requestParameters);
-            findWeiXinPublicAccountModel.validateAndThrow();
+            ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel = ApplicationHandler.instantiateObject(ObtainWeiXinPublicAccountModel.class, requestParameters);
+            obtainWeiXinPublicAccountModel.validateAndThrow();
 
-            apiRest = weiXinService.findWeiXinPublicAccount(findWeiXinPublicAccountModel);
+            apiRest = weiXinService.obtainWeiXinPublicAccount(obtainWeiXinPublicAccountModel);
         } catch (Exception e) {
-            LogUtils.error("查询微信公众号失败", controllerSimpleName, "findWeiXinPublicAccount", e, requestParameters);
+            LogUtils.error("获取微信公众号失败", controllerSimpleName, "obtainWeiXinPublicAccount", e, requestParameters);
             apiRest = new ApiRest(e);
         }
         return GsonUtils.toJson(apiRest);

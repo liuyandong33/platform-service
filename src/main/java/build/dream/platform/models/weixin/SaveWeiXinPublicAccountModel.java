@@ -13,9 +13,6 @@ public class SaveWeiXinPublicAccountModel extends BasicModel {
     private BigInteger tenantId;
 
     @NotNull
-    private BigInteger branchId;
-
-    @NotNull
     private String name;
 
     @NotNull
@@ -41,14 +38,6 @@ public class SaveWeiXinPublicAccountModel extends BasicModel {
 
     public void setTenantId(BigInteger tenantId) {
         this.tenantId = tenantId;
-    }
-
-    public BigInteger getBranchId() {
-        return branchId;
-    }
-
-    public void setBranchId(BigInteger branchId) {
-        this.branchId = branchId;
     }
 
     public String getName() {
