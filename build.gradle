@@ -16,6 +16,7 @@ buildscript {
 }
 
 apply plugin: "java"
+apply plugin: "scala"
 apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
 apply plugin: "idea"
@@ -34,6 +35,7 @@ dependencyManagement {
 
 dependencies {
     compile fileTree(include: ["*.jar"], dir: "libs")
+    compile group: "org.scala-lang", name: "scala-library", version: '2.12.5'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-data-redis")
