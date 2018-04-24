@@ -5,6 +5,7 @@ import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
@@ -32,17 +33,13 @@ public class UserController extends BasicController {
     @RequestMapping(value = "/obtainUserInfo", method = RequestMethod.GET)
     @ResponseBody
     public String obtainUserInfo() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainUserInfoModel obtainUserInfoModel = ApplicationHandler.instantiateObject(ObtainUserInfoModel.class, requestParameters);
             obtainUserInfoModel.validateAndThrow();
-            apiRest = userService.obtainUserInfo(obtainUserInfoModel);
-        } catch (Exception e) {
-            LogUtils.error("获取用户信息失败", controllerSimpleName, "obtainUserInfo", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return userService.obtainUserInfo(obtainUserInfoModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取用户信息失败", controllerSimpleName, "obtainUserInfo", requestParameters);
     }
 
     /**
