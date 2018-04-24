@@ -1,5 +1,74 @@
-ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-ScriptEngine scriptEngine = scriptEngineManager.getEngineByName("javascript");
-scriptEngine.eval("function execute(goodsJson) {var goodsInfo = JSON.parse(goodsJson);goodsInfo.id = 100;return JSON.stringify(goodsInfo);}");
-Invocable invocable = (Invocable) scriptEngine;
-String goodsJson = (String) invocable.invokeFunction("execute", GsonUtils.toJson(goods));
+package build.dream.platform.services
+
+import java.math.BigInteger
+import java.util.{HashMap, List, Map}
+
+import build.dream.common.api.ApiRest
+import build.dream.common.saas.domains._
+import build.dream.common.utils.{CommonUtils, ProxyUtils, SearchModel}
+import build.dream.platform.constants.Constants
+import build.dream.platform.mappers._
+import build.dream.platform.models.user.ObtainUserInfoModel
+import org.apache.commons.lang.Validate
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+@Service
+class UserService {
+    @Autowired
+    private val systemUserMapper: SystemUserMapper = null
+    @Autowired
+    private val tenantMapper: TenantMapper = null
+    @Autowired
+    private val backgroundPrivilegeMapper: BackgroundPrivilegeMapper = null
+    @Autowired
+    private val appPrivilegeMapper: AppPrivilegeMapper = null
+    @Autowired
+    private val posPrivilegeMapper: PosPrivilegeMapper = null
+    @Autowired
+    private val tenantSecretKeyMapper: TenantSecretKeyMapper = null
+    @Autowired
+    private val universalMapper: UniversalMapper = null
+
+    @Transactional(readOnly = true)
+    def obtainUserInfo(obtainUserInfoModel: ObtainUserInfoModel): ApiRest = {
+        val systemUser: SystemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(obtainUserInfoModel.getLoginName)
+        Validate.notNull(systemUser, "用户不存在！")
+        val userId: BigInteger = systemUser.getId
+
+        val searchModel: SearchModel = new SearchModel(true)
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, userId)
+        val tenant: Tenant = tenantMapper.find(searchModel)
+        Validate.notNull(tenant, "商户不存在！")
+        val tenantId: BigInteger = tenant.getId
+
+        val tenantSecretKeySearchModel: SearchModel = new SearchModel(true)
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId)
+        val tenantSecretKey: TenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel)
+        Validate.notNull(tenantSecretKey, "未检索到商户秘钥！")
+
+        val appPrivileges: List[AppPrivilege] = appPrivilegeMapper.findAllAppPrivileges(userId)
+        val posPrivileges: List[PosPrivilege] = posPrivilegeMapper.findAllPosPrivileges(userId)
+        val backgroundPrivileges: List[BackgroundPrivilege] = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId)
+
+        val obtainBranchInfoRequestParameters: Map[String, String] = new HashMap[String, String]
+        obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString)
+        obtainBranchInfoRequestParameters.put("userId", userId.toString)
+        val obtainBranchInfoApiRest: ApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode, CommonUtils.getServiceName(tenant.getBusiness), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters)
+        Validate.isTrue(obtainBranchInfoApiRest.isSuccessful, obtainBranchInfoApiRest.getError)
+
+        val data: Map[String, AnyRef] = new HashMap[String, AnyRef]
+        data.put("user", systemUser)
+        data.put("tenant", tenant)
+        data.put("tenantSecretKey", tenantSecretKey)
+        data.put("appPrivileges", appPrivileges)
+        data.put("posPrivileges", posPrivileges)
+        data.put("backgroundPrivileges", backgroundPrivileges)
+        data.put("branch", obtainBranchInfoApiRest.getData)
+        val apiRest: ApiRest = new ApiRest
+        apiRest.setData(data)
+        apiRest.setSuccessful(true)
+        return apiRest
+    }
+}

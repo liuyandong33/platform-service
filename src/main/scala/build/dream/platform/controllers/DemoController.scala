@@ -22,7 +22,7 @@ class DemoController {
       */
     @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET))
     @ResponseBody
-    def index: String = {
+    def obtainUserInfo: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val methodCaller: MethodCaller = () => {
             val obtainUserInfoModel = ApplicationHandler.instantiateObject(classOf[ObtainUserInfoModel], requestParameters)
