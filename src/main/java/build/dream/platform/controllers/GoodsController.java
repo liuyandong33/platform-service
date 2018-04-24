@@ -1,10 +1,8 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
-import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
@@ -21,7 +19,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/goods")
-public class GoodsController extends BasicController {
+public class GoodsController {
     @Autowired
     private GoodsService goodsService;
 
@@ -33,17 +31,13 @@ public class GoodsController extends BasicController {
     @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllGoodsInfos() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainAllGoodsInfosModel obtainAllGoodsInfosModel = ApplicationHandler.instantiateObject(ObtainAllGoodsInfosModel.class, requestParameters);
             obtainAllGoodsInfosModel.validateAndThrow();
-            apiRest = goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel);
-        } catch (Exception e) {
-            LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainAllGoodsInfos", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取商品信息失败", requestParameters);
     }
 
     /**
@@ -54,17 +48,13 @@ public class GoodsController extends BasicController {
     @RequestMapping(value = "/listGoodsInfos", method = RequestMethod.GET)
     @ResponseBody
     public String listGoodsInfos() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ListGoodsInfosModel listGoodsInfosModel = ApplicationHandler.instantiateObject(ListGoodsInfosModel.class, requestParameters);
             listGoodsInfosModel.validateAndThrow();
-            apiRest = goodsService.listGoodsInfos(listGoodsInfosModel);
-        } catch (Exception e) {
-            LogUtils.error("分页查询商品列表失败", controllerSimpleName, "listGoodsInfos", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return goodsService.listGoodsInfos(listGoodsInfosModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "分页查询商品列表失败", requestParameters);
     }
 
     /**
@@ -75,25 +65,20 @@ public class GoodsController extends BasicController {
     @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET)
     @ResponseBody
     public String obtainGoodsInfo() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainGoodsInfoModel obtainGoodsInfoModel = ApplicationHandler.instantiateObject(ObtainGoodsInfoModel.class, requestParameters);
             obtainGoodsInfoModel.validateAndThrow();
-            apiRest = goodsService.obtainGoodsInfo(obtainGoodsInfoModel);
-        } catch (Exception e) {
-            LogUtils.error("获取商品信息失败", controllerSimpleName, "obtainGoodsInfo", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return goodsService.obtainGoodsInfo(obtainGoodsInfoModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取商品信息失败", requestParameters);
     }
 
     @RequestMapping(value = "/saveGoods", method = RequestMethod.POST)
     @ResponseBody
     public String saveGoods() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             SaveGoodsModel saveGoodsModel = ApplicationHandler.instantiateObject(SaveGoodsModel.class, requestParameters);
             String goodsSpecifications = requestParameters.get("goodsSpecifications");
             ApplicationHandler.notEmpty(goodsSpecifications, "goodsSpecifications");
@@ -101,11 +86,8 @@ public class GoodsController extends BasicController {
             saveGoodsModel.setGoodsSpecificationModels(goodsSpecificationModels);
             saveGoodsModel.validateAndThrow();
 
-            apiRest = goodsService.saveGoods(saveGoodsModel);
-        } catch (Exception e) {
-            LogUtils.error("保存商品信息失败", controllerSimpleName, "saveGoods", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return goodsService.saveGoods(saveGoodsModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "保存商品信息失败", requestParameters);
     }
 }
