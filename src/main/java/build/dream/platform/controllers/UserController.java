@@ -1,10 +1,7 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
 import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
@@ -39,7 +36,7 @@ public class UserController extends BasicController {
             obtainUserInfoModel.validateAndThrow();
             return userService.obtainUserInfo(obtainUserInfoModel);
         };
-        return ApplicationHandler.callMethod(methodCaller, "获取用户信息失败", controllerSimpleName, "obtainUserInfo", requestParameters);
+        return ApplicationHandler.callMethod(methodCaller, "获取用户信息失败", requestParameters);
     }
 
     /**
@@ -50,17 +47,13 @@ public class UserController extends BasicController {
     @RequestMapping(value = "/batchGetUsers", method = RequestMethod.GET)
     @ResponseBody
     public String batchGetUsers() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             BatchGetUsersModel batchGetUsersModel = ApplicationHandler.instantiateObject(BatchGetUsersModel.class, requestParameters);
             batchGetUsersModel.validateAndThrow();
-            apiRest = userService.batchObtainUser(batchGetUsersModel);
-        } catch (Exception e) {
-            LogUtils.error("查询用户失败", controllerSimpleName, "batchGetUsers", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return userService.batchObtainUser(batchGetUsersModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "查询用户失败", requestParameters);
     }
 
     /**
@@ -71,17 +64,13 @@ public class UserController extends BasicController {
     @RequestMapping(value = "/obtainAllPrivileges", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllPrivileges() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainAllPrivilegesModel obtainAllPrivilegesModel = ApplicationHandler.instantiateObject(ObtainAllPrivilegesModel.class, requestParameters);
             obtainAllPrivilegesModel.validateAndThrow();
-            apiRest = userService.obtainAllPrivileges(obtainAllPrivilegesModel);
-        } catch (Exception e) {
-            LogUtils.error("获取用户权限失败", controllerSimpleName, "obtainAllPrivileges", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return userService.obtainAllPrivileges(obtainAllPrivilegesModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取用户权限失败", requestParameters);
     }
 
     /**
@@ -92,17 +81,13 @@ public class UserController extends BasicController {
     @RequestMapping(value = "/batchDeleteUser", method = RequestMethod.POST)
     @ResponseBody
     public String batchDeleteUser() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             BatchDeleteUserModel batchDeleteUserModel = ApplicationHandler.instantiateObject(BatchDeleteUserModel.class, requestParameters);
             batchDeleteUserModel.validateAndThrow();
 
-            apiRest = userService.batchDeleteUser(batchDeleteUserModel);
-        } catch (Exception e) {
-            LogUtils.error("批量删除用户失败", controllerSimpleName, "batchDeleteUser", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return userService.batchDeleteUser(batchDeleteUserModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "批量删除用户失败", requestParameters);
     }
 }
