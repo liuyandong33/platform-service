@@ -1,10 +1,9 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
 import build.dream.platform.services.OrderService;
@@ -31,19 +30,15 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
     @ResponseBody
     public String saveOrder() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             SaveOrderModel saveOrderModel = ApplicationHandler.instantiateObject(SaveOrderModel.class, requestParameters);
             String goodsInfos = requestParameters.get("goodsInfos");
             saveOrderModel.setGoodsInfos(goodsInfos);
             saveOrderModel.validateAndThrow();
-            apiRest = orderService.saveOrder(saveOrderModel);
-        } catch (Exception e) {
-            LogUtils.error("保存订单失败", controllerSimpleName, "saveOrder", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.saveOrder(saveOrderModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "保存订单失败", requestParameters);
     }
 
     /**
@@ -54,18 +49,14 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET)
     @ResponseBody
     public String obtainOrderInfo() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             String orderInfoId = requestParameters.get("orderInfoId");
             ApplicationHandler.notEmpty(orderInfoId, "orderInfoId");
 
-            apiRest = orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId));
-        } catch (Exception e) {
-            LogUtils.error("获取订单信息失败", controllerSimpleName, "obtainOrderInfo", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId));
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取订单信息失败", requestParameters);
     }
 
     /**
@@ -76,17 +67,13 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/obtainAllOrderInfos", method = RequestMethod.GET)
     @ResponseBody
     public String obtainAllOrderInfos() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainAllOrderInfosModel obtainAllOrderInfosModel = ApplicationHandler.instantiateObject(ObtainAllOrderInfosModel.class, requestParameters);
             obtainAllOrderInfosModel.validateAndThrow();
-            apiRest = orderService.obtainAllOrderInfos(obtainAllOrderInfosModel);
-        } catch (Exception e) {
-            LogUtils.error("获取订单信息失败", controllerSimpleName, "obtainAllOrderInfos", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.obtainAllOrderInfos(obtainAllOrderInfosModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取订单信息失败", requestParameters);
     }
 
     /**
@@ -97,17 +84,13 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST)
     @ResponseBody
     public String batchDeleteOrders() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             BatchDeleteOrdersModel batchDeleteOrdersModel = ApplicationHandler.instantiateObject(BatchDeleteOrdersModel.class, requestParameters);
             batchDeleteOrdersModel.validateAndThrow();
-            apiRest = orderService.batchDeleteOrders(batchDeleteOrdersModel);
-        } catch (Exception e) {
-            LogUtils.error("批量删除订单失败", controllerSimpleName, "batchDeleteOrders", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.batchDeleteOrders(batchDeleteOrdersModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "批量删除订单失败", requestParameters);
     }
 
     /**
@@ -118,17 +101,13 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST)
     @ResponseBody
     public String deleteOrder() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             DeleteOrderModel deleteOrderModel = ApplicationHandler.instantiateObject(DeleteOrderModel.class, requestParameters);
             deleteOrderModel.validateAndThrow();
-            apiRest = orderService.deleteOrder(deleteOrderModel);
-        } catch (Exception e) {
-            LogUtils.error("删除订单失败", controllerSimpleName, "deleteOrder", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.deleteOrder(deleteOrderModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "删除订单失败", requestParameters);
     }
 
     /**
@@ -139,18 +118,14 @@ public class OrderController extends BasicController {
     @RequestMapping(value = "/doPay", method = RequestMethod.POST)
     @ResponseBody
     public String doPay() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             DoPayModel doPayModel = ApplicationHandler.instantiateObject(DoPayModel.class, requestParameters);
             doPayModel.validateAndThrow();
 
-            apiRest = orderService.doPay(doPayModel);
-        } catch (Exception e) {
-            LogUtils.error("发起支付失败", controllerSimpleName, "doPay", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return orderService.doPay(doPayModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "发起支付失败", requestParameters);
     }
 
     /**
