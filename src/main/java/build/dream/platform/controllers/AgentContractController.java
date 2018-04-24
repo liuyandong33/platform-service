@@ -1,6 +1,5 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.agentcontract.*;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/agentContract")
-public class AgentContractController extends BasicController {
+public class AgentContractController {
     @Autowired
     private AgentContractService agentContractService;
 
