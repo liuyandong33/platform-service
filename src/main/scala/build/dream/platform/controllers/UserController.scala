@@ -10,8 +10,8 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod, ResponseBody}
 
 @Controller
-@RequestMapping(value = Array("/demo"))
-class DemoController {
+@RequestMapping(value = Array("/user"))
+class UserController {
     @Autowired
     private val userService: UserService = null
 
