@@ -1,8 +1,10 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
-import build.dream.common.utils.*;
+import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.MethodCaller;
+import build.dream.common.utils.MimeMappingUtils;
+import build.dream.common.utils.QRCodeUtils;
 import build.dream.platform.models.activity.ObtainAllActivitiesModel;
 import build.dream.platform.models.activity.SaveSpecialGoodsActivityModel;
 import build.dream.platform.services.ActivityService;
@@ -30,19 +32,15 @@ public class ActivityController extends BasicController {
     @RequestMapping(value = "/saveSpecialGoodsActivity")
     @ResponseBody
     public String saveSpecialGoodsActivity() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             SaveSpecialGoodsActivityModel saveSpecialGoodsActivityModel = ApplicationHandler.instantiateObject(SaveSpecialGoodsActivityModel.class, requestParameters);
             String specialGoodsActivityInfos = requestParameters.get("specialGoodsActivityInfos");
             saveSpecialGoodsActivityModel.setSpecialGoodsActivityInfos(specialGoodsActivityInfos);
             saveSpecialGoodsActivityModel.validateAndThrow();
-            apiRest = activityService.saveSpecialGoodsActivity(saveSpecialGoodsActivityModel);
-        } catch (Exception e) {
-            LogUtils.error("保存特价商品活动失败", controllerSimpleName, "saveSpecialGoodsActivity", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return activityService.saveSpecialGoodsActivity(saveSpecialGoodsActivityModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "保存特价商品活动失败", requestParameters);
     }
 
     @RequestMapping(value = "/generateQRCode")
@@ -79,16 +77,12 @@ public class ActivityController extends BasicController {
     @RequestMapping(value = "/obtainAllActivities")
     @ResponseBody
     public String obtainAllActivities() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainAllActivitiesModel obtainAllActivitiesModel = ApplicationHandler.instantiateObject(ObtainAllActivitiesModel.class, requestParameters);
             obtainAllActivitiesModel.validateAndThrow();
-            apiRest = activityService.obtainAllActivities(obtainAllActivitiesModel);
-        } catch (Exception e) {
-            LogUtils.error("获取活动失败", controllerSimpleName, "obtainAllActivities", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return activityService.obtainAllActivities(obtainAllActivitiesModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取活动失败", requestParameters);
     }
 }
