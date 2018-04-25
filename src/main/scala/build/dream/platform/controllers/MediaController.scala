@@ -1,11 +1,12 @@
 package build.dream.platform.controllers
 
 import java.io.OutputStream
-import java.util.Map
-import javax.servlet.http.HttpServletResponse
+import java.util.{HashMap, Map}
 
-import build.dream.common.utils.{ApplicationHandler, MimeMappingUtils, QRCodeUtils}
+import build.dream.common.utils.{ApplicationHandler, MimeMappingUtils, ProxyUtils, QRCodeUtils}
+import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.StringUtils
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, ResponseBody}
 
@@ -60,5 +61,19 @@ class MediaController {
         val outputStream: OutputStream = httpServletResponse.getOutputStream
         QRCodeUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
         outputStream.close()
+    }
+
+
+    /**
+      * 显示外部图片，绕过防盗链
+      */
+    @RequestMapping(value = Array("/doGetOriginal"))
+    @ResponseBody
+    def showExternalImage(): ResponseEntity[Array[Byte]] = {
+        val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
+        val url: String = requestParameters.get("url")
+        val doGetOriginalRequestParameters: Map[String, String] = new HashMap[String, String]
+        doGetOriginalRequestParameters.put("url", url)
+        ProxyUtils.doGetOriginal("out", "proxy", "doGetOriginal", doGetOriginalRequestParameters);
     }
 }

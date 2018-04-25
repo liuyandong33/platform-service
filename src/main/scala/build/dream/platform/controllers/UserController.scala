@@ -104,42 +104,115 @@ class UserController {
             Validate.isTrue(httpServletRequest.isInstanceOf[MultipartHttpServletRequest], "请上传商品信息！")
             val multipartHttpServletRequest: MultipartHttpServletRequest = httpServletRequest.asInstanceOf[MultipartHttpServletRequest]
             val goodsInfoFile = multipartHttpServletRequest.getFile("goodsInfoFile")
+            Validate.notNull(goodsInfoFile, "请上传商品信息！")
 
             val xssfWorkbook: XSSFWorkbook = new XSSFWorkbook(goodsInfoFile.getInputStream)
             val xssfSheet: XSSFSheet = xssfWorkbook.getSheetAt(0)
 
             val xssfDrawing: XSSFDrawing = xssfSheet.createDrawingPatriarch()
             val lastRowNum: Int = xssfSheet.getLastRowNum
-            val employeeInfos: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
+            val goodsInfos: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
+
+            val normalXssfCellStyle: XSSFCellStyle = xssfWorkbook.createCellStyle
+            normalXssfCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex)
+            normalXssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+            normalXssfCellStyle.setBorderTop(BorderStyle.THIN)
+            normalXssfCellStyle.setBorderLeft(BorderStyle.THIN)
+            normalXssfCellStyle.setBorderRight(BorderStyle.THIN)
+            normalXssfCellStyle.setBorderBottom(BorderStyle.THIN)
+
+            val abnormalXssfCellStyle: XSSFCellStyle = xssfWorkbook.createCellStyle
+            abnormalXssfCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex)
+            var isNormal: Boolean = true
+
             for (index: Int <- 1 to lastRowNum) {
                 val xssfRow: XSSFRow = xssfSheet.getRow(index)
-                val employeeInfo: Map[String, Object] = new HashMap[String, Object]()
-                val serialNumberXSSFCell: XSSFCell = xssfRow.getCell(0)
 
-                val serialNumber: Int = serialNumberXSSFCell.getNumericCellValue.intValue()
-                val xssfCellStyle: XSSFCellStyle = xssfWorkbook.createCellStyle
-                xssfCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-                xssfCellStyle.setBorderTop(BorderStyle.THIN)
-                xssfCellStyle.setBorderLeft(BorderStyle.THIN)
-                xssfCellStyle.setBorderRight(BorderStyle.THIN)
-                xssfCellStyle.setBorderBottom(BorderStyle.THIN)
-
-                serialNumberXSSFCell.removeCellComment()
-
-                if (serialNumber > 60) {
-                    val xssfComment: XSSFComment = xssfDrawing.createCellComment(new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 1, 1))
-                    xssfComment.setString("序号不能小于0")
-                    serialNumberXSSFCell.setCellComment(xssfComment)
-
-                    xssfCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex)
+                val codeXSSFCell: XSSFCell = xssfRow.getCell(0)
+                codeXSSFCell.removeCellComment()
+                val code: String = codeXSSFCell.getStringCellValue
+                if (code.length > 20) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品编码不能超过20个字符！")
+                    codeXSSFCell.setCellComment(xssfComment)
+                    codeXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
                 } else {
-                    xssfCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex)
+                    codeXSSFCell.setCellStyle(normalXssfCellStyle)
                 }
-                serialNumberXSSFCell.setCellStyle(xssfCellStyle)
+
+
+                val barCodeXSSFCell: XSSFCell = xssfRow.getCell(1)
+                barCodeXSSFCell.removeCellComment()
+                val barCode: String = barCodeXSSFCell.getStringCellValue
+                if (barCode.length > 20) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品条码不能超过20个字符！")
+                    barCodeXSSFCell.setCellComment(xssfComment)
+                    barCodeXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
+                } else {
+                    barCodeXSSFCell.setCellStyle(normalXssfCellStyle)
+                }
+
+                val nameXSSFCell: XSSFCell = xssfRow.getCell(0)
+                nameXSSFCell.removeCellComment()
+                val name: String = nameXSSFCell.getStringCellValue
+                if (name.length > 20) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品名称不能超过20个字符！")
+                    nameXSSFCell.setCellComment(xssfComment)
+                    nameXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
+                } else {
+                    nameXSSFCell.setCellStyle(normalXssfCellStyle)
+                }
+
+                val salePriceXSSFCell: XSSFCell = xssfRow.getCell(0)
+                salePriceXSSFCell.removeCellComment()
+                val salePrice: Double = nameXSSFCell.getNumericCellValue
+                if (salePrice > 999999) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品销售价格不能超过999999！")
+                    salePriceXSSFCell.setCellComment(xssfComment)
+                    salePriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
+                } else {
+                    salePriceXSSFCell.setCellStyle(normalXssfCellStyle)
+                }
+
+                val memberPriceXSSFCell: XSSFCell = xssfRow.getCell(0)
+                memberPriceXSSFCell.removeCellComment()
+                val memberPrice: Double = nameXSSFCell.getNumericCellValue
+                if (memberPrice > 999999) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品销售价格不能超过999999！")
+                    memberPriceXSSFCell.setCellComment(xssfComment)
+                    memberPriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
+                } else if (memberPrice > salePrice) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "会员价格不能大于销售价格！")
+                    memberPriceXSSFCell.setCellComment(xssfComment)
+                    memberPriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
+                    isNormal = false
+                } else {
+                    memberPriceXSSFCell.setCellStyle(normalXssfCellStyle)
+                }
+
+                if (isNormal) {
+                    val goodsInfo: Map[String, Object] = new HashMap[String, Object]()
+                    goodsInfo.put("code", code)
+                    goodsInfo.put("barCode", barCode)
+                    goodsInfo.put("name", name)
+                    goodsInfo.put("salePrice", salePrice)
+                    goodsInfo.put("memberPrice", memberPrice)
+                    goodsInfos.add(goodsInfo)
+                }
             }
-            xssfWorkbook.write(new FileOutputStream("C:\\Users\\liuyandong\\Desktop\\456.xlsx"))
+            xssfWorkbook.write(new FileOutputStream("/Users/liuyandong/Desktop/456.xlsx"))
             new ApiRest()
         }
-        ApplicationHandler.callMethod(methodCaller, "批量删除用户失败", requestParameters)
+        ApplicationHandler.callMethod(methodCaller, "上传商品档案失败", requestParameters)
+    }
+
+    def obtainXSSFComment(xssfDrawing: XSSFDrawing, comment: String): XSSFComment = {
+        val xssfComment: XSSFComment = xssfDrawing.createCellComment(new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 1, 1))
+        xssfComment.setString("comment")
+        xssfComment
     }
 }
