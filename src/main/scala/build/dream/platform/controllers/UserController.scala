@@ -111,7 +111,7 @@ class UserController {
 
             val xssfDrawing: XSSFDrawing = xssfSheet.createDrawingPatriarch()
             val lastRowNum: Int = xssfSheet.getLastRowNum
-            val goodsInfos: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
+            val goodsInfos: List[Map[String, Any]] = new ArrayList[Map[String, Any]]()
 
             val normalXssfCellStyle: XSSFCellStyle = xssfWorkbook.createCellStyle
             normalXssfCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex)
@@ -195,7 +195,7 @@ class UserController {
                 }
 
                 if (isNormal) {
-                    val goodsInfo: Map[String, Object] = new HashMap[String, Object]()
+                    val goodsInfo: Map[String, Any] = new HashMap[String, Any]()
                     goodsInfo.put("code", code)
                     goodsInfo.put("barCode", barCode)
                     goodsInfo.put("name", name)
