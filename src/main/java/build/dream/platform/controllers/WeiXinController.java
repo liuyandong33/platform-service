@@ -1,10 +1,8 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.FindWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
@@ -26,66 +24,49 @@ public class WeiXinController extends BasicController {
     @RequestMapping(value = "/deleteWeiXinOpenPlatformApplication")
     @ResponseBody
     public String deleteWeiXinOpenPlatformApplication() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel = ApplicationHandler.instantiateObject(DeleteWeiXinOpenPlatformApplicationModel.class, requestParameters);
             deleteWeiXinOpenPlatformApplicationModel.validateAndThrow();
-            apiRest = weiXinService.deleteWeiXinOpenPlatformApplication(deleteWeiXinOpenPlatformApplicationModel);
-        } catch (Exception e) {
-            LogUtils.error("删除微信公众平台应用失败", controllerSimpleName, "findWeiXinOpenPlatformApplication", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return weiXinService.deleteWeiXinOpenPlatformApplication(deleteWeiXinOpenPlatformApplicationModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "删除微信公众平台应用失败", requestParameters);
     }
 
     @RequestMapping(value = "/findWeiXinOpenPlatformApplication")
     @ResponseBody
     public String findWeiXinOpenPlatformApplication() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel = ApplicationHandler.instantiateObject(FindWeiXinOpenPlatformApplicationModel.class, requestParameters);
             findWeiXinOpenPlatformApplicationModel.validateAndThrow();
-            apiRest = weiXinService.find(findWeiXinOpenPlatformApplicationModel);
-        } catch (Exception e) {
-            LogUtils.error("查询微信公众平台应用失败", controllerSimpleName, "findWeiXinOpenPlatformApplication", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return weiXinService.find(findWeiXinOpenPlatformApplicationModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "查询微信公众平台应用失败", requestParameters);
     }
 
     @RequestMapping(value = "/saveWeiXinPublicAccount")
     @ResponseBody
     public String saveWeiXinPublicAccount() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel = ApplicationHandler.instantiateObject(SaveWeiXinPublicAccountModel.class, requestParameters);
             saveWeiXinPublicAccountModel.validateAndThrow();
 
-            apiRest = weiXinService.saveWeiXinPublicAccount(saveWeiXinPublicAccountModel);
-        } catch (Exception e) {
-            LogUtils.error("保存微信公众号失败", controllerSimpleName, "saveWeiXinPublicAccount", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return weiXinService.saveWeiXinPublicAccount(saveWeiXinPublicAccountModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "保存微信公众号失败", requestParameters);
     }
 
     @RequestMapping(value = "/obtainWeiXinPublicAccount")
     @ResponseBody
     public String obtainWeiXinPublicAccount() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel = ApplicationHandler.instantiateObject(ObtainWeiXinPublicAccountModel.class, requestParameters);
             obtainWeiXinPublicAccountModel.validateAndThrow();
-
-            apiRest = weiXinService.obtainWeiXinPublicAccount(obtainWeiXinPublicAccountModel);
-        } catch (Exception e) {
-            LogUtils.error("获取微信公众号失败", controllerSimpleName, "obtainWeiXinPublicAccount", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return weiXinService.obtainWeiXinPublicAccount(obtainWeiXinPublicAccountModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "获取微信公众号失败", requestParameters);
     }
 }
