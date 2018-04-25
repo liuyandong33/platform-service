@@ -35,6 +35,7 @@ class DemoService {
         val startTime: Date = simpleDateFormat.parse(saveSpecialGoodsActivityModel.getStartTime + " 00:00:00")
         val endTime: Date = simpleDateFormat.parse(saveSpecialGoodsActivityModel.getEndTime + " 23:59:59")
         Validate.isTrue(endTime.after(startTime), "活动结束时间必须大于开始时间！")
+
         val goodsIds: List[BigInteger] = new ArrayList[BigInteger]
         val goodsSpecificationIds: List[BigInteger] = new ArrayList[BigInteger]
         val specialGoodsActivityInfos: List[SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo] = saveSpecialGoodsActivityModel.getSpecialGoodsActivityInfos
@@ -42,6 +43,7 @@ class DemoService {
             goodsIds.add(specialGoodsActivityInfo.getGoodsId)
             goodsSpecificationIds.add(specialGoodsActivityInfo.getGoodsSpecificationId)
         }
+
         // 查询出涉及的所有商品
         val goodsSearchModel: SearchModel = new SearchModel(true)
         goodsSearchModel.addSearchCondition("id", "=", goodsIds)
@@ -50,6 +52,7 @@ class DemoService {
         for (goods: Goods <- goodses) {
             goodsMap.put(goods.getId, goods)
         }
+
         // 查询出涉及的所有商品规格
         val goodsSpecificationSearchModel: SearchModel = new SearchModel(true)
         goodsSpecificationSearchModel.addSearchCondition("id", "=", goodsSpecificationIds)
@@ -58,6 +61,7 @@ class DemoService {
         for (goodsSpecification: GoodsSpecification <- goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId, goodsSpecification)
         }
+
         val activity: Activity = new Activity
         activity.setName(saveSpecialGoodsActivityModel.getName)
         activity.setStartTime(startTime)
@@ -70,7 +74,7 @@ class DemoService {
         activityMapper.insert(activity)
 
         val specialGoodsActivities: List[SpecialGoodsActivity] = new ArrayList[SpecialGoodsActivity]
-        for (specialGoodsActivityInfo: SpecialGoodsActivity <- specialGoodsActivityInfos) {
+        for (specialGoodsActivityInfo: SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo <- specialGoodsActivityInfos) {
             val goods: Goods = goodsMap.get(specialGoodsActivityInfo.getGoodsId)
             Validate.notNull(goods, "商品不存在！")
 
