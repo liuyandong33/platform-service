@@ -26,6 +26,7 @@ class UserController {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val methodCaller: MethodCaller = () => {
             val obtainUserInfoModel = ApplicationHandler.instantiateObject(classOf[ObtainUserInfoModel], requestParameters)
+            obtainUserInfoModel.validateAndThrow()
             userService.obtainUserInfo(obtainUserInfoModel)
         }
         ApplicationHandler.callMethod(methodCaller, "获取用户信息失败", requestParameters)
