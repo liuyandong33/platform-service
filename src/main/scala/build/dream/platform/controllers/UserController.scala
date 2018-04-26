@@ -212,7 +212,7 @@ class UserController {
 
     def obtainXSSFComment(xssfDrawing: XSSFDrawing, comment: String): XSSFComment = {
         val xssfComment: XSSFComment = xssfDrawing.createCellComment(new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 1, 1))
-        xssfComment.setString("comment")
+        xssfComment.setString(comment)
         xssfComment
     }
 }
