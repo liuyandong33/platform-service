@@ -69,7 +69,7 @@ class MediaController {
       */
     @RequestMapping(value = Array("/doGetOriginal"))
     @ResponseBody
-    def showExternalImage(): ResponseEntity[Array[Byte]] = {
+    def doGetOriginal(): ResponseEntity[Array[Byte]] = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val url: String = requestParameters.get("url")
         val doGetOriginalRequestParameters: Map[String, String] = new HashMap[String, String]
