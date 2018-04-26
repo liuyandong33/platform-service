@@ -40,7 +40,8 @@ class ActivityController {
       * @return
       */
     @RequestMapping(value = Array("/obtainAllActivities"))
-    @ResponseBody def obtainAllActivities: String = {
+    @ResponseBody
+    def obtainAllActivities: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val methodCaller: MethodCaller = () => {
             val obtainAllActivitiesModel: ObtainAllActivitiesModel = ApplicationHandler.instantiateObject(classOf[ObtainAllActivitiesModel], requestParameters)
