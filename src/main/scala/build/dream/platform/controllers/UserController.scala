@@ -1,6 +1,8 @@
 package build.dream.platform.controllers
 
 import java.io.FileOutputStream
+import java.lang.Double
+import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
 
 import build.dream.common.api.ApiRest
@@ -9,6 +11,7 @@ import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersMode
 import build.dream.platform.services.UserService
 import javax.servlet.http.HttpServletRequest
 import org.apache.commons.lang.Validate
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
 import org.apache.poi.ss.usermodel._
 import org.apache.poi.xssf.usermodel.{XSSFCell, XSSFCellStyle, _}
 import org.springframework.beans.factory.annotation.Autowired
@@ -111,7 +114,7 @@ class UserController {
 
             val xssfDrawing: XSSFDrawing = xssfSheet.createDrawingPatriarch()
             val lastRowNum: Int = xssfSheet.getLastRowNum
-            val goodsInfos: List[Map[String, Any]] = new ArrayList[Map[String, Any]]()
+            val goodsInfos: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
 
             val normalXssfCellStyle: XSSFCellStyle = xssfWorkbook.createCellStyle
             normalXssfCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex)
@@ -125,6 +128,8 @@ class UserController {
             abnormalXssfCellStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex)
             var isNormal: Boolean = true
 
+            val salePricePattern: Pattern = Pattern.compile("^(([1-9]\\d{0,7})|(([0]\\.\\d{1,2}|[1-9]\\d{0,7}\\.\\d{1,2})))$")
+            val memberPricePattern: Pattern = Pattern.compile("^(([1-9]\\d{0,7})|(([0]\\.\\d{1,2}|[1-9]\\d{0,7}\\.\\d{1,2})))$")
             for (index: Int <- 1 to lastRowNum) {
                 val xssfRow: XSSFRow = xssfSheet.getRow(index)
 
@@ -139,7 +144,6 @@ class UserController {
                 } else {
                     codeXSSFCell.setCellStyle(normalXssfCellStyle)
                 }
-
 
                 val barCodeXSSFCell: XSSFCell = xssfRow.getCell(1)
                 barCodeXSSFCell.removeCellComment()
@@ -167,40 +171,38 @@ class UserController {
 
                 val salePriceXSSFCell: XSSFCell = xssfRow.getCell(0)
                 salePriceXSSFCell.removeCellComment()
-                val salePrice: Double = nameXSSFCell.getNumericCellValue
-                if (salePrice > 999999) {
-                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品销售价格不能超过999999！")
+                val salePrice: String = obtainCellValue(nameXSSFCell)
+                var bigDecimalSalePrice: BigDecimal = null
+                if (!salePricePattern.matcher(salePrice).matches()) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "销售价格格式错误，应为小于99999999.99的最多两位小数的数字！")
                     salePriceXSSFCell.setCellComment(xssfComment)
                     salePriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
                     isNormal = false
                 } else {
+                    bigDecimalSalePrice = BigDecimal.valueOf(Double.valueOf(salePrice))
                     salePriceXSSFCell.setCellStyle(normalXssfCellStyle)
                 }
 
-                val memberPriceXSSFCell: XSSFCell = xssfRow.getCell(0)
-                memberPriceXSSFCell.removeCellComment()
-                val memberPrice: Double = nameXSSFCell.getNumericCellValue
-                if (memberPrice > 999999) {
-                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "商品销售价格不能超过999999！")
-                    memberPriceXSSFCell.setCellComment(xssfComment)
-                    memberPriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
-                    isNormal = false
-                } else if (memberPrice > salePrice) {
-                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "会员价格不能大于销售价格！")
+                val memberPriceXSSFCell: XSSFCell = xssfRow.getCell(0, MissingCellPolicy.CREATE_NULL_AS_BLANK)
+                val memberPrice: String = obtainCellValue(memberPriceXSSFCell)
+                var bigDecimalMemberPrice: BigDecimal = null
+                if (!memberPricePattern.matcher(memberPrice).matches()) {
+                    val xssfComment: XSSFComment = obtainXSSFComment(xssfDrawing, "会员价格格式错误，应为小于99999999.99的最多两位小数的数字！")
                     memberPriceXSSFCell.setCellComment(xssfComment)
                     memberPriceXSSFCell.setCellStyle(abnormalXssfCellStyle)
                     isNormal = false
                 } else {
+                    bigDecimalMemberPrice = BigDecimal.valueOf(Double.valueOf(memberPrice))
                     memberPriceXSSFCell.setCellStyle(normalXssfCellStyle)
                 }
 
                 if (isNormal) {
-                    val goodsInfo: Map[String, Any] = new HashMap[String, Any]()
+                    val goodsInfo: Map[String, Object] = new HashMap[String, Object]()
                     goodsInfo.put("code", code)
                     goodsInfo.put("barCode", barCode)
                     goodsInfo.put("name", name)
-                    goodsInfo.put("salePrice", salePrice)
-                    goodsInfo.put("memberPrice", memberPrice)
+                    goodsInfo.put("salePrice", bigDecimalSalePrice)
+                    goodsInfo.put("memberPrice", bigDecimalMemberPrice)
                     goodsInfos.add(goodsInfo)
                 }
             }
@@ -214,5 +216,16 @@ class UserController {
         val xssfComment: XSSFComment = xssfDrawing.createCellComment(new XSSFClientAnchor(0, 0, 0, 0, 1, 1, 1, 1))
         xssfComment.setString(comment)
         xssfComment
+    }
+
+    def obtainCellValue(cell: Cell): String = {
+        var cellValue: String = null
+        val cellType: CellType = cell.getCellTypeEnum
+        if (cellType == CellType.STRING) {
+            cellValue = cell.getStringCellValue
+        } else if (cellType == CellType.NUMERIC) {
+            cellValue = cell.getNumericCellValue.toString
+        }
+        cellValue
     }
 }
