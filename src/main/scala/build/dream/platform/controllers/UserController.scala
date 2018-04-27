@@ -1,12 +1,12 @@
 package build.dream.platform.controllers
 
-import java.io.FileOutputStream
+import java.io.{File, FileOutputStream}
 import java.lang.Double
 import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
 
 import build.dream.common.api.ApiRest
-import build.dream.common.utils.{ApplicationHandler, MethodCaller}
+import build.dream.common.utils._
 import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersModel, ObtainAllPrivilegesModel, ObtainUserInfoModel}
 import build.dream.platform.services.UserService
 import javax.servlet.http.HttpServletRequest
@@ -104,6 +104,10 @@ class UserController {
     def uploadGoods(httpServletRequest: HttpServletRequest): String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val methodCaller: MethodCaller = () => {
+            val tenantId: String = "1"
+            val tenantCode: String = "61011888"
+            val branchId: String = "1"
+
             Validate.isTrue(httpServletRequest.isInstanceOf[MultipartHttpServletRequest], "请上传商品信息！")
             val multipartHttpServletRequest: MultipartHttpServletRequest = httpServletRequest.asInstanceOf[MultipartHttpServletRequest]
             val goodsInfoFile = multipartHttpServletRequest.getFile("goodsInfoFile")
@@ -206,10 +210,26 @@ class UserController {
                     goodsInfos.add(goodsInfo)
                 }
             }
-            xssfWorkbook.write(new FileOutputStream("/Users/liuyandong/Desktop/456.xlsx"))
-            new ApiRest()
+            if (isNormal) {
+                val importGoodsRequestParameters: Map[String, String] = new HashMap[String, String]()
+                importGoodsRequestParameters.put("tenantId", tenantId)
+                importGoodsRequestParameters.put("tenantCode", tenantCode)
+                importGoodsRequestParameters.put("branchId", branchId)
+                importGoodsRequestParameters.put("zipGoodsInfos", ZipUtils.zipText(GsonUtils.toJson(goodsInfos)))
+
+                val partitionCode: String = ""
+                val importGoodsApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, "", "goods", "importGoods", importGoodsRequestParameters)
+                Validate.isTrue(importGoodsApiRest.isSuccessful, importGoodsApiRest.getError)
+            } else {
+                val tmpdir: String = System.getProperty("java.io.tmpdir")
+                xssfWorkbook.write(new FileOutputStream(tmpdir + File.separator + tenantId + "_" + branchId + ".xls"))
+            }
+            val apiRest: ApiRest = new ApiRest()
+            apiRest.setSuccessful(true)
+            apiRest.setMessage("导入商品信息成功！")
+            apiRest
         }
-        ApplicationHandler.callMethod(methodCaller, "上传商品档案失败", requestParameters)
+        ApplicationHandler.callMethod(methodCaller, "导入商品档案失败", requestParameters)
     }
 
     def obtainXSSFComment(xssfDrawing: XSSFDrawing, comment: String): XSSFComment = {
