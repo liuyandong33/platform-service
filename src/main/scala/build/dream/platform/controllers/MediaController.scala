@@ -1,9 +1,9 @@
 package build.dream.platform.controllers
 
 import java.io.OutputStream
-import java.util.{HashMap, Map}
+import java.util.Map
 
-import build.dream.common.utils.{ApplicationHandler, MimeMappingUtils, ProxyUtils, QRCodeUtils}
+import build.dream.common.utils._
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.StringUtils
 import org.springframework.http.ResponseEntity
@@ -72,8 +72,6 @@ class MediaController {
     def doGetOriginal(): ResponseEntity[Array[Byte]] = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val url: String = requestParameters.get("url")
-        val doGetOriginalRequestParameters: Map[String, String] = new HashMap[String, String]
-        doGetOriginalRequestParameters.put("url", url)
-        ProxyUtils.doGetOriginal("out", "proxy", "doGetOriginal", doGetOriginalRequestParameters);
+        OutUtils.doGetOriginal(url, null)
     }
 }
