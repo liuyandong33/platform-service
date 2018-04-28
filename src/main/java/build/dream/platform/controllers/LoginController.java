@@ -1,10 +1,9 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
+import build.dream.platform.models.login.LoginModel;
 import build.dream.platform.services.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,22 +21,12 @@ public class LoginController extends BasicController {
     @RequestMapping(value = "/login")
     @ResponseBody
     public String login() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
-            String loginName = requestParameters.get("loginName");
-            ApplicationHandler.notBlank(loginName, "loginName");
-
-            String password = requestParameters.get("password");
-            ApplicationHandler.notBlank(password, "password");
-
-            String sessionId = requestParameters.get("sessionId");
-            ApplicationHandler.notBlank(sessionId, "sessionId");
-            apiRest = loginService.login(loginName, password, sessionId);
-        } catch (Exception e) {
-            LogUtils.error("登录失败", controllerSimpleName, "login", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+        MethodCaller methodCaller = () -> {
+            LoginModel loginModel = ApplicationHandler.instantiateObject(LoginModel.class, requestParameters);
+            loginModel.validateAndThrow();
+            return loginService.login(loginModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "登录失败", requestParameters);
     }
 }

@@ -15,6 +15,7 @@ import build.dream.platform.mappers.AgentMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
+import build.dream.platform.models.login.LoginModel;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,10 @@ public class LoginService {
     private AgentMapper agentMapper;
 
     @Transactional(readOnly = true)
-    public ApiRest login(String loginName, String password, String sessionId) {
+    public ApiRest login(LoginModel loginModel) {
+        String loginName = loginModel.getLoginName();
+        String password = loginModel.getPassword();
+        String sessionId = loginModel.getSessionId();
         SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(loginName);
         Validate.notNull(systemUser, "用户不存在！");
         Integer userType = systemUser.getUserType();

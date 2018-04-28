@@ -1,10 +1,8 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
@@ -25,51 +23,39 @@ public class TenantController extends BasicController {
     @RequestMapping(value = "/obtainTenantInfo")
     @ResponseBody
     public String obtainTenantInfo() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             ObtainTenantInfoModel obtainTenantInfoModel = ApplicationHandler.instantiateObject(ObtainTenantInfoModel.class, requestParameters);
             obtainTenantInfoModel.validateAndThrow();
 
-            apiRest = tenantService.obtainTenantInfo(obtainTenantInfoModel);
-        } catch (Exception e) {
-            LogUtils.error("查询商户信息失败", controllerSimpleName, "findTenantInfoById", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return tenantService.obtainTenantInfo(obtainTenantInfoModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "查询商户信息失败", requestParameters);
     }
 
     @RequestMapping(value = "/findAllGoodsInfos")
     @ResponseBody
     public String findAllGoodsInfos() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             FindAllGoodsInfosModel findAllGoodsInfosModel = ApplicationHandler.instantiateObject(FindAllGoodsInfosModel.class, requestParameters);
             findAllGoodsInfosModel.validateAndThrow();
 
-            apiRest = tenantService.findAllGoodsInfos(findAllGoodsInfosModel);
-        } catch (Exception e) {
-            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findAllGoodsInfos", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return tenantService.findAllGoodsInfos(findAllGoodsInfosModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "查询产品购买信息失败", requestParameters);
     }
 
     @RequestMapping(value = "/findGoodsInfo")
     @ResponseBody
     public String findGoodsInfo() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             FindGoodsInfoModel findGoodsInfoModel = ApplicationHandler.instantiateObject(FindGoodsInfoModel.class, requestParameters);
             findGoodsInfoModel.validateAndThrow();
 
-            apiRest = tenantService.findGoodsInfo(findGoodsInfoModel);
-        } catch (Exception e) {
-            LogUtils.error("查询产品购买信息失败", controllerSimpleName, "findGoodsInfo", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return tenantService.findGoodsInfo(findGoodsInfoModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "查询产品购买信息失败", requestParameters);
     }
 }

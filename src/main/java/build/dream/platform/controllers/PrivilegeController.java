@@ -1,10 +1,8 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.services.PrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,42 +28,24 @@ public class PrivilegeController extends BasicController {
     @RequestMapping(value = "/listBackgroundPrivileges")
     @ResponseBody
     public String listBackgroundPrivileges() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
-            apiRest = privilegeService.listBackgroundPrivileges();
-        } catch (Exception e) {
-            LogUtils.error("获取后台权限列表失败", controllerSimpleName, "listBackgroundPrivileges", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+        MethodCaller methodCaller = () -> privilegeService.listBackgroundPrivileges();
+        return ApplicationHandler.callMethod(methodCaller, "获取后台权限列表失败", requestParameters);
     }
 
     @RequestMapping(value = "/listAppPrivileges")
     @ResponseBody
     public String listAppPrivileges() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
-            apiRest = privilegeService.listAppPrivileges();
-        } catch (Exception e) {
-            LogUtils.error("获取APP权限列表失败", controllerSimpleName, "listAppPrivileges", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+        MethodCaller methodCaller = () -> privilegeService.listAppPrivileges();
+        return ApplicationHandler.callMethod(methodCaller, "获取APP权限列表失败", requestParameters);
     }
 
     @RequestMapping(value = "/listPosPrivileges")
     @ResponseBody
     public String listPosPrivileges() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
-            apiRest = privilegeService.listPosPrivileges();
-        } catch (Exception e) {
-            LogUtils.error("获取POS权限列表失败", controllerSimpleName, "listPosPrivileges", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+        MethodCaller methodCaller = () -> privilegeService.listPosPrivileges();
+        return ApplicationHandler.callMethod(methodCaller, "获取POS权限列表失败", requestParameters);
     }
 }

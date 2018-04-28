@@ -1,10 +1,8 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.api.ApiRest;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.services.RegisterService;
@@ -30,17 +28,13 @@ public class RegisterController extends BasicController {
     @RequestMapping(value = "/registerTenant", method = RequestMethod.GET)
     @ResponseBody
     public String registerTenant() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             RegisterTenantModel registerTenantModel = ApplicationHandler.instantiateObject(RegisterTenantModel.class, requestParameters);
             registerTenantModel.validateAndThrow();
-            apiRest = registerService.registerTenant(registerTenantModel);
-        } catch (Exception e) {
-            LogUtils.error("注册商户失败", controllerSimpleName, "registerTenant", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return registerService.registerTenant(registerTenantModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "注册商户失败", requestParameters);
     }
 
     /**
@@ -51,16 +45,12 @@ public class RegisterController extends BasicController {
     @RequestMapping(value = "/registerAgent", method = RequestMethod.GET)
     @ResponseBody
     public String registerAgent() {
-        ApiRest apiRest = null;
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        try {
+        MethodCaller methodCaller = () -> {
             RegisterAgentModel registerAgentModel = ApplicationHandler.instantiateObject(RegisterAgentModel.class, requestParameters);
             registerAgentModel.validateAndThrow();
-            apiRest = registerService.registerAgent(registerAgentModel);
-        } catch (Exception e) {
-            LogUtils.error("注册代理商失败", controllerSimpleName, "registerTenant", e, requestParameters);
-            apiRest = new ApiRest(e);
-        }
-        return GsonUtils.toJson(apiRest);
+            return registerService.registerAgent(registerAgentModel);
+        };
+        return ApplicationHandler.callMethod(methodCaller, "注册代理商失败", requestParameters);
     }
 }

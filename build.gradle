@@ -57,4 +57,5 @@ dependencies {
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
 
     compile group: "org.apache.poi", name: "poi-ooxml", version: "3.17"
+    compile group: "com.belerweb", name: "pinyin4j", version: "2.5.1"
 }

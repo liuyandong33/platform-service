@@ -144,7 +144,7 @@ public class OrderController extends BasicController {
 
             result = orderService.handleCallback(orderNumber, Constants.PAID_TYPE_ALIPAY);
         } catch (Exception e) {
-            LogUtils.error("处理支付宝支付回调失败", controllerSimpleName, "alipayCallback", e, requestParameters);
+            LogUtils.error("处理支付宝支付回调失败", className, "alipayCallback", e, requestParameters);
             result = Constants.FAILURE;
         }
         return result;
@@ -166,7 +166,7 @@ public class OrderController extends BasicController {
 
             result = orderService.handleCallback(orderNumber, Constants.PAID_TYPE_WEI_XIN);
         } catch (Exception e) {
-            LogUtils.error("处理微信支付回调失败", controllerSimpleName, "weiXinPayCallback", e, requestParameters);
+            LogUtils.error("处理微信支付回调失败", className, "weiXinPayCallback", e, requestParameters);
             result = Constants.FAILURE;
         }
         return result;
