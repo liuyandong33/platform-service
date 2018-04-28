@@ -53,11 +53,11 @@ class MediaController {
         if (StringUtils.isBlank(height)) {
             height = "400"
         }
-        val text = requestParameters.get("text")
-        val fileName = requestParameters.get("fileName")
-        val httpServletResponse = ApplicationHandler.getHttpServletResponse
+        val text: String = requestParameters.get("text")
+        val fileName: String = requestParameters.get("fileName")
+        val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
         httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(QRCodeUtils.FORMAT))
-        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + fileName + ".png")
+        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + fileName + QRCodeUtils.FORMAT)
         val outputStream: OutputStream = httpServletResponse.getOutputStream
         QRCodeUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
         outputStream.close()
