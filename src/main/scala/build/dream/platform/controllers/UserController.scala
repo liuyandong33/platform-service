@@ -1,6 +1,6 @@
 package build.dream.platform.controllers
 
-import java.io.{File, FileOutputStream}
+import java.io._
 import java.lang.Double
 import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
@@ -9,7 +9,7 @@ import build.dream.common.api.ApiRest
 import build.dream.common.utils._
 import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersModel, ObtainAllPrivilegesModel, ObtainUserInfoModel}
 import build.dream.platform.services.UserService
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.apache.commons.lang.Validate
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
 import org.apache.poi.ss.usermodel._
@@ -247,5 +247,27 @@ class UserController {
             cellValue = cell.getNumericCellValue.toString
         }
         cellValue
+    }
+
+    @RequestMapping(value = Array("/download"), method = Array(RequestMethod.POST))
+    @ResponseBody
+    def download(): Unit = {
+        val tenantId = ""
+        val branchId = ""
+        val tmpdir: String = System.getProperty("java.io.tmpdir")
+        val file: File = new File(tmpdir + File.separator + tenantId + "_" + branchId + ".xls")
+        val inputStream: InputStream = new FileInputStream(file)
+        var length: Int = 0
+        val buffer: Array[Byte] = new Array[Byte](1024)
+        val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
+        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension("xls"))
+        val outputStream: OutputStream = httpServletResponse.getOutputStream
+        while (length != -1) {
+            length = inputStream.read(buffer, 0, 1024)
+            outputStream.write(buffer, 0, length);
+        }
+        inputStream.close()
+        file.delete()
+        outputStream.close()
     }
 }
