@@ -2,6 +2,8 @@ package build.dream.platform.controllers
 
 import java.io._
 import java.lang.Double
+import java.math.BigInteger
+import java.net.URLEncoder
 import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
 
@@ -9,6 +11,7 @@ import build.dream.common.api.ApiRest
 import build.dream.common.utils._
 import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersModel, ObtainAllPrivilegesModel, ObtainUserInfoModel}
 import build.dream.platform.services.UserService
+import build.dream.platform.utils.PoiUtils
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import org.apache.commons.lang.Validate
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
@@ -249,7 +252,7 @@ class UserController {
         cellValue
     }
 
-    @RequestMapping(value = Array("/download"), method = Array(RequestMethod.POST))
+    @RequestMapping(value = Array("/download"), method = Array(RequestMethod.GET))
     @ResponseBody
     def download(): Unit = {
         val tenantId = ""
@@ -268,6 +271,36 @@ class UserController {
         }
         inputStream.close()
         file.delete()
+        outputStream.close()
+    }
+
+    @RequestMapping(value = Array("/downloadGoodsTemplate"), method = Array(RequestMethod.GET))
+    @ResponseBody
+    def downloadGoodsTemplate: Unit = {
+        val sheetName: String = "商品"
+        val titles: Array[String] = Array("编码", "条码", "店内码", "商品名称", "分类", "单位", "进价", "售价", "配送价", "会员价", "状态", "称重PLU")
+        val categories: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
+        val category: Map[String, Object] = new HashMap[String, Object]()
+        category.put("name", "烧烤")
+        category.put("id", BigInteger.TEN)
+        categories.add(category)
+
+        val units: List[Map[String, Object]] = new ArrayList[Map[String, Object]]()
+        val unit: Map[String, Object] = new HashMap[String, Object]()
+        unit.put("name", "份")
+        unit.put("id", BigInteger.ONE)
+        units.add(unit)
+
+        val statuses: Array[String] = Array("正常", "停售")
+        val workbook: Workbook = PoiUtils.buildGoodsTemplate(sheetName, titles, categories, units, statuses)
+
+        val fileName: String = "商品导入模板"
+        val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
+        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension("xls"))
+        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xls")
+        val outputStream: OutputStream = httpServletResponse.getOutputStream
+        workbook.write(outputStream)
+        workbook.close()
         outputStream.close()
     }
 }
