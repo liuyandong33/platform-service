@@ -12,6 +12,12 @@
                             #{item}
                         </foreach>
                     </when>
+                    <when test="@org.apache.commons.lang.StringUtils@equalsIgnoreCase(searchCondition.operationSymbol, 'NOT IN')">
+                        ${searchCondition.columnName} ${searchCondition.operationSymbol}
+                        <foreach collection="searchCondition.searchParameter" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </when>
                     <otherwise>
                         ${searchCondition.columnName} ${searchCondition.operationSymbol} #{searchCondition.searchParameter}
                     </otherwise>
