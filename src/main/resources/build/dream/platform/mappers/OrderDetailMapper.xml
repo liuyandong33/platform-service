@@ -8,11 +8,4 @@
             ${sql[1]}
         </foreach>
     </insert>
-
-    <update id="deleteAllByOrderIds">
-        UPDATE order_detail SET deleted = 1, last_update_remark = #{lastUpdateRemark} WHERE order_id IN
-        <foreach collection="orderIds" index="index" item="orderId" open="(" separator="," close=")">
-            #{orderId}
-        </foreach>
-    </update>
 </mapper>
