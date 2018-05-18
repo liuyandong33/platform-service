@@ -24,6 +24,10 @@ public class DatabaseHelper {
         return obtainUniversalMapper().insert(domain);
     }
 
+    public static long insertAll(List<?> domains) {
+        return obtainUniversalMapper().insertAll(domains);
+    }
+
     public static long update(Object domain) {
         return obtainUniversalMapper().update(domain);
     }

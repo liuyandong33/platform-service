@@ -96,7 +96,7 @@ public class AgentContractService {
                 agentContractPriceInfo.setLastUpdateRemark("保存代理商合同价格信息！");
                 agentContractPriceInfos.add(agentContractPriceInfo);
             }
-            agentContractPriceInfoMapper.insertAll(agentContractPriceInfos);
+            DatabaseHelper.insertAll(agentContractPriceInfos);
         } else {
             SearchModel searchModel = new SearchModel();
             searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContractId);

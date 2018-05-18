@@ -4,7 +4,8 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.*;
+import build.dream.platform.mappers.SequenceMapper;
+import build.dream.platform.mappers.UniversalMapper;
 import build.dream.platform.models.order.*;
 import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.DatabaseHelper;
@@ -27,15 +28,9 @@ import java.util.*;
 @Service
 public class OrderService {
     @Autowired
-    private OrderDetailMapper orderDetailMapper;
-    @Autowired
     private SequenceMapper sequenceMapper;
     @Autowired
     private UniversalMapper universalMapper;
-    @Autowired
-    private ActivationCodeInfoMapper activationCodeInfoMapper;
-    @Autowired
-    private SaleFlowMapper saleFlowMapper;
 
     /**
      * 保存订单
@@ -123,7 +118,7 @@ public class OrderService {
             orderDetail.setLastUpdateRemark("保存订单详情信息！");
             orderDetails.add(orderDetail);
         }
-        orderDetailMapper.insertAll(orderDetails);
+        DatabaseHelper.insertAll(orderDetails);
 
         orderInfo.setTotalAmount(totalAmount);
         orderInfo.setDiscountAmount(discountAmount);
@@ -497,9 +492,9 @@ public class OrderService {
                 saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
                 saleFlows.add(saleFlow);
             }
-            activationCodeInfoMapper.insertAll(activationCodeInfos);
+            DatabaseHelper.insertAll(activationCodeInfos);
         }
-        saleFlowMapper.insertAll(saleFlows);
+        DatabaseHelper.insertAll(saleFlows);
         return Constants.SUCCESS;
     }
 }

@@ -21,6 +21,8 @@ public interface UniversalMapper {
 
     long insert(Object domain);
 
+    long insertAll(List<?> domains);
+
     long update(Object domain);
 
     Map<String, Object> find(SearchModel searchModel);

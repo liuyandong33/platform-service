@@ -96,7 +96,7 @@ public class ActivityService {
             specialGoodsActivity.setLastUpdateRemark("保存特价活动！");
             specialGoodsActivities.add(specialGoodsActivity);
         }
-        specialGoodsActivityMapper.insertAll(specialGoodsActivities);
+        DatabaseHelper.insertAll(specialGoodsActivities);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("保存特价商品活动成功！");
