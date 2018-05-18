@@ -58,7 +58,7 @@ public class WeiXinService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest find(FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel) {
+    public ApiRest findWeiXinOpenPlatformApplication(FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinOpenPlatformApplicationModel.getAppId());
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);

@@ -5,7 +5,6 @@ import build.dream.common.saas.domains.Tenant;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
-import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;

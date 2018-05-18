@@ -40,7 +40,7 @@ public class WeiXinController extends BasicController {
         MethodCaller methodCaller = () -> {
             FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel = ApplicationHandler.instantiateObject(FindWeiXinOpenPlatformApplicationModel.class, requestParameters);
             findWeiXinOpenPlatformApplicationModel.validateAndThrow();
-            return weiXinService.find(findWeiXinOpenPlatformApplicationModel);
+            return weiXinService.findWeiXinOpenPlatformApplication(findWeiXinOpenPlatformApplicationModel);
         };
         return ApplicationHandler.callMethod(methodCaller, "查询微信公众平台应用失败", requestParameters);
     }
