@@ -16,6 +16,7 @@ import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.login.LoginModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,7 @@ public class LoginService {
     @Autowired
     private SystemUserMapper systemUserMapper;
     @Autowired
-    private TenantMapper tenantMapper;
-    @Autowired
     private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
-    @Autowired
-    private AgentMapper agentMapper;
 
     @Transactional(readOnly = true)
     public ApiRest login(LoginModel loginModel) {
@@ -56,7 +53,7 @@ public class LoginService {
         if (userType == Constants.USER_TYPE_TENANT || userType == Constants.USER_TYPE_TENANT_EMPLOYEE) {
             SearchModel searchModel = new SearchModel(true);
             searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getTenantId());
-            Tenant tenant = tenantMapper.find(searchModel);
+            Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
             Validate.notNull(tenant, "商户不存在！");
 
             sessionMap.put(SessionConstants.KEY_TENANT_ID, tenant.getId().toString());
@@ -66,7 +63,7 @@ public class LoginService {
         } else if (userType == Constants.USER_TYPE_AGENT) {
             SearchModel searchModel = new SearchModel(true);
             searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getAgentId());
-            Agent agent = agentMapper.find(searchModel);
+            Agent agent = DatabaseHelper.find(Agent.class, searchModel);
             Validate.notNull(agent, "代理商不存在！");
 
             sessionMap.put(SessionConstants.KEY_AGENT_ID, agent.getId().toString());

@@ -13,6 +13,7 @@ import build.dream.platform.mappers.PosRoleMapper;
 import build.dream.platform.models.role.ListRolePrivilegesModel;
 import build.dream.platform.models.role.ListRolesModel;
 import build.dream.platform.models.role.SaveRolePrivilegesModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,26 +44,26 @@ public class RoleService {
 
         Map<String, Object> data = new HashMap<String, Object>();
         if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(listRolesModel.getType())) {
-            long total = backgroundRoleMapper.count(countSearchModel);
+            long total = DatabaseHelper.count(BackgroundRole.class, countSearchModel);
             List<BackgroundRole> backgroundRoles = new ArrayList<BackgroundRole>();
             if (total > 0) {
-                backgroundRoles = backgroundRoleMapper.findAllPaged(pagedSearchModel);
+                backgroundRoles = DatabaseHelper.findAllPaged(BackgroundRole.class, pagedSearchModel);
             }
             data.put("total", total);
             data.put("rows", backgroundRoles);
         } else if (Constants.PRIVILEGE_TYPE_APP.equals(listRolesModel.getType())) {
-            long total = appRoleMapper.count(countSearchModel);
+            long total = DatabaseHelper.count(AppRole.class, countSearchModel);
             List<AppRole> appRoles = new ArrayList<AppRole>();
             if (total > 0) {
-                appRoles = appRoleMapper.findAllPaged(pagedSearchModel);
+                appRoles = DatabaseHelper.findAllPaged(AppRole.class, pagedSearchModel);
             }
             data.put("total", total);
             data.put("rows", appRoles);
         } else if (Constants.PRIVILEGE_TYPE_POS.equals(listRolesModel.getType())) {
-            long total = posRoleMapper.count(countSearchModel);
+            long total = DatabaseHelper.count(PosRole.class, countSearchModel);
             List<PosRole> posRoles = new ArrayList<PosRole>();
             if (total > 0) {
-                posRoles = posRoleMapper.findAllPaged(pagedSearchModel);
+                posRoles = DatabaseHelper.findAllPaged(PosRole.class, pagedSearchModel);
             }
             data.put("total", total);
             data.put("rows", posRoles);

@@ -7,9 +7,10 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.SpecialGoodsActivity;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.*;
+import build.dream.platform.mappers.SpecialGoodsActivityMapper;
 import build.dream.platform.models.activity.ObtainAllActivitiesModel;
 import build.dream.platform.models.activity.SaveSpecialGoodsActivityModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,7 @@ import java.util.*;
 @Service
 public class ActivityService {
     @Autowired
-    private GoodsMapper goodsMapper;
-    @Autowired
-    private GoodsSpecificationMapper goodsSpecificationMapper;
-    @Autowired
     private SpecialGoodsActivityMapper specialGoodsActivityMapper;
-    @Autowired
-    private ActivityMapper activityMapper;
-    @Autowired
-    private UniversalMapper universalMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveSpecialGoodsActivity(SaveSpecialGoodsActivityModel saveSpecialGoodsActivityModel) throws ParseException {
@@ -53,7 +46,7 @@ public class ActivityService {
         // 查询出涉及的所有商品
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
-        List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
+        List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new HashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
             goodsMap.put(goods.getId(), goods);
@@ -62,7 +55,7 @@ public class ActivityService {
         // 查询出涉及的所有商品规格
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
-        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
@@ -115,7 +108,7 @@ public class ActivityService {
     public ApiRest obtainAllActivities(ObtainAllActivitiesModel obtainAllActivitiesModel) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 2);
-        List<Activity> activities = activityMapper.findAll(searchModel);
+        List<Activity> activities = DatabaseHelper.findAll(Activity.class, searchModel);
 
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
         for (Activity activity : activities) {

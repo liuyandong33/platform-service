@@ -1,7 +1,6 @@
 package build.dream.platform.mappers;
 
 import build.dream.common.saas.domains.AgentContractPriceInfo;
-import build.dream.common.utils.SearchModel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -12,7 +11,5 @@ import java.util.Map;
 @Mapper
 public interface AgentContractPriceInfoMapper {
     long insertAll(List<AgentContractPriceInfo> agentContractPriceInfos);
-    long update(AgentContractPriceInfo agentContractPriceInfo);
-    List<AgentContractPriceInfo> findAll(SearchModel searchModel);
     List<Map<String, Object>> findAllAgentContractPriceInfos(@Param("agentContractId") BigInteger agentContractId);
 }

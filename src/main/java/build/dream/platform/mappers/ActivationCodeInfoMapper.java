@@ -7,6 +7,5 @@ import java.util.List;
 
 @Mapper
 public interface ActivationCodeInfoMapper {
-    long insert(ActivationCodeInfo activationCodeInfo);
     long insertAll(List<ActivationCodeInfo> activationCodeInfos);
 }

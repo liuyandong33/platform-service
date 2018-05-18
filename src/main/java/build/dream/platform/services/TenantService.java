@@ -9,6 +9,7 @@ import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,6 @@ import java.util.Map;
 @Service
 public class TenantService {
     @Autowired
-    private TenantMapper tenantMapper;
-    @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
 
     @Transactional(readOnly = true)
@@ -40,7 +39,7 @@ public class TenantService {
         if (StringUtils.isNotBlank(tenantCode)) {
             searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantCode);
         }
-        Tenant tenant = tenantMapper.find(searchModel);
+        Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setClassName(Tenant.class.getName());

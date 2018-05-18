@@ -4,9 +4,10 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.*;
+import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
@@ -29,19 +30,7 @@ import java.util.Map;
 @Service
 public class RegisterService {
     @Autowired
-    private SystemUserMapper systemUserMapper;
-    @Autowired
-    private TenantMapper tenantMapper;
-    @Autowired
     private SequenceMapper sequenceMapper;
-    @Autowired
-    private TenantSecretKeyMapper tenantSecretKeyMapper;
-    @Autowired
-    private TenantGoodsMapper tenantGoodsMapper;
-    @Autowired
-    private GoodsMapper goodsMapper;
-    @Autowired
-    private AgentMapper agentMapper;
 
     /**
      * 注册商户
@@ -58,18 +47,18 @@ public class RegisterService {
         String email = registerTenantModel.getEmail();
         SearchModel mobileCountSearchModel = new SearchModel(true);
         mobileCountSearchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUALS, mobile);
-        Validate.isTrue(systemUserMapper.count(mobileCountSearchModel) == 0, "手机号码已注册！");
+        Validate.isTrue(DatabaseHelper.count(SystemUser.class, mobileCountSearchModel) == 0, "手机号码已注册！");
 
         SearchModel emailCountSearchModel = new SearchModel(true);
         emailCountSearchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUALS, email);
-        Validate.isTrue(systemUserMapper.count(emailCountSearchModel) == 0, "邮箱已注册！");
+        Validate.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
         String business = registerTenantModel.getBusiness();
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, BigInteger.ONE);
         searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 1);
         searchModel.addSearchCondition("business", Constants.SQL_OPERATION_SYMBOL_EQUALS, business);
-        Goods goods = goodsMapper.find(searchModel);
+        Goods goods = DatabaseHelper.find(Goods.class, searchModel);
         Validate.notNull(goods, "未查询到基础服务商品！");
 
         Tenant tenant = new Tenant();
@@ -91,7 +80,7 @@ public class RegisterService {
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         tenant.setCreateUserId(userId);
         tenant.setLastUpdateUserId(userId);
-        tenantMapper.insert(tenant);
+        DatabaseHelper.insert(tenant);
 
         SystemUser systemUser = new SystemUser();
         systemUser.setName(registerTenantModel.getLinkman());
@@ -107,7 +96,7 @@ public class RegisterService {
         systemUser.setEnabled(true);
         systemUser.setCreateUserId(userId);
         systemUser.setLastUpdateUserId(userId);
-        systemUserMapper.insert(systemUser);
+        DatabaseHelper.insert(systemUser);
 
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
         tenantSecretKey.setTenantId(tenant.getId());
@@ -120,7 +109,7 @@ public class RegisterService {
         tenantSecretKey.setCreateUserId(userId);
         tenantSecretKey.setLastUpdateUserId(userId);
         tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
-        tenantSecretKeyMapper.insert(tenantSecretKey);
+        DatabaseHelper.insert(tenantSecretKey);
 
         String serviceName = CommonUtils.getServiceName(business);
         Map<String, String> initializeBranchRequestParameters = new HashMap<String, String>();
@@ -157,7 +146,7 @@ public class RegisterService {
         tenantGoods.setCreateUserId(userId);
         tenantGoods.setLastUpdateUserId(userId);
         tenantGoods.setLastUpdateRemark("注册商户，创建使用商品！");
-        tenantGoodsMapper.insert(tenantGoods);
+        DatabaseHelper.insert(tenantGoods);
 
         CacheUtils.hset(Constants.KEY_TENANT_PUBLIC_KEYS, tenant.getId().toString(), publicKey);
 
@@ -172,14 +161,14 @@ public class RegisterService {
     private boolean mobileIsUnique(String mobile) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUALS, mobile);
-        SystemUser systemUser = systemUserMapper.find(searchModel);
+        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, searchModel);
         return systemUser == null;
     }
 
     private boolean emailIsUnique(String email) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUALS, email);
-        SystemUser systemUser = systemUserMapper.find(searchModel);
+        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, searchModel);
         return systemUser == null;
     }
 
@@ -199,7 +188,7 @@ public class RegisterService {
         agent.setCreateUserId(userId);
         agent.setLastUpdateUserId(userId);
         agent.setLastUpdateRemark("新增代理商信息！");
-        agentMapper.insert(agent);
+        DatabaseHelper.insert(agent);
 
         SystemUser systemUser = new SystemUser();
         systemUser.setName(registerAgentModel.getLinkman());
@@ -216,7 +205,7 @@ public class RegisterService {
         systemUser.setCreateUserId(userId);
         systemUser.setLastUpdateUserId(userId);
         systemUser.setLastUpdateRemark("新增代理商登录账号！");
-        systemUserMapper.insert(systemUser);
+        DatabaseHelper.insert(systemUser);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);

@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="build.dream.platform.mappers.AppPrivilegeMapper">
-    <select id="find" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AppPrivilege">
-        SELECT ${selectColumns} FROM app_privilege <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
-    </select>
-
-    <select id="findAll" parameterType="build.dream.common.utils.SearchModel" resultType="build.dream.common.saas.domains.AppPrivilege">
-        SELECT ${selectColumns} FROM app_privilege <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
-    </select>
-
     <select id="findAllAppPrivileges" resultType="build.dream.common.saas.domains.AppPrivilege">
         SELECT
         *

@@ -7,6 +7,5 @@ import java.util.List;
 
 @Mapper
 public interface SaleFlowMapper {
-    long insert(SaleFlow saleFlow);
     long insertAll(List<SaleFlow> saleFlows);
 }

@@ -8,10 +8,9 @@ import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.SystemParameterMapper;
-import build.dream.platform.mappers.SystemPartitionMapper;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.UniversalMapper;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +32,6 @@ import java.util.Map;
 public class BranchService {
     @Autowired
     private UniversalMapper universalMapper;
-    @Autowired
-    private SystemPartitionMapper systemPartitionMapper;
-    @Autowired
-    private SystemParameterMapper systemParameterMapper;
     @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
 
@@ -64,11 +59,11 @@ public class BranchService {
         SearchModel systemPartitionSearchModel = new SearchModel(true);
         systemPartitionSearchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUALS, deploymentEnvironment);
         systemPartitionSearchModel.addSearchCondition("service_name", Constants.SQL_OPERATION_SYMBOL_IN, new String[]{Constants.SERVICE_NAME_CATERING, Constants.SERVICE_NAME_RETAIL});
-        List<SystemPartition> systemPartitions = systemPartitionMapper.findAll(systemPartitionSearchModel);
+        List<SystemPartition> systemPartitions = DatabaseHelper.findAll(SystemPartition.class, systemPartitionSearchModel);
 
         SearchModel systemParameterSearchModel = new SearchModel(true);
         systemParameterSearchModel.addSearchCondition("parameter_name", Constants.SQL_OPERATION_SYMBOL_EQUALS, Constants.LAST_PULL_TIME);
-        SystemParameter lastPullTimeSystemParameter = systemParameterMapper.find(systemParameterSearchModel);
+        SystemParameter lastPullTimeSystemParameter = DatabaseHelper.find(SystemParameter.class, systemParameterSearchModel);
 
         String lastPullTime = null;
         String reacquire = null;
@@ -84,7 +79,7 @@ public class BranchService {
             lastPullTimeSystemParameter.setCreateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateRemark("保存最后拉取时间！");
-            systemParameterMapper.insert(lastPullTimeSystemParameter);
+            DatabaseHelper.insert(lastPullTimeSystemParameter);
             lastPullTime = "1970-01-01 00:00:00";
             reacquire = "true";
         } else {
@@ -92,7 +87,7 @@ public class BranchService {
             lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
             lastPullTimeSystemParameter.setLastUpdateUserId(userId);
             lastPullTimeSystemParameter.setLastUpdateRemark("同步门店信息定时任务执行，修改最后拉取时间！");
-            systemParameterMapper.update(lastPullTimeSystemParameter);
+            DatabaseHelper.update(lastPullTimeSystemParameter);
             reacquire = "false";
         }
 

@@ -8,7 +8,7 @@
         </foreach>
         <include refid="build.dream.platform.mappers.CommonMapper.searchConditionSql"></include>
     </update>
-    
+
     <select id="executeQuery" parameterType="java.util.Map" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
         ${sql}
     </select>
@@ -27,6 +27,14 @@
 
     <insert id="insert" parameterType="java.lang.Object" useGeneratedKeys="true" keyProperty="id">
         ${@build.dream.common.utils.DatabaseUtils@generateInsertSql(class.name)}
+    </insert>
+
+    <insert id="insertAll" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        <bind name="sql" value="@build.dream.common.utils.DatabaseUtils@generateInsertAllSql('build.dream.common.saas.domains.SpecialGoodsActivity')"></bind>
+        ${sql[0]}
+        <foreach collection="list" index="index" item="item" separator=",">
+            ${sql[1]}
+        </foreach>
     </insert>
 
     <update id="update" parameterType="java.lang.Object">

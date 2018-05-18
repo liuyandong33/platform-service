@@ -7,6 +7,7 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.*;
 import build.dream.platform.models.order.*;
 import build.dream.platform.utils.ActivationCodeUtils;
+import build.dream.platform.utils.DatabaseHelper;
 import build.dream.platform.utils.GoodsUtils;
 import build.dream.platform.utils.OrderUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,27 +27,15 @@ import java.util.*;
 @Service
 public class OrderService {
     @Autowired
-    private SequenceMapper sequenceMapper;
-    @Autowired
-    private GoodsMapper goodsMapper;
-    @Autowired
-    private GoodsSpecificationMapper goodsSpecificationMapper;
-    @Autowired
-    private OrderInfoMapper orderInfoMapper;
-    @Autowired
     private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private SequenceMapper sequenceMapper;
     @Autowired
     private UniversalMapper universalMapper;
     @Autowired
     private ActivationCodeInfoMapper activationCodeInfoMapper;
     @Autowired
     private SaleFlowMapper saleFlowMapper;
-    @Autowired
-    private TenantGoodsMapper tenantGoodsMapper;
-    @Autowired
-    private TenantMapper tenantMapper;
-    @Autowired
-    private GoodsTypeMapper goodsTypeMapper;
 
     /**
      * 保存订单
@@ -67,7 +56,7 @@ public class OrderService {
 
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
-        List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
+        List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new LinkedHashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
             goodsMap.put(goods.getId(), goods);
@@ -75,7 +64,7 @@ public class OrderService {
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
-        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new LinkedHashMap<BigInteger, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
@@ -96,7 +85,7 @@ public class OrderService {
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
         orderInfo.setCreateUserId(userId);
         orderInfo.setLastUpdateUserId(userId);
-        orderInfoMapper.insert(orderInfo);
+        DatabaseHelper.insert(orderInfo);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal discountAmount = BigDecimal.ZERO;
@@ -141,7 +130,7 @@ public class OrderService {
         orderInfo.setPayableAmount(totalAmount.subtract(discountAmount));
         orderInfo.setPaidAmount(BigDecimal.ZERO);
         orderInfo.setLastUpdateRemark("保存订单信息！");
-        orderInfoMapper.update(orderInfo);
+        DatabaseHelper.update(orderInfo);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setData(OrderUtils.buildOrderInfo(orderInfo, orderDetails));
@@ -160,12 +149,12 @@ public class OrderService {
     public ApiRest obtainOrderInfo(BigInteger orderInfoId) {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
-        OrderInfo orderInfo = orderInfoMapper.find(orderInfoSearchModel);
+        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
-        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+        List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setData(OrderUtils.buildOrderInfo(orderInfo, orderDetails));
@@ -183,7 +172,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
         SearchModel orderSearchModel = new SearchModel(true);
-        long total = orderInfoMapper.count(orderSearchModel);
+        long total = DatabaseHelper.count(OrderInfo.class, orderSearchModel);
 
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
         if (total > 0) {
@@ -196,7 +185,7 @@ public class OrderService {
             if (obtainAllOrderInfosModel.getAgentId() != null) {
                 orderInfoPagedSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAllOrderInfosModel.getAgentId());
             }
-            List<OrderInfo> orderInfos = orderInfoMapper.findAllPaged(orderInfoPagedSearchModel);
+            List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, orderInfoPagedSearchModel);
 
             if (CollectionUtils.isNotEmpty(orderInfos)) {
                 List<BigInteger> orderIds = new ArrayList<BigInteger>();
@@ -206,7 +195,7 @@ public class OrderService {
 
                 SearchModel orderDetailSearchModel = new SearchModel(true);
                 orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
-                List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+                List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
                 Map<BigInteger, List<OrderDetail>> orderDetailsMap = new HashMap<BigInteger, List<OrderDetail>>();
                 for (OrderDetail orderDetail : orderDetails) {
                     List<OrderDetail> orderDetailList = orderDetailsMap.get(orderDetail.getOrderInfoId());
@@ -277,13 +266,13 @@ public class OrderService {
         BigInteger userId = deleteOrderModel.getUserId();
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
-        OrderInfo orderInfo = orderInfoMapper.find(searchModel);
+        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         orderInfo.setDeleted(true);
         orderInfo.setLastUpdateUserId(userId);
         orderInfo.setLastUpdateRemark("删除订单信息！");
-        orderInfoMapper.update(orderInfo);
+        DatabaseHelper.update(orderInfo);
 
         UpdateModel updateModel = new UpdateModel(true);
         updateModel.setTableName("order_detail");
@@ -309,7 +298,7 @@ public class OrderService {
     public ApiRest doPay(DoPayModel doPayModel) throws IOException {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, doPayModel.getOrderInfoId());
-        OrderInfo orderInfo = orderInfoMapper.find(searchModel);
+        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         Map<String, String> requestParameters = new HashMap<String, String>();
@@ -370,7 +359,7 @@ public class OrderService {
     public String handleCallback(String orderNumber, int paidType) throws IOException, ParseException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
-        OrderInfo orderInfo = orderInfoMapper.find(orderInfoSearchModel);
+        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         int orderStatus = orderInfo.getOrderStatus();
@@ -388,11 +377,11 @@ public class OrderService {
         orderInfo.setPaidType(paidType);
         orderInfo.setLastUpdateUserId(userId);
         orderInfo.setLastUpdateRemark("处理支付回调，修改订单状态！");
-        orderInfoMapper.update(orderInfo);
+        DatabaseHelper.update(orderInfo);
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
-        List<OrderDetail> orderDetails = orderDetailMapper.findAll(orderDetailSearchModel);
+        List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         BigInteger orderId = orderInfo.getId();
         Date occurrenceTime = new Date();
@@ -403,7 +392,7 @@ public class OrderService {
             BigInteger tenantId = orderInfo.getTenantId();
             SearchModel tenantSearchModel = new SearchModel(true);
             tenantSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
-            Tenant tenant = tenantMapper.find(tenantSearchModel);
+            Tenant tenant = DatabaseHelper.find(Tenant.class, tenantSearchModel);
             String partitionCode = tenant.getPartitionCode();
             String serviceName = CommonUtils.getServiceName(tenant.getBusiness());
 
@@ -417,21 +406,21 @@ public class OrderService {
 
                 SearchModel goodsSearchModel = new SearchModel(true);
                 goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
-                Goods goods = goodsMapper.find(goodsSearchModel);
+                Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
 
                 SearchModel goodsSpecificationSearchModel = new SearchModel(true);
                 goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
                 goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
-                GoodsSpecification goodsSpecification = goodsSpecificationMapper.find(goodsSpecificationSearchModel);
+                GoodsSpecification goodsSpecification = DatabaseHelper.find(GoodsSpecification.class, goodsSpecificationSearchModel);
 
                 int meteringMode = goods.getMeteringMode();
                 if (meteringMode == 1) {
-                    TenantGoods tenantGoods = tenantGoodsMapper.find(tenantGoodsSearchModel);
+                    TenantGoods tenantGoods = DatabaseHelper.find(TenantGoods.class, tenantGoodsSearchModel);
                     if (tenantGoods != null) {
                         tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(tenantGoods.getExpireTime(), goodsSpecification));
                         tenantGoods.setLastUpdateUserId(userId);
                         tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
-                        tenantGoodsMapper.update(tenantGoods);
+                        DatabaseHelper.update(tenantGoods);
                     } else {
                         tenantGoods = new TenantGoods();
                         tenantGoods.setTenantId(tenantId);
@@ -441,12 +430,12 @@ public class OrderService {
                         tenantGoods.setCreateUserId(userId);
                         tenantGoods.setLastUpdateUserId(userId);
                         tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
-                        tenantGoodsMapper.insert(tenantGoods);
+                        DatabaseHelper.insert(tenantGoods);
                     }
 
                     SearchModel goodsTypeSearchModel = new SearchModel(true);
                     goodsTypeSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goods.getGoodsTypeId());
-                    GoodsType goodsType = goodsTypeMapper.find(goodsTypeSearchModel);
+                    GoodsType goodsType = DatabaseHelper.find(GoodsType.class, goodsTypeSearchModel);
                     if (StringUtils.isNotBlank(goodsType.getRenewSql())) {
                         Map<String, String> renewCallbackRequestParameters = new HashMap<String, String>();
                         renewCallbackRequestParameters.put("tenantId", tenantId.toString());

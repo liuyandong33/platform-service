@@ -12,6 +12,7 @@ import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.models.user.ObtainUserInfoModel;
+import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,15 +29,11 @@ public class UserService {
     @Autowired
     private SystemUserMapper systemUserMapper;
     @Autowired
-    private TenantMapper tenantMapper;
-    @Autowired
     private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
     @Autowired
     private AppPrivilegeMapper appPrivilegeMapper;
     @Autowired
     private PosPrivilegeMapper posPrivilegeMapper;
-    @Autowired
-    private TenantSecretKeyMapper tenantSecretKeyMapper;
     @Autowired
     private UniversalMapper universalMapper;
 
@@ -55,13 +52,13 @@ public class UserService {
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, userId);
-        Tenant tenant = tenantMapper.find(searchModel);
+        Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
         Validate.notNull(tenant, "商户不存在！");
         BigInteger tenantId = tenant.getId();
 
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
         tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
-        TenantSecretKey tenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel);
+        TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
         Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
 
         List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
@@ -97,7 +94,7 @@ public class UserService {
     public ApiRest batchObtainUser(BatchGetUsersModel batchGetUsersModel) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", "IN", batchGetUsersModel.getUserIds());
-        List<SystemUser> systemUsers = systemUserMapper.findAll(searchModel);
+        List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         return new ApiRest(systemUsers, "批量获取用户信息成功！");
     }
 

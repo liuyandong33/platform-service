@@ -8,17 +8,14 @@ import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchCondition;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.GoodsMapper;
-import build.dream.platform.mappers.GoodsSpecificationMapper;
-import build.dream.platform.mappers.GoodsTypeMapper;
 import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
+import build.dream.platform.utils.DatabaseHelper;
 import build.dream.platform.utils.GoodsUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +27,6 @@ import java.util.Map;
 
 @Service
 public class GoodsService {
-    @Autowired
-    private GoodsMapper goodsMapper;
-    @Autowired
-    private GoodsSpecificationMapper goodsSpecificationMapper;
-    @Autowired
-    private GoodsTypeMapper goodsTypeMapper;
-
     /**
      * 获取商品信息
      *
@@ -46,10 +36,10 @@ public class GoodsService {
     @Transactional(readOnly = true)
     public ApiRest obtainAllGoodsInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
         SearchModel goodsSearchModel = new SearchModel(true);
-        List<Goods> goodses = goodsMapper.findAll(goodsSearchModel);
+        List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         Map<BigInteger, List<Map<String, Object>>> goodsSpecificationInfoMap = new HashMap<BigInteger, List<Map<String, Object>>>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             List<Map<String, Object>> goodsSpecificationInfos = goodsSpecificationInfoMap.get(goodsSpecification.getGoodsId());
@@ -84,14 +74,14 @@ public class GoodsService {
         }
         SearchModel searchModel = new SearchModel(true);
         searchModel.setSearchConditions(searchConditions);
-        long total = goodsMapper.count(searchModel);
+        long total = DatabaseHelper.count(Goods.class, searchModel);
         List<Goods> goodses = new ArrayList<Goods>();
         if (total > 0) {
             PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
             pagedSearchModel.setSearchConditions(searchConditions);
             pagedSearchModel.setPage(listGoodsInfosModel.getPage());
             pagedSearchModel.setRows(listGoodsInfosModel.getRows());
-            goodses = goodsMapper.findAllPaged(pagedSearchModel);
+            goodses = DatabaseHelper.findAllPaged(Goods.class, pagedSearchModel);
         }
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", total);
@@ -109,12 +99,12 @@ public class GoodsService {
         BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
-        Goods goods = goodsMapper.find(goodsSearchModel);
+        Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
         Validate.notNull(goods, "商品不存在！");
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
-        List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         List<Map<String, Object>> goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationInfos.add(GoodsUtils.buildGoodsSpecificationInfo(goodsSpecification));
@@ -133,7 +123,7 @@ public class GoodsService {
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsTypeId);
-        GoodsType goodsType = goodsTypeMapper.find(searchModel);
+        GoodsType goodsType = DatabaseHelper.find(GoodsType.class, searchModel);
         Validate.notNull(goodsType, "商品类型不存在！");
         if (goodsType.isSingle()) {
             SearchModel countSearchModel = new SearchModel(true);
@@ -141,14 +131,14 @@ public class GoodsService {
             if (goodsId != null) {
                 searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUALS, goodsId);
             }
-            long count = goodsMapper.count(searchModel);
+            long count = DatabaseHelper.count(Goods.class, searchModel);
             Validate.isTrue(count == 0, "商品类型【" + goodsType.getName() + "】下只能创建一个商品！");
         }
         Goods goods = null;
         if (goodsId != null) {
             SearchModel goodsSearchModel = new SearchModel(true);
             goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
-            goods = goodsMapper.find(goodsSearchModel);
+            goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
             Validate.notNull(goods, "商品不存在！");
             goods.setName(saveGoodsModel.getName());
             goods.setGoodsTypeId(saveGoodsModel.getGoodsTypeId());
@@ -157,7 +147,7 @@ public class GoodsService {
             goods.setBusiness(saveGoodsModel.getBusiness());
             goods.setLastUpdateUserId(userId);
             goods.setLastUpdateRemark("修改商品信息！");
-            goodsMapper.update(goods);
+            DatabaseHelper.update(goods);
 
             List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
             List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
@@ -169,7 +159,7 @@ public class GoodsService {
             SearchModel goodsSpecificationSearchModel = new SearchModel(true);
             goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
             goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
-            List<GoodsSpecification> goodsSpecifications = goodsSpecificationMapper.findAll(goodsSpecificationSearchModel);
+            List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
             Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
             for (GoodsSpecification goodsSpecification : goodsSpecifications) {
                 goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
@@ -187,10 +177,10 @@ public class GoodsService {
                     goodsSpecification.setAgentPrice(goodsSpecificationModel.getAgentPrice());
                     goodsSpecification.setLastUpdateUserId(userId);
                     goodsSpecification.setLastUpdateRemark("修改商品规格！");
-                    goodsSpecificationMapper.update(goodsSpecification);
+                    DatabaseHelper.update(goodsSpecification);
                 } else {
                     GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
-                    goodsSpecificationMapper.insert(goodsSpecification);
+                    DatabaseHelper.insert(goodsSpecification);
                 }
             }
         } else {
@@ -203,12 +193,12 @@ public class GoodsService {
             goods.setCreateUserId(userId);
             goods.setLastUpdateUserId(userId);
             goods.setLastUpdateRemark("新增商品信息！");
-            goodsMapper.insert(goods);
+            DatabaseHelper.insert(goods);
 
             List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
             for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
                 GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
-                goodsSpecificationMapper.insert(goodsSpecification);
+                DatabaseHelper.insert(goodsSpecification);
             }
         }
         return new ApiRest(goods, "保存商品信息成功！");
