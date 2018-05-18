@@ -5,7 +5,6 @@ import build.dream.common.utils.NamingStrategyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.mappers.UniversalMapper;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class DatabaseHelper {
         }
     }
 
-    public static long count(Class<T> domainClass, SearchModel searchModel) {
+    public static <T> long count(Class<T> domainClass, SearchModel searchModel) {
         String simpleName = domainClass.getSimpleName();
         String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
         return count(tableName, searchModel);
