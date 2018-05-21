@@ -33,10 +33,10 @@ public class TenantService {
 
         SearchModel searchModel = new SearchModel(true);
         if (tenantId != null) {
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         }
         if (StringUtils.isNotBlank(tenantCode)) {
-            searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantCode);
+            searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantCode);
         }
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
 

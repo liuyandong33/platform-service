@@ -98,12 +98,12 @@ public class GoodsService {
     public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
         BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
         Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
         Validate.notNull(goods, "商品不存在！");
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+        goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         List<Map<String, Object>> goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
@@ -122,14 +122,14 @@ public class GoodsService {
         BigInteger userId = saveGoodsModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsTypeId);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
         GoodsType goodsType = DatabaseHelper.find(GoodsType.class, searchModel);
         Validate.notNull(goodsType, "商品类型不存在！");
         if (goodsType.isSingle()) {
             SearchModel countSearchModel = new SearchModel(true);
-            countSearchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsTypeId);
+            countSearchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
             if (goodsId != null) {
-                searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUALS, goodsId);
+                searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUAL, goodsId);
             }
             long count = DatabaseHelper.count(Goods.class, searchModel);
             Validate.isTrue(count == 0, "商品类型【" + goodsType.getName() + "】下只能创建一个商品！");
@@ -137,7 +137,7 @@ public class GoodsService {
         Goods goods = null;
         if (goodsId != null) {
             SearchModel goodsSearchModel = new SearchModel(true);
-            goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+            goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
             goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
             Validate.notNull(goods, "商品不存在！");
             goods.setName(saveGoodsModel.getName());
@@ -158,7 +158,7 @@ public class GoodsService {
             }
             SearchModel goodsSpecificationSearchModel = new SearchModel(true);
             goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
-            goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+            goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
             List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
             Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
             for (GoodsSpecification goodsSpecification : goodsSpecifications) {

@@ -99,8 +99,8 @@ public class AgentContractService {
             DatabaseHelper.insertAll(agentContractPriceInfos);
         } else {
             SearchModel searchModel = new SearchModel();
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContractId);
-            searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveAgentContractModel.getAgentId());
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, agentContractId);
+            searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, saveAgentContractModel.getAgentId());
             AgentContract agentContract = DatabaseHelper.find(AgentContract.class, searchModel);
             Validate.notNull(agentContract, "代理商合同不存在！");
             Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_UNAUDITED, "只有未审核状态的代理商合同才能修改！");
@@ -112,7 +112,7 @@ public class AgentContractService {
             }
             SearchModel agentContractPriceInfoSearchModel = new SearchModel(true);
             agentContractPriceInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, agentContractPriceInfoIds);
-            agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, agentContract.getId());
+            agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, agentContract.getId());
             List<AgentContractPriceInfo> agentContractPriceInfos = DatabaseHelper.findAll(AgentContractPriceInfo.class, agentContractPriceInfoSearchModel);
             Map<BigInteger, AgentContractPriceInfo> agentContractPriceInfoMap = new HashMap<BigInteger, AgentContractPriceInfo>();
             for (AgentContractPriceInfo agentContractPriceInfo : agentContractPriceInfos) {
@@ -146,8 +146,8 @@ public class AgentContractService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest auditAgentContract(AuditAgentContractModel auditAgentContractModel) {
         SearchModel searchModel = new SearchModel();
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, auditAgentContractModel.getAgentContractId());
-        searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, auditAgentContractModel.getAgentId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, auditAgentContractModel.getAgentContractId());
+        searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, auditAgentContractModel.getAgentId());
         AgentContract agentContract = DatabaseHelper.find(AgentContract.class, searchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
         Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_UNAUDITED, "只有未审核状态的代理商合同才能进行审核操作！");
@@ -188,8 +188,8 @@ public class AgentContractService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest terminateAgentContract(TerminateAgentContractModel terminateAgentContractModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, terminateAgentContractModel.getAgentContractId());
-        searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, terminateAgentContractModel.getAgentId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, terminateAgentContractModel.getAgentContractId());
+        searchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, terminateAgentContractModel.getAgentId());
         AgentContract agentContract = DatabaseHelper.find(AgentContract.class, searchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
         Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_EXECUTING, "只有执行中的代理商合同才能进行终止操作！");
@@ -270,13 +270,13 @@ public class AgentContractService {
     @Transactional(readOnly = true)
     public ApiRest obtainAgentContractInfo(ObtainAgentContractInfoModel obtainAgentContractInfoModel) {
         SearchModel agentSearchModel = new SearchModel(true);
-        agentSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentId());
+        agentSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAgentContractInfoModel.getAgentId());
         Agent agent = DatabaseHelper.find(Agent.class, agentSearchModel);
         Validate.notNull(agent, "代理商不存在！");
 
         SearchModel agentContractSearchModel = new SearchModel(true);
-        agentContractSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentContractId());
-        agentContractSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAgentContractInfoModel.getAgentId());
+        agentContractSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAgentContractInfoModel.getAgentContractId());
+        agentContractSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAgentContractInfoModel.getAgentId());
         AgentContract agentContract = DatabaseHelper.find(AgentContract.class, agentContractSearchModel);
         Validate.notNull(agentContract, "代理商合同不存在！");
 

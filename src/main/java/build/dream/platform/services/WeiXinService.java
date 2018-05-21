@@ -16,7 +16,7 @@ public class WeiXinService {
     @Transactional
     public ApiRest saveWeiXinOpenPlatformApplication(SaveWeiXinOpenPlatformApplicationModel saveWeiXinOpenPlatformApplicationModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveWeiXinOpenPlatformApplicationModel.getAppId());
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, saveWeiXinOpenPlatformApplicationModel.getAppId());
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         if (weiXinOpenPlatformApplication == null) {
             weiXinOpenPlatformApplication = new WeiXinOpenPlatformApplication();
@@ -43,7 +43,7 @@ public class WeiXinService {
     @Transactional
     public ApiRest deleteWeiXinOpenPlatformApplication(DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, deleteWeiXinOpenPlatformApplicationModel.getAppId());
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, deleteWeiXinOpenPlatformApplicationModel.getAppId());
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         Validate.notNull(weiXinOpenPlatformApplication, "微信开放平台应用不存在！");
         weiXinOpenPlatformApplication.setDeleted(true);
@@ -60,7 +60,7 @@ public class WeiXinService {
     @Transactional(readOnly = true)
     public ApiRest findWeiXinOpenPlatformApplication(FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, findWeiXinOpenPlatformApplicationModel.getAppId());
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, findWeiXinOpenPlatformApplicationModel.getAppId());
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinOpenPlatformApplication);
@@ -73,7 +73,7 @@ public class WeiXinService {
     @Transactional
     public ApiRest saveWeiXinPublicAccount(SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, saveWeiXinPublicAccountModel.getTenantId());
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, saveWeiXinPublicAccountModel.getTenantId());
         WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
         if (weiXinPublicAccount == null) {
             weiXinPublicAccount = new WeiXinPublicAccount();
@@ -105,7 +105,7 @@ public class WeiXinService {
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinPublicAccount(ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainWeiXinPublicAccountModel.getTenantId());
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainWeiXinPublicAccountModel.getTenantId());
         WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinPublicAccount);

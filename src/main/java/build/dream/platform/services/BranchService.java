@@ -57,12 +57,12 @@ public class BranchService {
 
         String deploymentEnvironment = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
         SearchModel systemPartitionSearchModel = new SearchModel(true);
-        systemPartitionSearchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUALS, deploymentEnvironment);
+        systemPartitionSearchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUAL, deploymentEnvironment);
         systemPartitionSearchModel.addSearchCondition("service_name", Constants.SQL_OPERATION_SYMBOL_IN, new String[]{Constants.SERVICE_NAME_CATERING, Constants.SERVICE_NAME_RETAIL});
         List<SystemPartition> systemPartitions = DatabaseHelper.findAll(SystemPartition.class, systemPartitionSearchModel);
 
         SearchModel systemParameterSearchModel = new SearchModel(true);
-        systemParameterSearchModel.addSearchCondition("parameter_name", Constants.SQL_OPERATION_SYMBOL_EQUALS, Constants.LAST_PULL_TIME);
+        systemParameterSearchModel.addSearchCondition("parameter_name", Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.LAST_PULL_TIME);
         SystemParameter lastPullTimeSystemParameter = DatabaseHelper.find(SystemParameter.class, systemParameterSearchModel);
 
         String lastPullTime = null;

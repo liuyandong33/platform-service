@@ -143,12 +143,12 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ApiRest obtainOrderInfo(BigInteger orderInfoId) {
         SearchModel orderInfoSearchModel = new SearchModel(true);
-        orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
+        orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
-        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
+        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         ApiRest apiRest = new ApiRest();
@@ -175,10 +175,10 @@ public class OrderService {
             orderInfoPagedSearchModel.setPage(obtainAllOrderInfosModel.getPage());
             orderInfoPagedSearchModel.setRows(obtainAllOrderInfosModel.getRows());
             if (obtainAllOrderInfosModel.getTenantId() != null) {
-                orderInfoPagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAllOrderInfosModel.getTenantId());
+                orderInfoPagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAllOrderInfosModel.getTenantId());
             }
             if (obtainAllOrderInfosModel.getAgentId() != null) {
-                orderInfoPagedSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, obtainAllOrderInfosModel.getAgentId());
+                orderInfoPagedSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAllOrderInfosModel.getAgentId());
             }
             List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, orderInfoPagedSearchModel);
 
@@ -260,7 +260,7 @@ public class OrderService {
         BigInteger orderInfoId = deleteOrderModel.getOrderInfoId();
         BigInteger userId = deleteOrderModel.getUserId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
@@ -274,7 +274,7 @@ public class OrderService {
         updateModel.addContentValue("deleted", 1);
         updateModel.addContentValue("last_update_user_id", userId);
         updateModel.addContentValue("last_update_remark", "删除订单详情信息！");
-        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfoId);
+        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         universalMapper.universalUpdate(updateModel);
 
         ApiRest apiRest = new ApiRest();
@@ -292,7 +292,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ApiRest doPay(DoPayModel doPayModel) throws IOException {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, doPayModel.getOrderInfoId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, doPayModel.getOrderInfoId());
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
@@ -353,7 +353,7 @@ public class OrderService {
     @Transactional(rollbackFor = Exception.class)
     public String handleCallback(String orderNumber, int paidType) throws IOException, ParseException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
-        orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderNumber);
+        orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderNumber);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
@@ -375,7 +375,7 @@ public class OrderService {
         DatabaseHelper.update(orderInfo);
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
-        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderInfo.getId());
+        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfo.getId());
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         BigInteger orderId = orderInfo.getId();
@@ -386,7 +386,7 @@ public class OrderService {
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             BigInteger tenantId = orderInfo.getTenantId();
             SearchModel tenantSearchModel = new SearchModel(true);
-            tenantSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+            tenantSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
             Tenant tenant = DatabaseHelper.find(Tenant.class, tenantSearchModel);
             String partitionCode = tenant.getPartitionCode();
             String serviceName = CommonUtils.getServiceName(tenant.getBusiness());
@@ -395,17 +395,17 @@ public class OrderService {
                 BigInteger branchId = orderDetail.getBranchId();
                 BigInteger goodsId = orderDetail.getGoodsId();
                 SearchModel tenantGoodsSearchModel = new SearchModel(true);
-                tenantGoodsSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
-                tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, branchId);
-                tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goodsId);
+                tenantGoodsSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+                tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+                tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
 
                 SearchModel goodsSearchModel = new SearchModel(true);
-                goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
+                goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsId());
                 Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
 
                 SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsId());
-                goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, orderDetail.getGoodsSpecificationId());
+                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsId());
+                goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsSpecificationId());
                 GoodsSpecification goodsSpecification = DatabaseHelper.find(GoodsSpecification.class, goodsSpecificationSearchModel);
 
                 int meteringMode = goods.getMeteringMode();
@@ -429,7 +429,7 @@ public class OrderService {
                     }
 
                     SearchModel goodsTypeSearchModel = new SearchModel(true);
-                    goodsTypeSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, goods.getGoodsTypeId());
+                    goodsTypeSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goods.getGoodsTypeId());
                     GoodsType goodsType = DatabaseHelper.find(GoodsType.class, goodsTypeSearchModel);
                     if (StringUtils.isNotBlank(goodsType.getRenewSql())) {
                         Map<String, String> renewCallbackRequestParameters = new HashMap<String, String>();

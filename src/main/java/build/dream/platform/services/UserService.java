@@ -51,13 +51,13 @@ public class UserService {
         BigInteger userId = systemUser.getId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, userId);
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, userId);
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
         Validate.notNull(tenant, "商户不存在！");
         BigInteger tenantId = tenant.getId();
 
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId);
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
         Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
 

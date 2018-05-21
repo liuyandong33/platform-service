@@ -107,7 +107,7 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public ApiRest obtainAllActivities(ObtainAllActivitiesModel obtainAllActivitiesModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUALS, 2);
+        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUAL, 2);
         List<Activity> activities = DatabaseHelper.findAll(Activity.class, searchModel);
 
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();

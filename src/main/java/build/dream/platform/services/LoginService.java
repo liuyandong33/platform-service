@@ -50,7 +50,7 @@ public class LoginService {
         ApplicationHandler.ifNotBlankPut(sessionMap, SessionConstants.KEY_USER_EMAIL, systemUser.getEmail());
         if (userType == Constants.USER_TYPE_TENANT || userType == Constants.USER_TYPE_TENANT_EMPLOYEE) {
             SearchModel searchModel = new SearchModel(true);
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getTenantId());
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, systemUser.getTenantId());
             Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
             Validate.notNull(tenant, "商户不存在！");
 
@@ -60,7 +60,7 @@ public class LoginService {
             sessionMap.put(SessionConstants.KEY_PARTITION_CODE, tenant.getPartitionCode());
         } else if (userType == Constants.USER_TYPE_AGENT) {
             SearchModel searchModel = new SearchModel(true);
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, systemUser.getAgentId());
+            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, systemUser.getAgentId());
             Agent agent = DatabaseHelper.find(Agent.class, searchModel);
             Validate.notNull(agent, "代理商不存在！");
 

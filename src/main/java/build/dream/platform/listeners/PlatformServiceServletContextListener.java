@@ -57,7 +57,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             }
 
             SearchModel systemUserSearchModel = new SearchModel(true);
-            systemUserSearchModel.addSearchCondition("user_type", Constants.SQL_OPERATION_SYMBOL_EQUALS, BigInteger.valueOf(3));
+            systemUserSearchModel.addSearchCondition("user_type", Constants.SQL_OPERATION_SYMBOL_EQUAL, BigInteger.valueOf(3));
             List<SystemUser> systemUsers = systemUserService.findAll(systemUserSearchModel);
             CommonUtils.loadServiceSystemUsers(systemUsers);
 

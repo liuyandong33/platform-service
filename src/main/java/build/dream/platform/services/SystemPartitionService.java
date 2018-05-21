@@ -14,7 +14,7 @@ public class SystemPartitionService {
     @Transactional(readOnly = true)
     public List<SystemPartition> findAllByDeploymentEnvironment(String deploymentEnvironment) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUALS, deploymentEnvironment);
+        searchModel.addSearchCondition("deployment_environment", Constants.SQL_OPERATION_SYMBOL_EQUAL, deploymentEnvironment);
         return DatabaseHelper.findAll(SystemPartition.class, searchModel);
     }
 }

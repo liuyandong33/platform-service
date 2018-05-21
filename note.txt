@@ -38,13 +38,13 @@ class UserService {
         val userId: BigInteger = systemUser.getId
 
         val searchModel: SearchModel = new SearchModel(true)
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUALS, userId)
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, userId)
         val tenant: Tenant = tenantMapper.find(searchModel)
         Validate.notNull(tenant, "商户不存在！")
         val tenantId: BigInteger = tenant.getId
 
         val tenantSecretKeySearchModel: SearchModel = new SearchModel(true)
-        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, tenantId)
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId)
         val tenantSecretKey: TenantSecretKey = tenantSecretKeyMapper.find(tenantSecretKeySearchModel)
         Validate.notNull(tenantSecretKey, "未检索到商户秘钥！")
 

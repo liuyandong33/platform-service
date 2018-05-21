@@ -35,10 +35,10 @@ public class RoleService {
     @Transactional(readOnly = true)
     public ApiRest listRoles(ListRolesModel listRolesModel) {
         SearchModel countSearchModel = new SearchModel(true);
-        countSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listRolesModel.getTenantId());
+        countSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, listRolesModel.getTenantId());
 
         PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
-        pagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUALS, listRolesModel.getTenantId());
+        pagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, listRolesModel.getTenantId());
         pagedSearchModel.setPage(listRolesModel.getPage());
         pagedSearchModel.setRows(listRolesModel.getRows());
 
