@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.converters.BigDecimalConverter;
 import org.apache.commons.beanutils.converters.BigIntegerConverter;
 import org.apache.commons.beanutils.converters.DateConverter;
 import org.apache.commons.beanutils.converters.IntegerConverter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
 import java.math.BigDecimal;
@@ -62,6 +63,10 @@ public class DatabaseHelper {
     public static <T> T find(Class<T> domainClass, String tableName, SearchModel searchModel) {
         try {
             searchModel.setTableName(tableName);
+            List<String> columns = searchModel.getColumns();
+            if (CollectionUtils.isEmpty(columns)) {
+                searchModel.setColumns(DatabaseUtils.obtainAllAlias(domainClass));
+            }
             Map<String, Object> map = obtainUniversalMapper().find(searchModel);
             T t = null;
             if (MapUtils.isNotEmpty(map)) {
@@ -81,6 +86,10 @@ public class DatabaseHelper {
     public static <T> List<T> findAll(Class<T> domainClass, String tableName, SearchModel searchModel) {
         try {
             searchModel.setTableName(tableName);
+            List<String> columns = searchModel.getColumns();
+            if (CollectionUtils.isEmpty(columns)) {
+                searchModel.setColumns(DatabaseUtils.obtainAllAlias(domainClass));
+            }
             List<Map<String, Object>> result = obtainUniversalMapper().findAll(searchModel);
             List<T> list = new ArrayList<T>();
             for (Map<String, Object> map : result) {
@@ -110,6 +119,10 @@ public class DatabaseHelper {
     public static <T> List<T> findAllPaged(Class<T> domainClass, String tableName, SearchModel searchModel) {
         try {
             searchModel.setTableName(tableName);
+            List<String> columns = searchModel.getColumns();
+            if (CollectionUtils.isEmpty(columns)) {
+                searchModel.setColumns(DatabaseUtils.obtainAllAlias(domainClass));
+            }
             List<Map<String, Object>> result = obtainUniversalMapper().findAllPaged(searchModel);
             List<T> list = new ArrayList<T>();
             for (Map<String, Object> map : result) {
