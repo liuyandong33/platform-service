@@ -1,9 +1,6 @@
 package build.dream.platform.utils;
 
-import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.DatabaseUtils;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.UpdateModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.UniversalMapper;
 import org.apache.commons.beanutils.BeanUtils;
@@ -45,6 +42,18 @@ public class DatabaseHelper {
 
     public static long insertAll(List<?> domains) {
         return obtainUniversalMapper().insertAll(domains);
+    }
+
+    public static long delete(Class<?> domainClass, DeleteModel deleteModel) {
+        deleteModel.setTableName(DatabaseUtils.obtainTableName(null, domainClass));
+        return obtainUniversalMapper().delete(deleteModel);
+    }
+
+    public static long delete(String tableName, BigInteger id) {
+        DeleteModel deleteModel = new DeleteModel();
+        deleteModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, id);
+        deleteModel.setTableName(tableName);
+        return obtainUniversalMapper().delete(deleteModel);
     }
 
     public static long update(Object domain) {
