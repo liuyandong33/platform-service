@@ -11,6 +11,8 @@ import java.util.Map;
 @Mapper
 public interface TenantGoodsMapper {
     List<Map<String, Object>> findAllGoodsInfos(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId);
+
     Map<String, Object> findGoodsInfo(@Param("tenantId") BigInteger tenantId, @Param("branchId") BigInteger branchId, @Param("goodsId") BigInteger goodsId);
+
     List<Map<String, Object>> findAllExpiredBranches(@Param("expireTime") Date expireTime);
 }

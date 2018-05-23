@@ -4,17 +4,11 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.SequenceMapper;
-import build.dream.platform.mappers.UniversalMapper;
 import build.dream.platform.models.order.*;
-import build.dream.platform.utils.ActivationCodeUtils;
-import build.dream.platform.utils.DatabaseHelper;
-import build.dream.platform.utils.GoodsUtils;
-import build.dream.platform.utils.OrderUtils;
+import build.dream.platform.utils.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +21,6 @@ import java.util.*;
 
 @Service
 public class OrderService {
-    @Autowired
-    private SequenceMapper sequenceMapper;
-    @Autowired
-    private UniversalMapper universalMapper;
-
     /**
      * 保存订单
      *
@@ -70,11 +59,11 @@ public class OrderService {
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             orderInfo.setOrderType(Constants.ORDER_TYPE_TENANT_ORDER);
             orderInfo.setTenantId(saveOrderModel.getTenantId());
-            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO", 10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
+            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("TO", 10, SequenceUtils.nextValue(SerialNumberGenerator.generatorTodaySequenceName("tenant_order_number"))));
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
             orderInfo.setOrderType(Constants.ORDER_TYPE_AGENT_ORDER);
             orderInfo.setAgentId(saveOrderModel.getAgentId());
-            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("AO", 10, sequenceMapper.nextValue(SerialNumberGenerator.generatorTodaySequenceName("agent_order_number"))));
+            orderInfo.setOrderNumber(SerialNumberGenerator.nextOrderNumber("AO", 10, SequenceUtils.nextValue(SerialNumberGenerator.generatorTodaySequenceName("agent_order_number"))));
         }
 
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
@@ -234,7 +223,7 @@ public class OrderService {
         orderInfoUpdateModel.addContentValue("last_update_user_id", userId);
         orderInfoUpdateModel.addContentValue("last_update_remark", "删除订单信息！");
         orderInfoUpdateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
-        universalMapper.universalUpdate(orderInfoUpdateModel);
+        DatabaseHelper.universalUpdate(orderInfoUpdateModel);
 
         UpdateModel orderDetailUpdateModel = new UpdateModel(true);
         orderDetailUpdateModel.setTableName("order_detail");
@@ -242,7 +231,7 @@ public class OrderService {
         orderDetailUpdateModel.addContentValue("last_update_user_id", userId);
         orderDetailUpdateModel.addContentValue("last_update_remark", "删除订单详情信息！");
         orderDetailUpdateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
-        universalMapper.universalUpdate(orderDetailUpdateModel);
+        DatabaseHelper.universalUpdate(orderDetailUpdateModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("删除订单信息成功！");
         apiRest.setSuccessful(true);
@@ -275,7 +264,7 @@ public class OrderService {
         updateModel.addContentValue("last_update_user_id", userId);
         updateModel.addContentValue("last_update_remark", "删除订单详情信息！");
         updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
-        universalMapper.universalUpdate(updateModel);
+        DatabaseHelper.universalUpdate(updateModel);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("删除订单信息成功！");

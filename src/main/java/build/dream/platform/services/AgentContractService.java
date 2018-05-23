@@ -6,10 +6,9 @@ import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AgentContractPriceInfoMapper;
-import build.dream.platform.mappers.SequenceMapper;
-import build.dream.platform.mappers.UniversalMapper;
 import build.dream.platform.models.agentcontract.*;
 import build.dream.platform.utils.DatabaseHelper;
+import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +22,6 @@ import java.util.*;
 
 @Service
 public class AgentContractService {
-    @Autowired
-    private SequenceMapper sequenceMapper;
-    @Autowired
-    private UniversalMapper universalMapper;
     @Autowired
     private AgentContractPriceInfoMapper agentContractPriceInfoMapper;
 
@@ -42,7 +37,7 @@ public class AgentContractService {
         BigInteger userId = saveAgentContractModel.getUserId();
         if (agentContractId == null) {
             AgentContract agentContract = new AgentContract();
-            String contractNumber = "HT" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.currentValue("agent_contract_number"));
+            String contractNumber = "HT" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.currentValue("agent_contract_number"));
             agentContract.setContractNumber(contractNumber);
             agentContract.setAgentId(saveAgentContractModel.getAgentId());
             agentContract.setStartTime(saveAgentContractModel.getStartTime());
@@ -161,7 +156,7 @@ public class AgentContractService {
         parameters.put("startTime", agentContract.getStartTime());
         parameters.put("endTime", agentContract.getEndTime());
         parameters.put("agentContractId", agentContract.getId());
-        long count = universalMapper.universalCount(parameters);
+        long count = DatabaseHelper.universalCount(parameters);
         Validate.isTrue(count == 0, "此合同与其他的合同在时间上存在冲突！");
 
         if (date.after(agentContract.getStartTime())) {
@@ -244,7 +239,7 @@ public class AgentContractService {
         Map<String, Object> countParameters = new HashMap<String, Object>();
         countParameters.put("sql", String.format(sql, "COUNT(1)") + searchCondition.toString());
         countParameters.putAll(namedParameters);
-        long count = universalMapper.universalCount(countParameters);
+        long count = DatabaseHelper.universalCount(countParameters);
         List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
         if (count > 0) {
             Map<String, Object> rowsParameters = new HashMap<String, Object>();
@@ -252,7 +247,7 @@ public class AgentContractService {
             rowsParameters.putAll(namedParameters);
             rowsParameters.put("offset", (listAgentContractsModel.getPage() - 1) * listAgentContractsModel.getRows());
             rowsParameters.put("maxResults", listAgentContractsModel.getRows());
-            rows = universalMapper.executeQuery(rowsParameters);
+            rows = DatabaseHelper.executeQuery(rowsParameters);
         }
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", count);

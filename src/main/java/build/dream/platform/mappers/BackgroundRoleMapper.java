@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper
 public interface BackgroundRoleMapper {
     long deleteRolePrivileges(@Param("roleId") BigInteger roleId);
+
     long saveRolePrivileges(@Param("roleId") BigInteger roleId, @Param("privilegeIds") List<BigInteger> privilegeIds);
+
     List<BackgroundPrivilege> listRolePrivileges(@Param("roleId") BigInteger roleId);
 }

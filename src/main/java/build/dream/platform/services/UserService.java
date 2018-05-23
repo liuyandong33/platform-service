@@ -7,7 +7,9 @@ import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.*;
+import build.dream.platform.mappers.AppPrivilegeMapper;
+import build.dream.platform.mappers.BackgroundPrivilegeMapper;
+import build.dream.platform.mappers.PosPrivilegeMapper;
 import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
@@ -27,15 +29,11 @@ import java.util.Map;
 @Service
 public class UserService {
     @Autowired
-    private SystemUserMapper systemUserMapper;
-    @Autowired
     private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
     @Autowired
     private AppPrivilegeMapper appPrivilegeMapper;
     @Autowired
     private PosPrivilegeMapper posPrivilegeMapper;
-    @Autowired
-    private UniversalMapper universalMapper;
 
     /**
      * 获取用户信息
@@ -46,8 +44,14 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) throws IOException {
-        SystemUser systemUser = systemUserMapper.findByLoginNameOrEmailOrMobile(obtainUserInfoModel.getLoginName());
+        String loginName = obtainUserInfoModel.getLoginName();
+
+        SearchModel userSearchModel = new SearchModel(true);
+        userSearchModel.setWhereClause("login_name = #{loginName} OR email = #{loginName} OR mobile = #{loginName}");
+        userSearchModel.addNamedParameter("loginName", loginName);
+        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userSearchModel);
         Validate.notNull(systemUser, "用户不存在！");
+
         BigInteger userId = systemUser.getId();
 
         SearchModel searchModel = new SearchModel(true);
@@ -135,7 +139,7 @@ public class UserService {
         updateModel.addContentValue("last_update_user_id", batchDeleteUserModel.getUserId());
         updateModel.addContentValue("last_update_remark", "删除用户信息！");
         updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, batchDeleteUserModel.getUserIds());
-        universalMapper.universalUpdate(updateModel);
+        DatabaseHelper.universalUpdate(updateModel);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("批量删除用户成功！");

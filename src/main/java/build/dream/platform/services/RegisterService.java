@@ -4,17 +4,16 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.SequenceMapper;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.utils.DatabaseHelper;
+import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +28,6 @@ import java.util.Map;
 
 @Service
 public class RegisterService {
-    @Autowired
-    private SequenceMapper sequenceMapper;
-
     /**
      * 注册商户
      *
@@ -71,10 +67,10 @@ public class RegisterService {
         } else if (Constants.BUSINESS_RETAIL.equals(business)) {
             partitionCode = ConfigurationUtils.getConfiguration(Constants.RETAIL_CURRENT_PARTITION_CODE);
         }
-        Integer currentPartitionQuantity = sequenceMapper.nextValue(partitionCode);
+        Integer currentPartitionQuantity = SequenceUtils.nextValue(partitionCode);
         Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
-        tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("tenant_code")));
+        tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("tenant_code")));
         tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
@@ -183,7 +179,7 @@ public class RegisterService {
         userId = BigInteger.ZERO;
 
         Agent agent = new Agent();
-        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, sequenceMapper.nextValue("agent_code")));
+        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("agent_code")));
         agent.setName(registerAgentModel.getName());
         agent.setCreateUserId(userId);
         agent.setLastUpdateUserId(userId);

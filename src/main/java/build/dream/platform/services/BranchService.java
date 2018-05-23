@@ -9,7 +9,6 @@ import build.dream.common.utils.ProxyUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
-import build.dream.platform.mappers.UniversalMapper;
 import build.dream.platform.utils.DatabaseHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -31,8 +30,6 @@ import java.util.Map;
 @Service
 public class BranchService {
     @Autowired
-    private UniversalMapper universalMapper;
-    @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
 
     /**
@@ -47,12 +44,12 @@ public class BranchService {
         parameters.put("sql", sql);
         parameters.put("tableName", "branch");
         parameters.put("tableSchema", "saas-db");
-        long count = (long) universalMapper.executeUniqueResultQuery(parameters).get("count");
+        long count = DatabaseHelper.universalCount(parameters);
         if (count == 0) {
             String createBranchTableSql = "CREATE TABLE branch(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'id', tenant_id BIGINT NOT NULL COMMENT '商户id', branch_id BIGINT NOT NULL COMMENT '门店id', `code` VARCHAR(20) NOT NULL COMMENT '门店编码', `name` VARCHAR(20) NOT NULL COMMENT '门店名称', `type` TINYINT NOT NULL COMMENT '门店类型', `status` TINYINT NOT NULL COMMENT '门店状态', tenant_code VARCHAR(20) NOT NULL COMMENT '商户编码', create_time DATETIME NOT NULL COMMENT '门店创建时间');";
             Map<String, Object> createBranchTableParameters = new HashMap<String, Object>();
             createBranchTableParameters.put("sql", createBranchTableSql);
-            universalMapper.executeUpdate(createBranchTableParameters);
+            DatabaseHelper.executeUpdate(createBranchTableParameters);
         }
 
         String deploymentEnvironment = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
@@ -126,7 +123,7 @@ public class BranchService {
 
                 Map<String, Object> insertBranchParameters = new HashMap<String, Object>();
                 insertBranchParameters.put("sql", insertBranchSql.toString());
-                universalMapper.executeUpdate(insertBranchParameters);
+                DatabaseHelper.executeUpdate(insertBranchParameters);
             }
 
             if (CollectionUtils.isNotEmpty(updateBranchInfos)) {
@@ -139,7 +136,7 @@ public class BranchService {
                         deleteBranchSql.append(branchInfo.get("branchId"));
                         Map<String, Object> deleteBranchParameters = new HashMap<String, Object>();
                         deleteBranchParameters.put("sql", deleteBranchSql.toString());
-                        universalMapper.executeUpdate(deleteBranchParameters);
+                        DatabaseHelper.executeUpdate(deleteBranchParameters);
                     } else {
                         StringBuilder updateBranchSql = new StringBuilder("UPDATE branch SET name = '");
                         updateBranchSql.append(branchInfo.get("name"));
@@ -155,7 +152,7 @@ public class BranchService {
                         updateBranchSql.append(branchInfo.get("branchId"));
                         Map<String, Object> updateBranchParameters = new HashMap<String, Object>();
                         updateBranchParameters.put("sql", updateBranchSql.toString());
-                        universalMapper.executeUpdate(updateBranchParameters);
+                        DatabaseHelper.executeUpdate(updateBranchParameters);
                     }
                 }
             }

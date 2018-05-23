@@ -3,6 +3,7 @@ package build.dream.platform.utils;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.DatabaseUtils;
 import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.UpdateModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.UniversalMapper;
 import org.apache.commons.beanutils.BeanUtils;
@@ -48,6 +49,18 @@ public class DatabaseHelper {
 
     public static long update(Object domain) {
         return obtainUniversalMapper().update(domain);
+    }
+
+    public static long universalUpdate(UpdateModel updateModel) {
+        return obtainUniversalMapper().universalUpdate(updateModel);
+    }
+
+    public static long executeUpdate(Map<String, Object> parameters) {
+        return obtainUniversalMapper().executeUpdate(parameters);
+    }
+
+    public static long universalCount(Map<String, Object> parameters) {
+        return obtainUniversalMapper().universalCount(parameters);
     }
 
     public static <T> T find(Class<T> domainClass, BigInteger id) {
@@ -134,5 +147,13 @@ public class DatabaseHelper {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static List<Map<String, Object>> executeQuery(Map<String, Object> parameters) {
+        return obtainUniversalMapper().executeQuery(parameters);
+    }
+
+    public static Map<String, Object> executeUniqueResultQuery(Map<String, Object> parameters) {
+        return obtainUniversalMapper().executeUniqueResultQuery(parameters);
     }
 }
