@@ -1,7 +1,7 @@
 package build.dream.platform.utils;
 
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.NamingStrategyUtils;
+import build.dream.common.utils.DatabaseUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.UniversalMapper;
@@ -50,18 +50,13 @@ public class DatabaseHelper {
     }
 
     public static <T> T find(Class<T> domainClass, BigInteger id) {
-        String simpleName = domainClass.getSimpleName();
-        String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
-
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, id);
-        return find(domainClass, tableName, searchModel);
+        return find(domainClass, searchModel);
     }
 
     public static <T> T find(Class<T> domainClass, SearchModel searchModel) {
-        String simpleName = domainClass.getSimpleName();
-        String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
-        return find(domainClass, tableName, searchModel);
+        return find(domainClass, DatabaseUtils.obtainTableName(null, domainClass), searchModel);
     }
 
     public static <T> T find(Class<T> domainClass, String tableName, SearchModel searchModel) {
@@ -80,9 +75,7 @@ public class DatabaseHelper {
     }
 
     public static <T> List<T> findAll(Class<T> domainClass, SearchModel searchModel) {
-        String simpleName = domainClass.getSimpleName();
-        String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
-        return findAll(domainClass, tableName, searchModel);
+        return findAll(domainClass, DatabaseUtils.obtainTableName(null, domainClass), searchModel);
     }
 
     public static <T> List<T> findAll(Class<T> domainClass, String tableName, SearchModel searchModel) {
@@ -102,9 +95,7 @@ public class DatabaseHelper {
     }
 
     public static <T> long count(Class<T> domainClass, SearchModel searchModel) {
-        String simpleName = domainClass.getSimpleName();
-        String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
-        return count(tableName, searchModel);
+        return count(DatabaseUtils.obtainTableName(null, domainClass), searchModel);
     }
 
     public static long count(String tableName, SearchModel searchModel) {
@@ -113,9 +104,7 @@ public class DatabaseHelper {
     }
 
     public static <T> List<T> findAllPaged(Class<T> domainClass, SearchModel searchModel) {
-        String simpleName = domainClass.getSimpleName();
-        String tableName = NamingStrategyUtils.camelCaseToUnderscore(simpleName.substring(0, 1).toLowerCase() + simpleName.substring(1));
-        return findAllPaged(domainClass, tableName, searchModel);
+        return findAllPaged(domainClass, DatabaseUtils.obtainTableName(null, domainClass), searchModel);
     }
 
     public static <T> List<T> findAllPaged(Class<T> domainClass, String tableName, SearchModel searchModel) {
