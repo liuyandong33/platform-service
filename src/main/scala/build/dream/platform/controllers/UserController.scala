@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
 import org.apache.poi.ss.usermodel._
 import org.apache.poi.xssf.usermodel.{XSSFCell, XSSFCellStyle, _}
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod, ResponseBody}
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -33,7 +34,7 @@ class UserController {
       *
       * @return
       */
-    @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET))
+    @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def obtainUserInfo: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
@@ -50,7 +51,7 @@ class UserController {
       *
       * @return
       */
-    @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET))
+    @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def batchGetUsers: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
@@ -67,7 +68,7 @@ class UserController {
       *
       * @return
       */
-    @RequestMapping(value = Array("/obtainAllPrivileges"), method = Array(RequestMethod.GET))
+    @RequestMapping(value = Array("/obtainAllPrivileges"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def obtainAllPrivileges: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
@@ -84,7 +85,7 @@ class UserController {
       *
       * @return
       */
-    @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST))
+    @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def batchDeleteUser: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
@@ -102,7 +103,7 @@ class UserController {
       * @param httpServletRequest
       * @return
       */
-    @RequestMapping(value = Array("/uploadGoods"), method = Array(RequestMethod.POST))
+    @RequestMapping(value = Array("/uploadGoods"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def uploadGoods(httpServletRequest: HttpServletRequest): String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
@@ -252,7 +253,7 @@ class UserController {
         cellValue
     }
 
-    @RequestMapping(value = Array("/download"), method = Array(RequestMethod.GET))
+    @RequestMapping(value = Array("/download"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def download(): Unit = {
         val tenantId = ""
@@ -274,7 +275,7 @@ class UserController {
         outputStream.close()
     }
 
-    @RequestMapping(value = Array("/downloadGoodsTemplate"), method = Array(RequestMethod.GET))
+    @RequestMapping(value = Array("/downloadGoodsTemplate"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     def downloadGoodsTemplate: Unit = {
         val sheetName: String = "商品"
