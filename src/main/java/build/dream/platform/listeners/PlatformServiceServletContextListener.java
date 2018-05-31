@@ -13,14 +13,12 @@ import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
 import build.dream.platform.services.SystemUserService;
 import build.dream.platform.services.TenantSecretKeyService;
-import build.dream.platform.utils.ElemeUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -73,8 +71,6 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             }
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
-
-//            ElemeUtils.startElemeConsumerThread();
 
             // 启动所有定时任务
             jobScheduler.scheduler();
