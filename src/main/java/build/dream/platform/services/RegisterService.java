@@ -127,7 +127,7 @@ public class RegisterService {
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
         Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
 
-        Map<String, Object> branchInfo = BeanUtils.beanToMap(initializeBranchApiRest.getData());
+        Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchApiRest.getData());
         BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
 
         String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(Constants.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
