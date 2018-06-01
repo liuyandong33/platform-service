@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseHelper {
-    private static UniversalMapper UNIVERSAL_MAPPER;
+    private static UniversalMapper universalMapper;
 
     static {
         ConvertUtils.register(new IntegerConverter(null), Integer.class);
@@ -30,10 +30,10 @@ public class DatabaseHelper {
     }
 
     public static UniversalMapper obtainUniversalMapper() {
-        if (UNIVERSAL_MAPPER == null) {
-            UNIVERSAL_MAPPER = ApplicationHandler.getBean(UniversalMapper.class);
+        if (universalMapper == null) {
+            universalMapper = ApplicationHandler.getBean(UniversalMapper.class);
         }
-        return UNIVERSAL_MAPPER;
+        return universalMapper;
     }
 
     public static long insert(Object domain) {
