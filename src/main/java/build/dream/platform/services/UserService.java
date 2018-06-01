@@ -54,11 +54,7 @@ public class UserService {
 
         BigInteger userId = systemUser.getId();
 
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, userId);
-        searchModel.setWhereClause("code = #{code}");
-        searchModel.addNamedParameter("code", "61011888");
-        Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
+        Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
         Validate.notNull(tenant, "商户不存在！");
         BigInteger tenantId = tenant.getId();
 
