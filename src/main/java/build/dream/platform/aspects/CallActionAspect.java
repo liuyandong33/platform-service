@@ -1,4 +1,4 @@
-package build.dream.platform.test;
+package build.dream.platform.aspects;
 
 import build.dream.common.annotations.Action;
 import build.dream.common.api.ApiRest;
