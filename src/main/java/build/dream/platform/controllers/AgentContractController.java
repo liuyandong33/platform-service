@@ -7,6 +7,7 @@ import build.dream.common.utils.GsonUtils;
 import build.dream.platform.models.agentcontract.*;
 import build.dream.platform.services.AgentContractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +27,7 @@ public class AgentContractController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/saveAgentContract", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @Action(error = "保存代理商合同失败")
     public String saveAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
@@ -43,7 +44,7 @@ public class AgentContractController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/auditAgentContract", method = RequestMethod.POST)
+    @RequestMapping(value = "/auditAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @Action(error = "审核代理商合同失败")
     public String auditAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
@@ -58,7 +59,7 @@ public class AgentContractController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/terminateAgentContract", method = RequestMethod.POST)
+    @RequestMapping(value = "/terminateAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @Action(error = "终止代理商合同失败")
     public String terminateAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
@@ -73,7 +74,7 @@ public class AgentContractController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/listAgentContracts", method = RequestMethod.GET)
+    @RequestMapping(value = "/listAgentContracts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @Action(error = "查询代理商合同列表失败")
     public String listAgentContracts() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
@@ -88,7 +89,7 @@ public class AgentContractController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainAgentContractInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/obtainAgentContractInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @Action(error = "获取代理商合同信息失败")
     public String obtainAgentContractInfo() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
