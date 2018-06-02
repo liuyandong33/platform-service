@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CallActionAspect {
     @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(action)")
-    public Object doAround(ProceedingJoinPoint proceedingJoinPoint, Action action) throws Throwable {
+    public Object doAround(ProceedingJoinPoint proceedingJoinPoint, Action action) {
         Object returnValue = null;
         try {
             returnValue = proceedingJoinPoint.proceed();
