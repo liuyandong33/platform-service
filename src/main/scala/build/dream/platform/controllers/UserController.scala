@@ -7,7 +7,9 @@ import java.net.URLEncoder
 import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
 
+import build.dream.common.annotations.Action
 import build.dream.common.api.ApiRest
+import build.dream.common.controllers.BasicController
 import build.dream.common.utils._
 import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersModel, ObtainAllPrivilegesModel, ObtainUserInfoModel}
 import build.dream.platform.services.UserService
@@ -25,7 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 
 @Controller
 @RequestMapping(value = Array("/user"))
-class UserController {
+class UserController extends BasicController {
     @Autowired
     private val userService: UserService = null
 
@@ -36,14 +38,12 @@ class UserController {
       */
     @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
+    @Action(error = "获取用户信息失败")
     def obtainUserInfo: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
-        val methodCaller: MethodCaller = () => {
-            val obtainUserInfoModel = ApplicationHandler.instantiateObject(classOf[ObtainUserInfoModel], requestParameters)
-            obtainUserInfoModel.validateAndThrow()
-            userService.obtainUserInfo(obtainUserInfoModel)
-        }
-        ApplicationHandler.callMethod(methodCaller, "获取用户信息失败", requestParameters)
+        val obtainUserInfoModel = ApplicationHandler.instantiateObject(classOf[ObtainUserInfoModel], requestParameters)
+        obtainUserInfoModel.validateAndThrow()
+        GsonUtils.toJson(userService.obtainUserInfo(obtainUserInfoModel))
     }
 
     /**
@@ -53,14 +53,12 @@ class UserController {
       */
     @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
+    @Action(error = "查询用户失败")
     def batchGetUsers: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
-        val methodCaller: MethodCaller = () => {
-            val batchGetUsersModel: BatchGetUsersModel = ApplicationHandler.instantiateObject(classOf[BatchGetUsersModel], requestParameters)
-            batchGetUsersModel.validateAndThrow()
-            userService.batchObtainUser(batchGetUsersModel)
-        }
-        ApplicationHandler.callMethod(methodCaller, "查询用户失败", requestParameters)
+        val batchGetUsersModel: BatchGetUsersModel = ApplicationHandler.instantiateObject(classOf[BatchGetUsersModel], requestParameters)
+        batchGetUsersModel.validateAndThrow()
+        GsonUtils.toJson(userService.batchObtainUser(batchGetUsersModel))
     }
 
     /**
@@ -70,14 +68,12 @@ class UserController {
       */
     @RequestMapping(value = Array("/obtainAllPrivileges"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
+    @Action(error = "获取用户权限失败")
     def obtainAllPrivileges: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
-        val methodCaller: MethodCaller = () => {
-            val obtainAllPrivilegesModel: ObtainAllPrivilegesModel = ApplicationHandler.instantiateObject(classOf[ObtainAllPrivilegesModel], requestParameters)
-            obtainAllPrivilegesModel.validateAndThrow()
-            userService.obtainAllPrivileges(obtainAllPrivilegesModel)
-        }
-        ApplicationHandler.callMethod(methodCaller, "获取用户权限失败", requestParameters)
+        val obtainAllPrivilegesModel: ObtainAllPrivilegesModel = ApplicationHandler.instantiateObject(classOf[ObtainAllPrivilegesModel], requestParameters)
+        obtainAllPrivilegesModel.validateAndThrow()
+        GsonUtils.toJson(userService.obtainAllPrivileges(obtainAllPrivilegesModel))
     }
 
     /**
@@ -87,14 +83,12 @@ class UserController {
       */
     @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
+    @Action(error = "批量删除用户失败")
     def batchDeleteUser: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
-        val methodCaller: MethodCaller = () => {
-            val batchDeleteUserModel: BatchDeleteUserModel = ApplicationHandler.instantiateObject(classOf[BatchDeleteUserModel], requestParameters)
-            batchDeleteUserModel.validateAndThrow()
-            userService.batchDeleteUser(batchDeleteUserModel)
-        }
-        ApplicationHandler.callMethod(methodCaller, "批量删除用户失败", requestParameters)
+        val batchDeleteUserModel: BatchDeleteUserModel = ApplicationHandler.instantiateObject(classOf[BatchDeleteUserModel], requestParameters)
+        batchDeleteUserModel.validateAndThrow()
+        GsonUtils.toJson(userService.batchDeleteUser(batchDeleteUserModel))
     }
 
     /**
