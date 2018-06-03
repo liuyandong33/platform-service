@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.text.ParseException;
 import java.util.Map;
 
 @Controller
@@ -30,7 +29,7 @@ public class AgentContractController extends BasicController {
     @RequestMapping(value = "/saveAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(error = "保存代理商合同失败")
-    public String saveAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
+    public String saveAgentContract() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         SaveAgentContractModel saveAgentContractModel = ApplicationHandler.instantiateObject(SaveAgentContractModel.class, requestParameters);
         String contractPriceInfos = requestParameters.get("contractPriceInfos");
@@ -47,7 +46,7 @@ public class AgentContractController extends BasicController {
     @RequestMapping(value = "/auditAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(error = "审核代理商合同失败")
-    public String auditAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
+    public String auditAgentContract() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         AuditAgentContractModel auditAgentContractModel = ApplicationHandler.instantiateObject(AuditAgentContractModel.class, requestParameters);
         auditAgentContractModel.validateAndThrow();
@@ -62,7 +61,7 @@ public class AgentContractController extends BasicController {
     @RequestMapping(value = "/terminateAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(error = "终止代理商合同失败")
-    public String terminateAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
+    public String terminateAgentContract() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         TerminateAgentContractModel terminateAgentContractModel = ApplicationHandler.instantiateObject(TerminateAgentContractModel.class, requestParameters);
         terminateAgentContractModel.validateAndThrow();
@@ -77,7 +76,7 @@ public class AgentContractController extends BasicController {
     @RequestMapping(value = "/listAgentContracts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(error = "查询代理商合同列表失败")
-    public String listAgentContracts() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
+    public String listAgentContracts() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         ListAgentContractsModel listAgentContractsModel = ApplicationHandler.instantiateObject(ListAgentContractsModel.class, requestParameters);
         listAgentContractsModel.validateAndThrow();
@@ -92,7 +91,7 @@ public class AgentContractController extends BasicController {
     @RequestMapping(value = "/obtainAgentContractInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(error = "获取代理商合同信息失败")
-    public String obtainAgentContractInfo() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
+    public String obtainAgentContractInfo() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         ObtainAgentContractInfoModel obtainAgentContractInfoModel = ApplicationHandler.instantiateObject(ObtainAgentContractInfoModel.class, requestParameters);
         obtainAgentContractInfoModel.validateAndThrow();
