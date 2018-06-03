@@ -292,7 +292,7 @@ class UserController extends BasicController {
         val fileName: String = "商品导入模板"
         val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
         httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension("xls"))
-        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xls")
+        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8") + ".xlsx")
         val outputStream: OutputStream = httpServletResponse.getOutputStream
         workbook.write(outputStream)
         workbook.close()
