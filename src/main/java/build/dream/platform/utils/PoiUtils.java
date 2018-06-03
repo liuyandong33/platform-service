@@ -1,5 +1,6 @@
 package build.dream.platform.utils;
 
+import build.dream.platform.constants.Constants;
 import org.apache.commons.collections.MapUtils;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
@@ -7,6 +8,8 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -71,10 +74,16 @@ public class PoiUtils {
         sheet.addValidationData(categoriesDataValidation);
         sheet.addValidationData(unitsDataValidation);
         sheet.addValidationData(statusesDataValidation);
+
+        Sheet templateCreateTimeSheet = workbook.createSheet("templateCreateTime");
+        Row row = templateCreateTimeSheet.createRow(0);
+        Cell cell = row.createCell(0);
+        cell.setCellValue(new SimpleDateFormat(Constants.DEFAULT_DATE_PATTERN).format(new Date()));
         workbook.setSheetHidden(1, true);
         workbook.setSheetHidden(2, true);
         workbook.setSheetHidden(3, true);
         workbook.setSheetHidden(4, true);
+        workbook.setSheetHidden(5, true);
         return workbook;
     }
 }
