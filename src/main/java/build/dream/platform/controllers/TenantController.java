@@ -1,15 +1,18 @@
 package build.dream.platform.controllers;
 
+import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.MethodCaller;
+import build.dream.common.utils.GsonUtils;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
 import build.dream.platform.services.TenantService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
@@ -20,42 +23,36 @@ public class TenantController extends BasicController {
     @Autowired
     private TenantService tenantService;
 
-    @RequestMapping(value = "/obtainTenantInfo")
+    @RequestMapping(value = "/obtainTenantInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String obtainTenantInfo() {
+    @ApiRestAction(error = "查询商户信息失败")
+    public String obtainTenantInfo() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            ObtainTenantInfoModel obtainTenantInfoModel = ApplicationHandler.instantiateObject(ObtainTenantInfoModel.class, requestParameters);
-            obtainTenantInfoModel.validateAndThrow();
+        ObtainTenantInfoModel obtainTenantInfoModel = ApplicationHandler.instantiateObject(ObtainTenantInfoModel.class, requestParameters);
+        obtainTenantInfoModel.validateAndThrow();
 
-            return tenantService.obtainTenantInfo(obtainTenantInfoModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "查询商户信息失败", requestParameters);
+        return GsonUtils.toJson(tenantService.obtainTenantInfo(obtainTenantInfoModel));
     }
 
-    @RequestMapping(value = "/findAllGoodsInfos")
+    @RequestMapping(value = "/findAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String findAllGoodsInfos() {
+    @ApiRestAction(error = "查询产品购买信息失败")
+    public String findAllGoodsInfos() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            FindAllGoodsInfosModel findAllGoodsInfosModel = ApplicationHandler.instantiateObject(FindAllGoodsInfosModel.class, requestParameters);
-            findAllGoodsInfosModel.validateAndThrow();
+        FindAllGoodsInfosModel findAllGoodsInfosModel = ApplicationHandler.instantiateObject(FindAllGoodsInfosModel.class, requestParameters);
+        findAllGoodsInfosModel.validateAndThrow();
 
-            return tenantService.findAllGoodsInfos(findAllGoodsInfosModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "查询产品购买信息失败", requestParameters);
+        return GsonUtils.toJson(tenantService.findAllGoodsInfos(findAllGoodsInfosModel));
     }
 
-    @RequestMapping(value = "/findGoodsInfo")
+    @RequestMapping(value = "/findGoodsInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String findGoodsInfo() {
+    @ApiRestAction(error = "查询产品购买信息失败")
+    public String findGoodsInfo() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            FindGoodsInfoModel findGoodsInfoModel = ApplicationHandler.instantiateObject(FindGoodsInfoModel.class, requestParameters);
-            findGoodsInfoModel.validateAndThrow();
+        FindGoodsInfoModel findGoodsInfoModel = ApplicationHandler.instantiateObject(FindGoodsInfoModel.class, requestParameters);
+        findGoodsInfoModel.validateAndThrow();
 
-            return tenantService.findGoodsInfo(findGoodsInfoModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "查询产品购买信息失败", requestParameters);
+        return GsonUtils.toJson(tenantService.findGoodsInfo(findGoodsInfoModel));
     }
 }
