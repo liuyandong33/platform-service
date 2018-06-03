@@ -1,14 +1,16 @@
 package build.dream.platform.controllers;
 
+import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.common.utils.MethodCaller;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
 import build.dream.platform.services.OrderService;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,18 +29,16 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String saveOrder() {
+    @ApiRestAction(error = "保存订单失败")
+    public String saveOrder() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            SaveOrderModel saveOrderModel = ApplicationHandler.instantiateObject(SaveOrderModel.class, requestParameters);
-            String goodsInfos = requestParameters.get("goodsInfos");
-            saveOrderModel.setGoodsInfos(goodsInfos);
-            saveOrderModel.validateAndThrow();
-            return orderService.saveOrder(saveOrderModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "保存订单失败", requestParameters);
+        SaveOrderModel saveOrderModel = ApplicationHandler.instantiateObject(SaveOrderModel.class, requestParameters);
+        String goodsInfos = requestParameters.get("goodsInfos");
+        saveOrderModel.setGoodsInfos(goodsInfos);
+        saveOrderModel.validateAndThrow();
+        return GsonUtils.toJson(orderService.saveOrder(saveOrderModel));
     }
 
     /**
@@ -46,17 +46,15 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
+    @ApiRestAction(error = "获取订单信息失败")
     public String obtainOrderInfo() {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            String orderInfoId = requestParameters.get("orderInfoId");
-            ApplicationHandler.notEmpty(orderInfoId, "orderInfoId");
+        String orderInfoId = requestParameters.get("orderInfoId");
+        ApplicationHandler.notEmpty(orderInfoId, "orderInfoId");
 
-            return orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId));
-        };
-        return ApplicationHandler.callMethod(methodCaller, "获取订单信息失败", requestParameters);
+        return GsonUtils.toJson(orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId)));
     }
 
     /**
@@ -64,16 +62,14 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainAllOrderInfos", method = RequestMethod.GET)
+    @RequestMapping(value = "/obtainAllOrderInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String obtainAllOrderInfos() {
+    @ApiRestAction(error = "获取订单信息失败")
+    public String obtainAllOrderInfos() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            ObtainAllOrderInfosModel obtainAllOrderInfosModel = ApplicationHandler.instantiateObject(ObtainAllOrderInfosModel.class, requestParameters);
-            obtainAllOrderInfosModel.validateAndThrow();
-            return orderService.obtainAllOrderInfos(obtainAllOrderInfosModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "获取订单信息失败", requestParameters);
+        ObtainAllOrderInfosModel obtainAllOrderInfosModel = ApplicationHandler.instantiateObject(ObtainAllOrderInfosModel.class, requestParameters);
+        obtainAllOrderInfosModel.validateAndThrow();
+        return GsonUtils.toJson(orderService.obtainAllOrderInfos(obtainAllOrderInfosModel));
     }
 
     /**
@@ -81,16 +77,14 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String batchDeleteOrders() {
+    @ApiRestAction(error = "批量删除订单失败")
+    public String batchDeleteOrders() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            BatchDeleteOrdersModel batchDeleteOrdersModel = ApplicationHandler.instantiateObject(BatchDeleteOrdersModel.class, requestParameters);
-            batchDeleteOrdersModel.validateAndThrow();
-            return orderService.batchDeleteOrders(batchDeleteOrdersModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "批量删除订单失败", requestParameters);
+        BatchDeleteOrdersModel batchDeleteOrdersModel = ApplicationHandler.instantiateObject(BatchDeleteOrdersModel.class, requestParameters);
+        batchDeleteOrdersModel.validateAndThrow();
+        return GsonUtils.toJson(orderService.batchDeleteOrders(batchDeleteOrdersModel));
     }
 
     /**
@@ -98,16 +92,14 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String deleteOrder() {
+    @ApiRestAction(error = "删除订单失败")
+    public String deleteOrder() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            DeleteOrderModel deleteOrderModel = ApplicationHandler.instantiateObject(DeleteOrderModel.class, requestParameters);
-            deleteOrderModel.validateAndThrow();
-            return orderService.deleteOrder(deleteOrderModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "删除订单失败", requestParameters);
+        DeleteOrderModel deleteOrderModel = ApplicationHandler.instantiateObject(DeleteOrderModel.class, requestParameters);
+        deleteOrderModel.validateAndThrow();
+        return GsonUtils.toJson(orderService.deleteOrder(deleteOrderModel));
     }
 
     /**
@@ -115,17 +107,15 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/doPay", method = RequestMethod.POST)
+    @RequestMapping(value = "/doPay", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String doPay() {
+    @ApiRestAction(error = "发起支付失败")
+    public String doPay() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            DoPayModel doPayModel = ApplicationHandler.instantiateObject(DoPayModel.class, requestParameters);
-            doPayModel.validateAndThrow();
+        DoPayModel doPayModel = ApplicationHandler.instantiateObject(DoPayModel.class, requestParameters);
+        doPayModel.validateAndThrow();
 
-            return orderService.doPay(doPayModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "发起支付失败", requestParameters);
+        return GsonUtils.toJson(orderService.doPay(doPayModel));
     }
 
     /**
