@@ -7,7 +7,7 @@ import java.net.URLEncoder
 import java.util.regex.Pattern
 import java.util.{ArrayList, HashMap, List, Map}
 
-import build.dream.common.annotations.Action
+import build.dream.common.annotations.ApiRestAction
 import build.dream.common.api.ApiRest
 import build.dream.common.controllers.BasicController
 import build.dream.common.utils._
@@ -38,7 +38,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @Action(error = "获取用户信息失败")
+    @ApiRestAction(error = "获取用户信息失败")
     def obtainUserInfo: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val obtainUserInfoModel = ApplicationHandler.instantiateObject(classOf[ObtainUserInfoModel], requestParameters)
@@ -53,7 +53,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @Action(error = "查询用户失败")
+    @ApiRestAction(error = "查询用户失败")
     def batchGetUsers: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val batchGetUsersModel: BatchGetUsersModel = ApplicationHandler.instantiateObject(classOf[BatchGetUsersModel], requestParameters)
@@ -68,7 +68,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/obtainAllPrivileges"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @Action(error = "获取用户权限失败")
+    @ApiRestAction(error = "获取用户权限失败")
     def obtainAllPrivileges: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val obtainAllPrivilegesModel: ObtainAllPrivilegesModel = ApplicationHandler.instantiateObject(classOf[ObtainAllPrivilegesModel], requestParameters)
@@ -83,7 +83,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @Action(error = "批量删除用户失败")
+    @ApiRestAction(error = "批量删除用户失败")
     def batchDeleteUser: String = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val batchDeleteUserModel: BatchDeleteUserModel = ApplicationHandler.instantiateObject(classOf[BatchDeleteUserModel], requestParameters)

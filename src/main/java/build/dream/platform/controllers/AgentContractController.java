@@ -1,6 +1,6 @@
 package build.dream.platform.controllers;
 
-import build.dream.common.annotations.Action;
+import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
@@ -29,7 +29,7 @@ public class AgentContractController extends BasicController {
      */
     @RequestMapping(value = "/saveAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @Action(error = "保存代理商合同失败")
+    @ApiRestAction(error = "保存代理商合同失败")
     public String saveAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         SaveAgentContractModel saveAgentContractModel = ApplicationHandler.instantiateObject(SaveAgentContractModel.class, requestParameters);
@@ -46,7 +46,7 @@ public class AgentContractController extends BasicController {
      */
     @RequestMapping(value = "/auditAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @Action(error = "审核代理商合同失败")
+    @ApiRestAction(error = "审核代理商合同失败")
     public String auditAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         AuditAgentContractModel auditAgentContractModel = ApplicationHandler.instantiateObject(AuditAgentContractModel.class, requestParameters);
@@ -61,7 +61,7 @@ public class AgentContractController extends BasicController {
      */
     @RequestMapping(value = "/terminateAgentContract", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @Action(error = "终止代理商合同失败")
+    @ApiRestAction(error = "终止代理商合同失败")
     public String terminateAgentContract() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         TerminateAgentContractModel terminateAgentContractModel = ApplicationHandler.instantiateObject(TerminateAgentContractModel.class, requestParameters);
@@ -76,7 +76,7 @@ public class AgentContractController extends BasicController {
      */
     @RequestMapping(value = "/listAgentContracts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @Action(error = "查询代理商合同列表失败")
+    @ApiRestAction(error = "查询代理商合同列表失败")
     public String listAgentContracts() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         ListAgentContractsModel listAgentContractsModel = ApplicationHandler.instantiateObject(ListAgentContractsModel.class, requestParameters);
@@ -91,7 +91,7 @@ public class AgentContractController extends BasicController {
      */
     @RequestMapping(value = "/obtainAgentContractInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @Action(error = "获取代理商合同信息失败")
+    @ApiRestAction(error = "获取代理商合同信息失败")
     public String obtainAgentContractInfo() throws InstantiationException, IllegalAccessException, ParseException, NoSuchFieldException {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         ObtainAgentContractInfoModel obtainAgentContractInfoModel = ApplicationHandler.instantiateObject(ObtainAgentContractInfoModel.class, requestParameters);
