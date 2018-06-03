@@ -1,14 +1,15 @@
 package build.dream.platform.controllers;
 
+import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.MethodCaller;
 import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
 import build.dream.platform.services.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,16 +29,14 @@ public class GoodsController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET)
+    @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String obtainAllGoodsInfos() {
+    @ApiRestAction(error = "获取商品信息失败")
+    public String obtainAllGoodsInfos() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            ObtainAllGoodsInfosModel obtainAllGoodsInfosModel = ApplicationHandler.instantiateObject(ObtainAllGoodsInfosModel.class, requestParameters);
-            obtainAllGoodsInfosModel.validateAndThrow();
-            return goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "获取商品信息失败", requestParameters);
+        ObtainAllGoodsInfosModel obtainAllGoodsInfosModel = ApplicationHandler.instantiateObject(ObtainAllGoodsInfosModel.class, requestParameters);
+        obtainAllGoodsInfosModel.validateAndThrow();
+        return GsonUtils.toJson(goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel));
     }
 
     /**
@@ -45,16 +44,14 @@ public class GoodsController {
      *
      * @return
      */
-    @RequestMapping(value = "/listGoodsInfos", method = RequestMethod.GET)
+    @RequestMapping(value = "/listGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String listGoodsInfos() {
+    @ApiRestAction(error = "分页查询商品列表失败")
+    public String listGoodsInfos() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            ListGoodsInfosModel listGoodsInfosModel = ApplicationHandler.instantiateObject(ListGoodsInfosModel.class, requestParameters);
-            listGoodsInfosModel.validateAndThrow();
-            return goodsService.listGoodsInfos(listGoodsInfosModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "分页查询商品列表失败", requestParameters);
+        ListGoodsInfosModel listGoodsInfosModel = ApplicationHandler.instantiateObject(ListGoodsInfosModel.class, requestParameters);
+        listGoodsInfosModel.validateAndThrow();
+        return GsonUtils.toJson(goodsService.listGoodsInfos(listGoodsInfosModel));
     }
 
     /**
@@ -62,32 +59,28 @@ public class GoodsController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET)
+    @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String obtainGoodsInfo() {
+    @ApiRestAction(error = "获取商品信息失败")
+    public String obtainGoodsInfo() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            ObtainGoodsInfoModel obtainGoodsInfoModel = ApplicationHandler.instantiateObject(ObtainGoodsInfoModel.class, requestParameters);
-            obtainGoodsInfoModel.validateAndThrow();
-            return goodsService.obtainGoodsInfo(obtainGoodsInfoModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "获取商品信息失败", requestParameters);
+        ObtainGoodsInfoModel obtainGoodsInfoModel = ApplicationHandler.instantiateObject(ObtainGoodsInfoModel.class, requestParameters);
+        obtainGoodsInfoModel.validateAndThrow();
+        return GsonUtils.toJson(goodsService.obtainGoodsInfo(obtainGoodsInfoModel));
     }
 
-    @RequestMapping(value = "/saveGoods", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveGoods", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    public String saveGoods() {
+    @ApiRestAction(error = "保存商品信息失败")
+    public String saveGoods() throws Exception {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        MethodCaller methodCaller = () -> {
-            SaveGoodsModel saveGoodsModel = ApplicationHandler.instantiateObject(SaveGoodsModel.class, requestParameters);
-            String goodsSpecifications = requestParameters.get("goodsSpecifications");
-            ApplicationHandler.notEmpty(goodsSpecifications, "goodsSpecifications");
-            List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = GsonUtils.jsonToList(goodsSpecifications, SaveGoodsModel.GoodsSpecificationModel.class);
-            saveGoodsModel.setGoodsSpecificationModels(goodsSpecificationModels);
-            saveGoodsModel.validateAndThrow();
+        SaveGoodsModel saveGoodsModel = ApplicationHandler.instantiateObject(SaveGoodsModel.class, requestParameters);
+        String goodsSpecifications = requestParameters.get("goodsSpecifications");
+        ApplicationHandler.notEmpty(goodsSpecifications, "goodsSpecifications");
+        List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = GsonUtils.jsonToList(goodsSpecifications, SaveGoodsModel.GoodsSpecificationModel.class);
+        saveGoodsModel.setGoodsSpecificationModels(goodsSpecificationModels);
+        saveGoodsModel.validateAndThrow();
 
-            return goodsService.saveGoods(saveGoodsModel);
-        };
-        return ApplicationHandler.callMethod(methodCaller, "保存商品信息失败", requestParameters);
+        return GsonUtils.toJson(goodsService.saveGoods(saveGoodsModel));
     }
 }
