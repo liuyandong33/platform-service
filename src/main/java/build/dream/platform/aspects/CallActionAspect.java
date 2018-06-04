@@ -26,19 +26,22 @@ public class CallActionAspect {
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         Object returnValue = null;
+
+        Throwable throwable = null;
         try {
             returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceName(), apiRestAction.serviceMethodName());
             returnValue = GsonUtils.toJson(returnValue);
         } catch (InvocationTargetException e) {
-            Throwable throwable = e.getTargetException();
+            throwable = e.getTargetException();
+        } catch (ApiException e) {
+            throwable = e;
+        } catch (Throwable t) {
+            throwable = new RuntimeException(apiRestAction.error());
+        }
+
+        if (throwable != null) {
             LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
             returnValue = GsonUtils.toJson(new ApiRest(throwable));
-        } catch (ApiException e) {
-            LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), e, requestParameters);
-            returnValue = GsonUtils.toJson(new ApiRest(e));
-        } catch (Throwable throwable) {
-            LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
-            returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
         }
         return returnValue;
     }
