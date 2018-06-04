@@ -58,7 +58,7 @@ public class GoodsController {
     @RequestMapping(value = "/saveGoods", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = SaveGoodsModel.class, serviceName = "goodsService", serviceMethodName = "saveGoods", error = "获取商品信息失败")
-    public String saveGoods() throws Exception {
+    public String saveGoods() {
         return null;
     }
 }
