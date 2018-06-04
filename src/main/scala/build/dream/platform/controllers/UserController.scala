@@ -19,7 +19,6 @@ import org.apache.commons.lang.Validate
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
 import org.apache.poi.ss.usermodel._
 import org.apache.poi.xssf.usermodel.{XSSFCell, XSSFCellStyle, _}
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod, ResponseBody}
@@ -28,9 +27,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 @Controller
 @RequestMapping(value = Array("/user"))
 class UserController extends BasicController {
-    @Autowired
-    private val userService: UserService = null
-
     /**
       * 获取用户信息
       *
@@ -38,7 +34,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/obtainUserInfo"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[ObtainUserInfoModel], serviceName = "userService", serviceMethodName = "obtainUserInfo", error = "获取用户信息失败")
+    @ApiRestAction(modelClass = classOf[ObtainUserInfoModel], serviceClass = classOf[UserService], serviceMethodName = "obtainUserInfo", error = "获取用户信息失败")
     def obtainUserInfo: String = {
         null
     }
@@ -50,7 +46,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[BatchGetUsersModel], serviceName = "userService", serviceMethodName = "batchObtainUser", error = "获取用户信息失败")
+    @ApiRestAction(modelClass = classOf[BatchGetUsersModel], serviceClass = classOf[UserService], serviceMethodName = "batchObtainUser", error = "获取用户信息失败")
     def batchGetUsers: String = {
         null
     }
@@ -62,7 +58,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/obtainAllPrivileges"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[ObtainAllPrivilegesModel], serviceName = "userService", serviceMethodName = "obtainAllPrivileges", error = "获取用户权限失败")
+    @ApiRestAction(modelClass = classOf[ObtainAllPrivilegesModel], serviceClass = classOf[UserService], serviceMethodName = "obtainAllPrivileges", error = "获取用户权限失败")
     def obtainAllPrivileges: String = {
         null
     }
@@ -74,7 +70,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[BatchDeleteUserModel], serviceName = "userService", serviceMethodName = "batchDeleteUser", error = "批量删除用户失败")
+    @ApiRestAction(modelClass = classOf[BatchDeleteUserModel], serviceClass = classOf[UserService], serviceMethodName = "batchDeleteUser", error = "批量删除用户失败")
     def batchDeleteUser: String = {
         null
     }

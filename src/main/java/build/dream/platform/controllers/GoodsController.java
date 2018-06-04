@@ -26,7 +26,7 @@ public class GoodsController {
      */
     @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = ObtainAllGoodsInfosModel.class, serviceName = "goodsService", serviceMethodName = "obtainAllGoodsInfos", error = "获取商品信息失败")
+    @ApiRestAction(modelClass = ObtainAllGoodsInfosModel.class, serviceClass = GoodsService.class, serviceMethodName = "obtainAllGoodsInfos", error = "获取商品信息失败")
     public String obtainAllGoodsInfos() {
         return null;
     }
@@ -38,7 +38,7 @@ public class GoodsController {
      */
     @RequestMapping(value = "/listGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = ListGoodsInfosModel.class, serviceName = "goodsService", serviceMethodName = "listGoodsInfos", error = "分页查询商品列表失败")
+    @ApiRestAction(modelClass = ListGoodsInfosModel.class, serviceClass = GoodsService.class, serviceMethodName = "listGoodsInfos", error = "分页查询商品列表失败")
     public String listGoodsInfos() {
         return null;
     }
@@ -50,7 +50,7 @@ public class GoodsController {
      */
     @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = ObtainGoodsInfoModel.class, serviceName = "goodsService", serviceMethodName = "obtainGoodsInfo", error = "获取商品信息失败")
+    @ApiRestAction(modelClass = ObtainGoodsInfoModel.class, serviceClass = GoodsService.class, serviceMethodName = "obtainGoodsInfo", error = "获取商品信息失败")
     public String obtainGoodsInfo() {
         return null;
     }
@@ -62,7 +62,7 @@ public class GoodsController {
      */
     @RequestMapping(value = "/saveGoods", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = SaveGoodsModel.class, serviceName = "goodsService", serviceMethodName = "saveGoods", error = "保存商品信息失败")
+    @ApiRestAction(modelClass = SaveGoodsModel.class, serviceClass = GoodsService.class, serviceMethodName = "saveGoods", error = "保存商品信息失败")
     public String saveGoods() {
         return null;
     }

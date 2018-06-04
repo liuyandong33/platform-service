@@ -12,16 +12,29 @@ import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Aspect
 @Component
 public class CallActionAspect {
+    @Autowired
+    private ApplicationContext applicationContext;
+    private ConcurrentHashMap<Class<?>, Object> serviceMap = new ConcurrentHashMap<Class<?>, Object>();
+
+    private Object obtainService(Class<?> serviceClass) {
+        if (!serviceMap.contains(serviceClass)) {
+            serviceMap.put(serviceClass, applicationContext.getBean(serviceClass));
+        }
+        return serviceMap.get(serviceClass);
+    }
+
     @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(apiRestAction)")
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
@@ -29,7 +42,7 @@ public class CallActionAspect {
 
         Throwable throwable = null;
         try {
-            returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceName(), apiRestAction.serviceMethodName());
+            returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
             returnValue = GsonUtils.toJson(returnValue);
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
@@ -48,25 +61,18 @@ public class CallActionAspect {
         return returnValue;
     }
 
-    public Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, String serviceName, String serviceMethodName) throws Throwable {
-        Object target = proceedingJoinPoint.getTarget();
-        Class<?> targetClass = target.getClass();
+    public Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
         Object returnValue = null;
-        if (modelClass != BasicModel.class && StringUtils.isNotBlank(serviceName) && StringUtils.isNotBlank(serviceMethodName)) {
+        if (modelClass != BasicModel.class && serviceClass != Object.class && StringUtils.isNotBlank(serviceMethodName)) {
             BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters);
             model.validateAndThrow();
-
-            Field field = targetClass.getDeclaredField(serviceName);
-            ValidateUtils.notNull(field, "系统异常！");
-            field.setAccessible(true);
-
-            Class<?> serviceClass = field.getType();
 
             Method method = serviceClass.getDeclaredMethod(serviceMethodName, modelClass);
             ValidateUtils.notNull(method, "系统异常！");
 
             method.setAccessible(true);
-            returnValue = method.invoke(field.get(target), model);
+
+            returnValue = method.invoke(obtainService(serviceClass), model);
         } else {
             returnValue = proceedingJoinPoint.proceed();
         }
