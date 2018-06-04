@@ -70,8 +70,8 @@ public class UserService {
         Map<String, String> obtainBranchInfoRequestParameters = new HashMap<String, String>();
         obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString());
         obtainBranchInfoRequestParameters.put("userId", userId.toString());
-        ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
-        Validate.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
+//        ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
+//        Validate.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
@@ -79,7 +79,7 @@ public class UserService {
         data.put("appPrivileges", appPrivileges);
         data.put("posPrivileges", posPrivileges);
         data.put("backgroundPrivileges", backgroundPrivileges);
-        data.put("branch", obtainBranchInfoApiRest.getData());
+//        data.put("branch", obtainBranchInfoApiRest.getData());
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
