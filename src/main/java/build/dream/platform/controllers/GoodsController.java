@@ -55,9 +55,14 @@ public class GoodsController {
         return null;
     }
 
+    /**
+     * 保存商品信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/saveGoods", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = SaveGoodsModel.class, serviceName = "goodsService", serviceMethodName = "saveGoods", error = "获取商品信息失败")
+    @ApiRestAction(modelClass = SaveGoodsModel.class, serviceName = "goodsService", serviceMethodName = "saveGoods", error = "保存商品信息失败")
     public String saveGoods() {
         return null;
     }
