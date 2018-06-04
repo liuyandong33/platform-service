@@ -25,7 +25,6 @@ public class CallActionAspect {
     @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(apiRestAction)")
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        Object target = proceedingJoinPoint.getTarget();
         Object returnValue = null;
         try {
             returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceName(), apiRestAction.serviceMethodName());
