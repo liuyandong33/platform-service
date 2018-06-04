@@ -26,31 +26,9 @@ public class CallActionAspect {
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         Object target = proceedingJoinPoint.getTarget();
-        Class<?> targetClass = target.getClass();
         Object returnValue = null;
-
         try {
-            Class<? extends BasicModel> modelClass = apiRestAction.modelClass();
-            String serviceName = apiRestAction.serviceName();
-            String serviceMethodName = apiRestAction.serviceMethodName();
-            if (modelClass != BasicModel.class && StringUtils.isNotBlank(serviceName) && StringUtils.isNotBlank(serviceMethodName)) {
-                BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters);
-                model.validateAndThrow();
-
-                Field field = targetClass.getDeclaredField(serviceName);
-                Validate.notNull(field);
-                field.setAccessible(true);
-
-                Class<?> serviceClass = field.getType();
-
-                Method method = serviceClass.getDeclaredMethod(serviceMethodName, modelClass);
-                Validate.notNull(method);
-
-                method.setAccessible(true);
-                returnValue = method.invoke(field.get(target), model);
-            } else {
-                returnValue = proceedingJoinPoint.proceed();
-            }
+            returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceName(), apiRestAction.serviceMethodName());
             returnValue = GsonUtils.toJson(returnValue);
         } catch (InvocationTargetException e) {
             Throwable throwable = e.getTargetException();
@@ -62,6 +40,31 @@ public class CallActionAspect {
         } catch (Throwable throwable) {
             LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
             returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
+        }
+        return returnValue;
+    }
+
+    public Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, String serviceName, String serviceMethodName) throws Throwable {
+        Object target = proceedingJoinPoint.getTarget();
+        Class<?> targetClass = target.getClass();
+        Object returnValue = null;
+        if (modelClass != BasicModel.class && StringUtils.isNotBlank(serviceName) && StringUtils.isNotBlank(serviceMethodName)) {
+            BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters);
+            model.validateAndThrow();
+
+            Field field = targetClass.getDeclaredField(serviceName);
+            Validate.notNull(field);
+            field.setAccessible(true);
+
+            Class<?> serviceClass = field.getType();
+
+            Method method = serviceClass.getDeclaredMethod(serviceMethodName, modelClass);
+            Validate.notNull(method);
+
+            method.setAccessible(true);
+            returnValue = method.invoke(field.get(target), model);
+        } else {
+            returnValue = proceedingJoinPoint.proceed();
         }
         return returnValue;
     }
