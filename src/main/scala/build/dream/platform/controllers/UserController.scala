@@ -75,7 +75,6 @@ class UserController extends BasicController {
     @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
     @ApiRestAction(modelClass = classOf[BatchDeleteUserModel], serviceName = "userService", serviceMethodName = "batchDeleteUser", error = "批量删除用户失败")
-    @ApiRestAction(error = "批量删除用户失败")
     def batchDeleteUser: String = {
         null
     }

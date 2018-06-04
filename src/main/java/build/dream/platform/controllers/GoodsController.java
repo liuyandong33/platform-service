@@ -31,12 +31,9 @@ public class GoodsController {
      */
     @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "获取商品信息失败")
-    public String obtainAllGoodsInfos() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        ObtainAllGoodsInfosModel obtainAllGoodsInfosModel = ApplicationHandler.instantiateObject(ObtainAllGoodsInfosModel.class, requestParameters);
-        obtainAllGoodsInfosModel.validateAndThrow();
-        return GsonUtils.toJson(goodsService.obtainAllGoodsInfos(obtainAllGoodsInfosModel));
+    @ApiRestAction(modelClass = ObtainAllGoodsInfosModel.class, serviceName = "goodsService", serviceMethodName = "obtainAllGoodsInfos", error = "获取商品信息失败")
+    public String obtainAllGoodsInfos() {
+        return null;
     }
 
     /**
