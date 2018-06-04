@@ -33,15 +33,17 @@ public class CallActionAspect {
             returnValue = GsonUtils.toJson(returnValue);
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
-        } catch (ApiException e) {
-            throwable = e;
         } catch (Throwable t) {
             throwable = new RuntimeException(apiRestAction.error());
         }
 
         if (throwable != null) {
             LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
-            returnValue = GsonUtils.toJson(new ApiRest(throwable));
+            if (throwable instanceof ApiException) {
+                returnValue = GsonUtils.toJson(new ApiRest(throwable));
+            } else {
+                returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
+            }
         }
         return returnValue;
     }

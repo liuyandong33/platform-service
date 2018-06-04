@@ -2,10 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.CommonUtils;
-import build.dream.common.utils.ProxyUtils;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.UpdateModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppPrivilegeMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
@@ -71,7 +68,7 @@ public class UserService {
         obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString());
         obtainBranchInfoRequestParameters.put("userId", userId.toString());
         ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
-        Validate.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
+        ValidateUtils.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
