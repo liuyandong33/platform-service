@@ -26,6 +26,8 @@ public class OssController {
         String bucket = "image-check-local";
         String dir = "user-dir";
 
+        String host = "http://" + bucket + "." + endpoint;
+
         Date expiration = DateUtils.addSeconds(new Date(), 300000);
 
         List<Object[]> conditions = new ArrayList<Object[]>();
@@ -39,12 +41,11 @@ public class OssController {
         callback.put("callbackBody", "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
         callback.put("callbackBodyType", "application/x-www-form-urlencoded");
 
-        Map<String, String> data = OSSUtils.obtainPolicy(accessId, accessKey, endpoint, bucket, dir, expiration, conditions, callback);
+        Map<String, String> data = OSSUtils.obtainPolicy(accessId, accessKey, host, dir, expiration, conditions, callback);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
-        System.out.println(GsonUtils.toJson(apiRest));
         return GsonUtils.toJson(apiRest);
     }
 
