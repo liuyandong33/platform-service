@@ -43,7 +43,6 @@ public class CallActionAspect {
         Throwable throwable = null;
         try {
             returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
-            returnValue = GsonUtils.toJson(returnValue);
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
         } catch (Throwable t) {
@@ -73,6 +72,9 @@ public class CallActionAspect {
             method.setAccessible(true);
 
             returnValue = method.invoke(obtainService(serviceClass), model);
+            if (!(returnValue instanceof String)) {
+                returnValue = GsonUtils.toJson(returnValue);
+            }
         } else {
             returnValue = proceedingJoinPoint.proceed();
         }

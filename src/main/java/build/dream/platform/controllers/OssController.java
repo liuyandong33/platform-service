@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Controller
@@ -50,7 +49,7 @@ public class OssController {
         callback.put("callbackBody", "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
         callback.put("callbackBodyType", "application/x-www-form-urlencoded");
 
-        Map<String, String> data = new LinkedHashMap<String, String>();
+        Map<String, String> data = new HashMap<String, String>();
         data.put("accessid", accessId);
         data.put("policy", encodedPolicy);
         data.put("signature", signature);
@@ -60,7 +59,6 @@ public class OssController {
         data.put("callback", Base64.encodeBase64String(GsonUtils.toJson(callback).getBytes(Constants.CHARSET_NAME_UTF_8)));
 
         ApiRest apiRest = new ApiRest();
-        apiRest = new ApiRest();
         apiRest.setData(data);
         apiRest.setSuccessful(true);
         return GsonUtils.toJson(apiRest);
