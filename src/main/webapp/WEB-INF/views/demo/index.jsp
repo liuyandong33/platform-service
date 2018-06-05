@@ -16,7 +16,7 @@
                 if (result["successful"]) {
                     var data = result["data"];
                     var formData = new FormData();
-                    formData.append("key", "user-dir/fhc03.jpg");
+                    formData.append("key", data["dir"] + "/fhc03.jpg");
                     formData.append("policy", data["policy"]);
                     formData.append("OSSAccessKeyId", data["accessid"]);
                     formData.append("success_action_status", 200);
