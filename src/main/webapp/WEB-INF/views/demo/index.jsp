@@ -18,7 +18,7 @@
                     var formData = new FormData();
                     formData.append("key", data["dir"] + "/fhc03.jpg");
                     formData.append("policy", data["policy"]);
-                    formData.append("OSSAccessKeyId", data["accessid"]);
+                    formData.append("OSSAccessKeyId", data["accessId"]);
                     formData.append("success_action_status", 200);
                     formData.append("callback", data["callback"]);
                     formData.append("signature", data["signature"]);
@@ -32,6 +32,9 @@
                         contentType : false,
                         success: function (result) {
                             alert(JSON.stringify(result))
+                        },
+                        error: function (error) {
+                            alert(JSON.stringify(error))
                         }
                     });
                 } else {

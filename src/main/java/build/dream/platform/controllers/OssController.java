@@ -36,8 +36,8 @@ public class OssController {
 
 
         Map<String, String> callback = new HashMap<String, String>();
-        callback.put("callbackUrl", "https://www.smartpos.top/portal/tenantWebService/showTenantInfo");
-        callback.put("callbackHost", "oss-demo.aliyuncs.com");
+        callback.put("callbackUrl", "https://check-local.smartpos.top/zd1/ct2/oss/obtainPolicy");
+        callback.put("callbackHost", "check-local.smartpos.top");
         callback.put("callbackBody", "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
         callback.put("callbackBodyType", "application/x-www-form-urlencoded");
 
