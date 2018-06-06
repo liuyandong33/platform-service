@@ -46,7 +46,7 @@ public class CallActionAspect {
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
         } catch (Throwable t) {
-            throwable = new RuntimeException(apiRestAction.error());
+            throwable = t;
         }
 
         if (throwable != null) {
