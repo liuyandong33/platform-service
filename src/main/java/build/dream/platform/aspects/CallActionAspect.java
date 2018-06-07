@@ -7,7 +7,6 @@ import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.common.utils.ValidateUtils;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -67,8 +66,6 @@ public class CallActionAspect {
             model.validateAndThrow();
 
             Method method = serviceClass.getDeclaredMethod(serviceMethodName, modelClass);
-            ValidateUtils.notNull(method, "系统异常！");
-
             method.setAccessible(true);
 
             returnValue = method.invoke(obtainService(serviceClass), model);
