@@ -28,7 +28,7 @@ public class CallActionAspect {
     private ConcurrentHashMap<Class<?>, Object> serviceMap = new ConcurrentHashMap<Class<?>, Object>();
 
     private Object obtainService(Class<?> serviceClass) {
-        if (!serviceMap.contains(serviceClass)) {
+        if (!serviceMap.containsKey(serviceClass)) {
             serviceMap.put(serviceClass, applicationContext.getBean(serviceClass));
         }
         return serviceMap.get(serviceClass);
