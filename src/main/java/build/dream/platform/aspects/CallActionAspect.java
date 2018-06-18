@@ -62,7 +62,7 @@ public class CallActionAspect {
     public Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName, String datePattern) throws Throwable {
         Object returnValue = null;
         if (modelClass != BasicModel.class && serviceClass != Object.class && StringUtils.isNotBlank(serviceMethodName)) {
-            BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters, datePattern);
+            BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters, datePattern, "");
             model.validateAndThrow();
 
             Method method = serviceClass.getDeclaredMethod(serviceMethodName, modelClass);
