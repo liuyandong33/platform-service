@@ -8,13 +8,34 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class DataSourceConfiguration {
-    @Bean(name = "dataSource")
-    @Primary
-    @ConfigurationProperties(prefix = "datasource")
-    public DataSource dataSource() {
+    @Bean(name = "primaryDataSource")
+    @ConfigurationProperties(prefix = "primary.datasource")
+    public DataSource primaryDataSource() {
         return DataSourceBuilder.create().type(DruidDataSource.class).build();
+    }
+
+    @Bean(name = "secondaryDataSource")
+    @ConfigurationProperties(prefix = "secondary.datasource")
+    public DataSource secondaryDataSource() {
+        return DataSourceBuilder.create().type(DruidDataSource.class).build();
+    }
+
+    @Bean
+    @Primary
+    public RoutingDataSource routingDataSource() {
+        RoutingDataSource routingDataSource = new RoutingDataSource();
+        DataSource primaryDataSource = primaryDataSource();
+        DataSource secondaryDataSource = secondaryDataSource();
+        Map<Object, Object> targetDataSources = new HashMap<Object, Object>();
+        targetDataSources.put("primaryDataSource", primaryDataSource);
+        targetDataSources.put("secondaryDataSource", secondaryDataSource);
+        routingDataSource.setTargetDataSources(targetDataSources);
+        routingDataSource.setDefaultTargetDataSource(primaryDataSource);
+        return routingDataSource;
     }
 }
