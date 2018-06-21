@@ -7,7 +7,6 @@ import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.platform.configurations.DataSourceContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -42,10 +41,6 @@ public class CallActionAspect {
 
         Throwable throwable = null;
         try {
-            String dataSource = requestParameters.get("dataSource");
-            if (StringUtils.isNotBlank(dataSource)) {
-                DataSourceContextHolder.setDataSourceType(requestParameters.get("dataSource"));
-            }
             returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
