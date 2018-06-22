@@ -75,7 +75,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             // 启动所有定时任务
             jobScheduler.scheduler();
         } catch (Exception e) {
-            LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e.getClass().getSimpleName(), e.getMessage());
+            LogUtils.error("初始化数据失败", PLATFORM_SERVICE_SERVLET_CONTEXT_LISTENER_SIMPLE_NAME, "contextInitialized", e);
         }
     }
 
