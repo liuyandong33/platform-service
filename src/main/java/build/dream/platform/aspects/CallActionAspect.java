@@ -1,6 +1,7 @@
 package build.dream.platform.aspects;
 
 import build.dream.common.annotations.ApiRestAction;
+import build.dream.common.annotations.ModelAndViewAction;
 import build.dream.common.api.ApiRest;
 import build.dream.common.exceptions.ApiException;
 import build.dream.common.models.BasicModel;
@@ -14,6 +15,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,6 +59,32 @@ public class CallActionAspect {
             }
         }
         return returnValue;
+    }
+
+    @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(modelAndViewAction)")
+    public Object callModelAndViewAction(ProceedingJoinPoint proceedingJoinPoint, ModelAndViewAction modelAndViewAction) {
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        Object returnValue = null;
+
+        Throwable throwable = null;
+        try {
+            returnValue = callAction(proceedingJoinPoint, requestParameters, modelAndViewAction.modelClass(), modelAndViewAction.serviceClass(), modelAndViewAction.serviceMethodName());
+        } catch (InvocationTargetException e) {
+            throwable = e.getTargetException();
+        } catch (Throwable t) {
+            throwable = t;
+        }
+
+        ModelAndView modelAndView = new ModelAndView();
+        if (throwable != null) {
+            LogUtils.error(modelAndViewAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
+        } else {
+            modelAndView.setViewName(modelAndViewAction.viewName());
+            if (returnValue instanceof Map) {
+                modelAndView.addAllObjects((Map<String, ?>) returnValue);
+            }
+        }
+        return modelAndView;
     }
 
     public Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
