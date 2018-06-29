@@ -89,7 +89,7 @@ public class OrderService {
             orderDetail.setGoodsSpecificationName(goodsSpecification.getName());
             Integer quantity = goodsInfo.getQuantity();
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-                orderDetail.setPrice(goodsSpecification.getTenantPrice().multiply(BigDecimal.valueOf(quantity)));
+                orderDetail.setPrice(goodsSpecification.getTenantPrice());
                 orderDetail.setTotalAmount(goodsSpecification.getTenantPrice().multiply(BigDecimal.valueOf(quantity)));
                 orderDetail.setDiscountAmount(BigDecimal.ZERO);
                 orderDetail.setBranchId(goodsInfo.getBranchId());
@@ -126,11 +126,12 @@ public class OrderService {
     /**
      * 获取订单信息
      *
-     * @param orderInfoId
+     * @param obtainOrderInfoModel
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest obtainOrderInfo(BigInteger orderInfoId) {
+    public ApiRest obtainOrderInfo(ObtainOrderInfoModel obtainOrderInfoModel) {
+        BigInteger orderInfoId = obtainOrderInfoModel.getOrderInfoId();
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);

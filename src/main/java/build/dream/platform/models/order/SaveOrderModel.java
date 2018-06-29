@@ -1,15 +1,17 @@
 package build.dream.platform.models.order;
 
+import build.dream.common.annotations.JsonSchema;
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.List;
 
 public class SaveOrderModel extends BasicModel {
+    private static final Integer[] ORDER_TYPES = {Constants.ORDER_TYPE_TENANT_ORDER, Constants.ORDER_TYPE_AGENT_ORDER};
     @NotNull
     private Integer orderType;
 
@@ -19,6 +21,8 @@ public class SaveOrderModel extends BasicModel {
     private BigInteger tenantId;
     private BigInteger agentId;
 
+    @NotEmpty
+    @JsonSchema(value = Constants.GOODS_INFOS_SCHEMA_FILE_PATH)
     private List<GoodsInfo> goodsInfos;
 
     public Integer getOrderType() {
@@ -61,15 +65,10 @@ public class SaveOrderModel extends BasicModel {
         this.goodsInfos = goodsInfos;
     }
 
-    public void setGoodsInfos(String goodsInfos) {
-        ApplicationHandler.validateJson(goodsInfos, Constants.GOODS_INFOS_SCHEMA_FILE_PATH, "goodsInfos");
-        this.goodsInfos = GsonUtils.jsonToList(goodsInfos, GoodsInfo.class);
-    }
-
     @Override
     public void validateAndThrow() {
         super.validateAndThrow();
-        ApplicationHandler.inArray(new Integer[]{Constants.ORDER_TYPE_TENANT_ORDER, Constants.ORDER_TYPE_AGENT_ORDER}, orderType, "orderType");
+        ApplicationHandler.inArray(ORDER_TYPES, orderType, "orderType");
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             ApplicationHandler.notNull(tenantId, "tenantId");
             for (GoodsInfo goodsInfo : goodsInfos) {

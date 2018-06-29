@@ -3,12 +3,10 @@ package build.dream.platform.controllers;
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
 import build.dream.platform.services.OrderService;
-import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -31,14 +29,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "保存订单失败")
-    public String saveOrder() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        SaveOrderModel saveOrderModel = ApplicationHandler.instantiateObject(SaveOrderModel.class, requestParameters);
-        String goodsInfos = requestParameters.get("goodsInfos");
-        saveOrderModel.setGoodsInfos(goodsInfos);
-        saveOrderModel.validateAndThrow();
-        return GsonUtils.toJson(orderService.saveOrder(saveOrderModel));
+    @ApiRestAction(modelClass = SaveOrderModel.class, serviceClass = OrderService.class, serviceMethodName = "saveOrder", error = "保存订单失败")
+    public String saveOrder() {
+        return null;
     }
 
     /**
@@ -48,13 +41,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/obtainOrderInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "获取订单信息失败")
+    @ApiRestAction(modelClass = ObtainOrderInfoModel.class, serviceClass = OrderService.class, serviceMethodName = "obtainOrderInfo", error = "获取订单信息失败")
     public String obtainOrderInfo() {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        String orderInfoId = requestParameters.get("orderInfoId");
-        ApplicationHandler.notEmpty(orderInfoId, "orderInfoId");
-
-        return GsonUtils.toJson(orderService.obtainOrderInfo(NumberUtils.createBigInteger(orderInfoId)));
+        return null;
     }
 
     /**
@@ -64,12 +53,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/obtainAllOrderInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "获取订单信息失败")
-    public String obtainAllOrderInfos() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        ObtainAllOrderInfosModel obtainAllOrderInfosModel = ApplicationHandler.instantiateObject(ObtainAllOrderInfosModel.class, requestParameters);
-        obtainAllOrderInfosModel.validateAndThrow();
-        return GsonUtils.toJson(orderService.obtainAllOrderInfos(obtainAllOrderInfosModel));
+    @ApiRestAction(modelClass = ObtainAllOrderInfosModel.class, serviceClass = OrderService.class, serviceMethodName = "obtainAllOrderInfos", error = "获取订单信息失败")
+    public String obtainAllOrderInfos() {
+        return null;
     }
 
     /**
@@ -79,12 +65,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/batchDeleteOrders", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "批量删除订单失败")
-    public String batchDeleteOrders() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        BatchDeleteOrdersModel batchDeleteOrdersModel = ApplicationHandler.instantiateObject(BatchDeleteOrdersModel.class, requestParameters);
-        batchDeleteOrdersModel.validateAndThrow();
-        return GsonUtils.toJson(orderService.batchDeleteOrders(batchDeleteOrdersModel));
+    @ApiRestAction(modelClass = BatchDeleteOrdersModel.class, serviceClass = OrderService.class, serviceMethodName = "batchDeleteOrders", error = "批量删除订单失败")
+    public String batchDeleteOrders() {
+        return null;
     }
 
     /**
@@ -94,12 +77,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/deleteOrder", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "删除订单失败")
-    public String deleteOrder() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        DeleteOrderModel deleteOrderModel = ApplicationHandler.instantiateObject(DeleteOrderModel.class, requestParameters);
-        deleteOrderModel.validateAndThrow();
-        return GsonUtils.toJson(orderService.deleteOrder(deleteOrderModel));
+    @ApiRestAction(modelClass = DeleteOrderModel.class, serviceClass = OrderService.class, serviceMethodName = "deleteOrder", error = "删除订单失败")
+    public String deleteOrder() {
+        return null;
     }
 
     /**
@@ -109,13 +89,9 @@ public class OrderController extends BasicController {
      */
     @RequestMapping(value = "/doPay", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(error = "发起支付失败")
-    public String doPay() throws Exception {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
-        DoPayModel doPayModel = ApplicationHandler.instantiateObject(DoPayModel.class, requestParameters);
-        doPayModel.validateAndThrow();
-
-        return GsonUtils.toJson(orderService.doPay(doPayModel));
+    @ApiRestAction(modelClass = DoPayModel.class, serviceClass = OrderService.class, serviceMethodName = "doPay", error = "发起支付失败")
+    public String doPay() {
+        return null;
     }
 
     /**
