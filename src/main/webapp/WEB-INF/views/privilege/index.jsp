@@ -9,32 +9,40 @@
 <html>
 <head>
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../libraries/zTree_v3-v3.5.16/css/metroStyle/metroStyle.css">
     <script type="text/javascript" src="../libraries/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../libraries/zTree_v3-v3.5.16/js/jquery.ztree.all-3.5.js"></script>
     <script type="text/javascript">
-        function doPay() {
-            var paidScene = 7;
-            $.post("../order/doPay", {orderInfoId: 1, userId: 1, paidScene: paidScene}, function (result) {
+        var setting = {
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pidKey: "pId",
+                    rootId: "0"
+                }
+            },
+            view: {
+                selectedMulti: false
+            },
+            check: {
+                enable: true,
+                chkStyle: "checkbox"
+            }
+        };
+        $(function () {
+            $.get("../privilege/listBackgroundPrivileges", {}, function (result) {
                 if (result["successful"]) {
-                    var data = result["data"];
-                    if (paidScene == 1) {
-
-                    } else if (paidScene == 2) {
-
-                    } else if (paidScene == 7 || paidScene == 8) {
-                        var index = data.lastIndexOf("<script>");
-                        var form = $(data.substring(0, index));
-                        form.css({"display": "none"});
-                        form.appendTo("body");
-                        form.submit();
-                    }
+                    var zTreeNodes = result["data"];
+                    var zTreeObj = $.fn.zTree.init($("#zTree"), setting, zTreeNodes);
                 } else {
                     alert(result["error"]);
                 }
             }, "json");
-        }
+        });
     </script>
 </head>
 <body>
-<button onclick="doPay();">aa</button>
+<div id="zTree" class="ztree"></div>
 </body>
 </html>
