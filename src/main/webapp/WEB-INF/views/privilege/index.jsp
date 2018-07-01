@@ -30,19 +30,31 @@
                 chkStyle: "checkbox"
             }
         };
+
+        var zTreeObj = null;
         $(function () {
             $.get("../privilege/listBackgroundPrivileges", {}, function (result) {
                 if (result["successful"]) {
                     var zTreeNodes = result["data"];
-                    var zTreeObj = $.fn.zTree.init($("#zTree"), setting, zTreeNodes);
+                    zTreeObj = $.fn.zTree.init($("#zTree"), setting, zTreeNodes);
                 } else {
                     alert(result["error"]);
                 }
             }, "json");
         });
+
+        function save() {
+            var checkedNodes = zTreeObj.getCheckedNodes(true);
+            var privilegeIds = [];
+            for (var index in checkedNodes) {
+                privilegeIds.push(checkedNodes[index]["id"]);
+            }
+        }
     </script>
 </head>
 <body>
 <div id="zTree" class="ztree"></div>
+
+<button onclick="save();">保存</button>
 </body>
 </html>
