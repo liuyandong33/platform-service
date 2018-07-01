@@ -4,7 +4,7 @@ import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
 
-public class FindWeiXinOpenPlatformApplicationModel extends BasicModel {
+public class ObtainWeiXinOpenPlatformApplicationModel extends BasicModel {
     @NotNull
     public String appId;
 

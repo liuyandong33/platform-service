@@ -6,7 +6,7 @@ import build.dream.common.saas.domains.WeiXinPublicAccount;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.FindWeiXinOpenPlatformApplicationModel;
+import build.dream.platform.models.weixin.ObtainWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
 import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
 import build.dream.platform.utils.DatabaseHelper;
@@ -14,12 +14,15 @@ import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+
 @Service
 public class WeiXinService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest deleteWeiXinOpenPlatformApplication(DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel) {
+        String appId = deleteWeiXinOpenPlatformApplicationModel.getAppId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, deleteWeiXinOpenPlatformApplicationModel.getAppId());
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         Validate.notNull(weiXinOpenPlatformApplication, "微信开放平台应用不存在！");
         weiXinOpenPlatformApplication.setDeleted(true);
@@ -34,9 +37,10 @@ public class WeiXinService {
     }
 
     @Transactional(readOnly = true)
-    public ApiRest findWeiXinOpenPlatformApplication(FindWeiXinOpenPlatformApplicationModel findWeiXinOpenPlatformApplicationModel) {
+    public ApiRest obtainWeiXinOpenPlatformApplication(ObtainWeiXinOpenPlatformApplicationModel obtainWeiXinOpenPlatformApplicationModel) {
+        String appId = obtainWeiXinOpenPlatformApplicationModel.getAppId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, findWeiXinOpenPlatformApplicationModel.getAppId());
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinOpenPlatformApplication);
@@ -48,26 +52,33 @@ public class WeiXinService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinPublicAccount(SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel) {
+        BigInteger tenantId = saveWeiXinPublicAccountModel.getTenantId();
+        String name = saveWeiXinPublicAccountModel.getName();
+        String appId = saveWeiXinPublicAccountModel.getAppId();
+        String appSecret = saveWeiXinPublicAccountModel.getAppSecret();
+        String originalId = saveWeiXinPublicAccountModel.getOriginalId();
+        BigInteger userId = saveWeiXinPublicAccountModel.getUserId();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, saveWeiXinPublicAccountModel.getTenantId());
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
         if (weiXinPublicAccount == null) {
             weiXinPublicAccount = new WeiXinPublicAccount();
-            weiXinPublicAccount.setTenantId(saveWeiXinPublicAccountModel.getTenantId());
-            weiXinPublicAccount.setName(saveWeiXinPublicAccountModel.getName());
-            weiXinPublicAccount.setAppId(saveWeiXinPublicAccountModel.getAppId());
-            weiXinPublicAccount.setAppSecret(saveWeiXinPublicAccountModel.getAppSecret());
-            weiXinPublicAccount.setOriginalId(saveWeiXinPublicAccountModel.getOriginalId());
-            weiXinPublicAccount.setCreateUserId(saveWeiXinPublicAccountModel.getUserId());
-            weiXinPublicAccount.setLastUpdateUserId(saveWeiXinPublicAccountModel.getUserId());
+            weiXinPublicAccount.setTenantId(tenantId);
+            weiXinPublicAccount.setName(name);
+            weiXinPublicAccount.setAppId(appId);
+            weiXinPublicAccount.setAppSecret(appSecret);
+            weiXinPublicAccount.setOriginalId(originalId);
+            weiXinPublicAccount.setCreateUserId(userId);
+            weiXinPublicAccount.setLastUpdateUserId(userId);
             weiXinPublicAccount.setLastUpdateRemark("新增微信公众号！");
             DatabaseHelper.insert(weiXinPublicAccount);
         } else {
-            weiXinPublicAccount.setName(saveWeiXinPublicAccountModel.getName());
-            weiXinPublicAccount.setAppId(saveWeiXinPublicAccountModel.getAppId());
-            weiXinPublicAccount.setAppSecret(saveWeiXinPublicAccountModel.getAppSecret());
-            weiXinPublicAccount.setOriginalId(saveWeiXinPublicAccountModel.getOriginalId());
-            weiXinPublicAccount.setLastUpdateUserId(saveWeiXinPublicAccountModel.getUserId());
+            weiXinPublicAccount.setName(name);
+            weiXinPublicAccount.setAppId(appId);
+            weiXinPublicAccount.setAppSecret(appSecret);
+            weiXinPublicAccount.setOriginalId(appSecret);
+            weiXinPublicAccount.setLastUpdateUserId(userId);
             weiXinPublicAccount.setLastUpdateRemark("修改微信公众号！");
             DatabaseHelper.update(weiXinPublicAccount);
         }

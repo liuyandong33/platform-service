@@ -1,8 +1,7 @@
 package build.dream.platform.models.agentcontract;
 
+import build.dream.common.annotations.JsonSchema;
 import build.dream.common.models.BasicModel;
-import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotNull;
@@ -13,14 +12,20 @@ import java.util.List;
 
 public class SaveAgentContractModel extends BasicModel {
     private BigInteger agentContractId;
+
     @NotNull
     private BigInteger agentId;
+
     @NotNull
     private Date startTime;
+
     @NotNull
     private Date endTime;
+
     @NotNull
     private BigInteger userId;
+
+    @JsonSchema(value = Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH)
     private List<ContractPriceInfo> contractPriceInfos;
 
     public BigInteger getAgentContractId() {
@@ -69,11 +74,6 @@ public class SaveAgentContractModel extends BasicModel {
 
     public void setContractPriceInfos(List<ContractPriceInfo> contractPriceInfos) {
         this.contractPriceInfos = contractPriceInfos;
-    }
-
-    public void setContractPriceInfos(String contractPriceInfos) {
-        ApplicationHandler.validateJson(contractPriceInfos, Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH, "contractPriceInfos");
-        this.contractPriceInfos = GsonUtils.jsonToList(contractPriceInfos, ContractPriceInfo.class);
     }
 
     public static class ContractPriceInfo {
