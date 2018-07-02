@@ -156,21 +156,31 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
-        SearchModel orderSearchModel = new SearchModel(true);
-        long total = DatabaseHelper.count(OrderInfo.class, orderSearchModel);
+        int page = obtainAllOrderInfosModel.getPage();
+        int rows = obtainAllOrderInfosModel.getRows();
+        BigInteger tenantId = obtainAllOrderInfosModel.getTenantId();
+        BigInteger agentId = obtainAllOrderInfosModel.getAgentId();
 
-        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
+        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
+        if (tenantId != null) {
+            searchConditions.add(new SearchCondition("tenant_id", Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, tenantId));
+        }
+
+        if (agentId != null) {
+            searchConditions.add(new SearchCondition("agent_id", Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, agentId));
+        }
+        SearchModel searchModel = new SearchModel();
+        searchModel.setSearchConditions(searchConditions);
+        long total = DatabaseHelper.count(OrderInfo.class, searchModel);
+
+        List<Map<String, Object>> orders = new ArrayList<Map<String, Object>>();
         if (total > 0) {
-            PagedSearchModel orderInfoPagedSearchModel = new PagedSearchModel(true);
-            orderInfoPagedSearchModel.setPage(obtainAllOrderInfosModel.getPage());
-            orderInfoPagedSearchModel.setRows(obtainAllOrderInfosModel.getRows());
-            if (obtainAllOrderInfosModel.getTenantId() != null) {
-                orderInfoPagedSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAllOrderInfosModel.getTenantId());
-            }
-            if (obtainAllOrderInfosModel.getAgentId() != null) {
-                orderInfoPagedSearchModel.addSearchCondition("agent_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainAllOrderInfosModel.getAgentId());
-            }
-            List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, orderInfoPagedSearchModel);
+            PagedSearchModel pagedSearchModel = new PagedSearchModel();
+            pagedSearchModel.setSearchConditions(searchConditions);
+            pagedSearchModel.setPage(obtainAllOrderInfosModel.getPage());
+            pagedSearchModel.setRows(obtainAllOrderInfosModel.getRows());
+            List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, pagedSearchModel);
 
             if (CollectionUtils.isNotEmpty(orderInfos)) {
                 List<BigInteger> orderIds = new ArrayList<BigInteger>();
@@ -192,13 +202,13 @@ public class OrderService {
                 }
 
                 for (OrderInfo orderInfo : orderInfos) {
-                    rows.add(OrderUtils.buildOrderInfo(orderInfo, orderDetailsMap.get(orderInfo.getId())));
+                    orders.add(OrderUtils.buildOrderInfo(orderInfo, orderDetailsMap.get(orderInfo.getId())));
                 }
             }
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("rows", rows);
+        data.put("rows", orders);
         data.put("total", total);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);
