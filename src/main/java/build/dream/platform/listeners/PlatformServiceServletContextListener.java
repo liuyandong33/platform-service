@@ -1,8 +1,6 @@
 package build.dream.platform.listeners;
 
 import build.dream.common.listeners.BasicServletContextListener;
-import build.dream.common.saas.domains.Configuration;
-import build.dream.common.saas.domains.SystemPartition;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.*;
@@ -13,7 +11,6 @@ import build.dream.platform.services.ConfigurationService;
 import build.dream.platform.services.SystemPartitionService;
 import build.dream.platform.services.SystemUserService;
 import build.dream.platform.services.TenantSecretKeyService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,17 +40,6 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         super.contextInitialized(servletContextEvent);
         super.previousInjectionBean(servletContextEvent.getServletContext(), CommonMapper.class);
         try {
-            String deploymentEnvironment = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
-            List<SystemPartition> systemPartitions = systemPartitionService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            if (CollectionUtils.isNotEmpty(systemPartitions)) {
-                SystemPartitionUtils.loadSystemPartitions(systemPartitions, deploymentEnvironment);
-            }
-
-            List<Configuration> configurations = configurationService.findAllByDeploymentEnvironment(deploymentEnvironment);
-            if (CollectionUtils.isNotEmpty(configurations)) {
-                ConfigurationUtils.loadConfigurations(configurations);
-            }
-
             SearchModel systemUserSearchModel = new SearchModel(true);
             systemUserSearchModel.addSearchCondition("user_type", Constants.SQL_OPERATION_SYMBOL_EQUAL, BigInteger.valueOf(3));
             List<SystemUser> systemUsers = systemUserService.findAll(systemUserSearchModel);
