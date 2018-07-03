@@ -4,7 +4,6 @@ import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.services.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController extends BasicController {
-    @Autowired
-    private LoginService loginService;
-
     @RequestMapping(value = "/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = ListGoodsInfosModel.class, serviceClass = LoginService.class, serviceMethodName = "login", error = "登录失败")
