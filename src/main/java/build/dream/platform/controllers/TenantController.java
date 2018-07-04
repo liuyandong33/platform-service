@@ -4,6 +4,7 @@ import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
+import build.dream.platform.models.tenant.ObtainPayAccountsModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
 import build.dream.platform.services.TenantService;
 import org.springframework.http.MediaType;
@@ -49,6 +50,13 @@ public class TenantController extends BasicController {
     @ResponseBody
     @ApiRestAction(modelClass = FindGoodsInfoModel.class, serviceClass = TenantService.class, serviceMethodName = "findGoodsInfo", error = "查询产品购买信息失败")
     public String findGoodsInfo() {
+        return null;
+    }
+
+    @RequestMapping(value = "/obtainPayAccounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = ObtainPayAccountsModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainPayAccounts", error = "获取支付账号失败")
+    public String obtainPayAccounts() {
         return null;
     }
 }
