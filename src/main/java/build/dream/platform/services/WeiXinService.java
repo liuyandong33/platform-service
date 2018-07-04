@@ -4,6 +4,8 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
 import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.saas.domains.WeiXinPublicAccount;
+import build.dream.common.utils.CacheUtils;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.*;
@@ -147,6 +149,8 @@ public class WeiXinService {
         String operationCertificatePassword = saveWeiXinPayAccountModel.getOperationCertificatePassword();
         SearchModel searchModel = new SearchModel(true);
         boolean acceptanceModel = saveWeiXinPayAccountModel.getAcceptanceModel();
+        BigInteger userId = saveWeiXinPayAccountModel.getUserId();
+
         searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, searchModel);
@@ -185,6 +189,9 @@ public class WeiXinService {
             if (StringUtils.isNotBlank(operationCertificatePassword)) {
                 weiXinPayAccount.setOperationCertificatePassword(operationCertificatePassword);
             }
+            weiXinPayAccount.setCreateUserId(userId);
+            weiXinPayAccount.setLastUpdateUserId(userId);
+            weiXinPayAccount.setLastUpdateRemark("新增微信支付账号！");
             DatabaseHelper.insert(weiXinPayAccount);
         } else {
             weiXinPayAccount.setAppId(appId);
@@ -198,9 +205,12 @@ public class WeiXinService {
             weiXinPayAccount.setSubMchId(StringUtils.isNotBlank(subMchId) ? subMchId : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setOperationCertificate(StringUtils.isNotBlank(operationCertificate) ? operationCertificate : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setOperationCertificatePassword(StringUtils.isNotBlank(operationCertificatePassword) ? operationCertificatePassword : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setLastUpdateUserId(userId);
+            weiXinPayAccount.setLastUpdateRemark("修改微信支付账号！");
             DatabaseHelper.update(weiXinPayAccount);
         }
 
+        CacheUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
         ApiRest apiRest = new ApiRest();
         apiRest.setSuccessful(true);
         apiRest.setMessage("保存微信支付账号成功！");

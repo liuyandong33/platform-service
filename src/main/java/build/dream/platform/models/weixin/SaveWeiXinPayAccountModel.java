@@ -40,6 +40,9 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
     @NotNull
     private Boolean acceptanceModel;
 
+    @NotNull
+    private BigInteger userId;
+
     public BigInteger getTenantId() {
         return tenantId;
     }
@@ -142,6 +145,14 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
 
     public void setAcceptanceModel(Boolean acceptanceModel) {
         this.acceptanceModel = acceptanceModel;
+    }
+
+    public BigInteger getUserId() {
+        return userId;
+    }
+
+    public void setUserId(BigInteger userId) {
+        this.userId = userId;
     }
 
     @Override
