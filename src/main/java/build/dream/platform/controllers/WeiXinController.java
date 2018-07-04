@@ -66,7 +66,7 @@ public class WeiXinController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/saveWeiXinPayAccount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/saveWeiXinPayAccount", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = SaveWeiXinPayAccountModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinPayAccount", error = "保存微信支付账号失败")
     public String saveWeiXinPayAccount() {
