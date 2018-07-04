@@ -3,7 +3,7 @@ package build.dream.platform.services;
 import build.dream.common.saas.domains.SystemPartition;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

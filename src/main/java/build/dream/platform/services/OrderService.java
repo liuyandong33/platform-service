@@ -5,7 +5,10 @@ import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
-import build.dream.platform.utils.*;
+import build.dream.platform.utils.ActivationCodeUtils;
+import build.dream.platform.utils.GoodsUtils;
+import build.dream.platform.utils.OrderUtils;
+import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -302,7 +305,7 @@ public class OrderService {
         requestParameters.put("userId", doPayModel.getUserId().toString());
 
         ApiRest apiRest = null;
-        String notifyUrl = SystemPartitionUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
+        String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
         int paidScene = doPayModel.getPaidScene();
         if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_H5 || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_MINI_PROGRAM) {
             requestParameters.put("body", "订单支付");

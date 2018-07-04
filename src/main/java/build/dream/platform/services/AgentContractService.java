@@ -7,7 +7,7 @@ import build.dream.common.utils.SerialNumberGenerator;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AgentContractPriceInfoMapper;
 import build.dream.platform.models.agentcontract.*;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;

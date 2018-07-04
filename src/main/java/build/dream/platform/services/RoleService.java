@@ -13,7 +13,7 @@ import build.dream.platform.mappers.PosRoleMapper;
 import build.dream.platform.models.role.ListRolePrivilegesModel;
 import build.dream.platform.models.role.ListRolesModel;
 import build.dream.platform.models.role.SaveRolePrivilegesModel;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

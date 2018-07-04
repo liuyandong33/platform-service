@@ -8,7 +8,7 @@ import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
 import build.dream.platform.models.tenant.FindGoodsInfoModel;
 import build.dream.platform.models.tenant.ObtainTenantInfoModel;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;

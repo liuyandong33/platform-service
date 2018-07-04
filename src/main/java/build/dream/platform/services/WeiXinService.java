@@ -9,7 +9,7 @@ import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationMod
 import build.dream.platform.models.weixin.ObtainWeiXinOpenPlatformApplicationModel;
 import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
 import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

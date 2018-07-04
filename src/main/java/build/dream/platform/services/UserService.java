@@ -11,8 +11,6 @@ import build.dream.platform.models.user.BatchDeleteUserModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.models.user.ObtainUserInfoModel;
-import build.dream.platform.utils.DatabaseHelper;
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,18 +45,18 @@ public class UserService {
         userSearchModel.setWhereClause("login_name = #{loginName} OR email = #{loginName} OR mobile = #{loginName}");
         userSearchModel.addNamedParameter("loginName", loginName);
         SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userSearchModel);
-        Validate.notNull(systemUser, "用户不存在！");
+        ValidateUtils.notNull(systemUser, "用户不存在！");
 
         BigInteger userId = systemUser.getId();
 
         Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
-        Validate.notNull(tenant, "商户不存在！");
+        ValidateUtils.notNull(tenant, "商户不存在！");
         BigInteger tenantId = tenant.getId();
 
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
         tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
-        Validate.notNull(tenantSecretKey, "未检索到商户秘钥！");
+        ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
 
         List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
         List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);

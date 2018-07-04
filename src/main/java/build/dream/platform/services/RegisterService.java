@@ -6,7 +6,7 @@ import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

@@ -12,7 +12,7 @@ import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
-import build.dream.platform.utils.DatabaseHelper;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.platform.utils.GoodsUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
