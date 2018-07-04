@@ -41,6 +41,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
                 alipayAccountMap.put(alipayAccount.getTenantId() + "_" + alipayAccount.getBranchId(), GsonUtils.toJson(alipayAccount));
             }
 
+            CacheUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
             if (MapUtils.isNotEmpty(alipayAccountMap)) {
                 CacheUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
             }
