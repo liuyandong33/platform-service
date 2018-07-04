@@ -11,7 +11,8 @@ import java.util.List;
 @Service
 public class TenantSecretKeyService {
     @Transactional(readOnly = true)
-    public List<TenantSecretKey> findAll(SearchModel searchModel) {
+    public List<TenantSecretKey> findAll() {
+        SearchModel searchModel = new SearchModel(true);
         return DatabaseHelper.findAll(TenantSecretKey.class, searchModel);
     }
 }

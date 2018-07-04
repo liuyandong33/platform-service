@@ -2,14 +2,15 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
+import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.saas.domains.WeiXinPublicAccount;
+import build.dream.common.utils.CacheUtils;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.ObtainWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
-import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
-import build.dream.common.utils.DatabaseHelper;
+import build.dream.platform.models.weixin.*;
+import build.dream.platform.utils.DatabaseHelper;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,12 @@ import java.math.BigInteger;
 
 @Service
 public class WeiXinService {
+    /**
+     * 删除微信开放平台应用
+     *
+     * @param deleteWeiXinOpenPlatformApplicationModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest deleteWeiXinOpenPlatformApplication(DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel) {
         String appId = deleteWeiXinOpenPlatformApplicationModel.getAppId();
@@ -36,6 +43,12 @@ public class WeiXinService {
         return apiRest;
     }
 
+    /**
+     * 获取微信开放平台应用
+     *
+     * @param obtainWeiXinOpenPlatformApplicationModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinOpenPlatformApplication(ObtainWeiXinOpenPlatformApplicationModel obtainWeiXinOpenPlatformApplicationModel) {
         String appId = obtainWeiXinOpenPlatformApplicationModel.getAppId();
@@ -50,6 +63,12 @@ public class WeiXinService {
         return apiRest;
     }
 
+    /**
+     * 保存微信公众号
+     *
+     * @param saveWeiXinPublicAccountModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinPublicAccount(SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel) {
         BigInteger tenantId = saveWeiXinPublicAccountModel.getTenantId();
@@ -89,6 +108,12 @@ public class WeiXinService {
         return apiRest;
     }
 
+    /**
+     * 获取微信公众号
+     *
+     * @param obtainWeiXinPublicAccountModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinPublicAccount(ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel) {
         SearchModel searchModel = new SearchModel(true);
@@ -99,6 +124,96 @@ public class WeiXinService {
         apiRest.setClassName(WeiXinPublicAccount.class.getName());
         apiRest.setMessage("查询微信公众号成功！");
         apiRest.setSuccessful(true);
+        return apiRest;
+    }
+
+    /**
+     * 保存微信支付账号
+     *
+     * @param saveWeiXinPayAccountModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveWeiXinPayAccount(SaveWeiXinPayAccountModel saveWeiXinPayAccountModel) {
+        BigInteger tenantId = saveWeiXinPayAccountModel.getTenantId();
+        BigInteger branchId = saveWeiXinPayAccountModel.getBranchId();
+        String appId = saveWeiXinPayAccountModel.getAppId();
+        String mchId = saveWeiXinPayAccountModel.getMchId();
+        String apiSecretKey = saveWeiXinPayAccountModel.getApiSecretKey();
+        String subPublicAccountAppId = saveWeiXinPayAccountModel.getSubPublicAccountAppId();
+        String subOpenPlatformAppId = saveWeiXinPayAccountModel.getSubOpenPlatformAppId();
+        String subMiniProgramAppId = saveWeiXinPayAccountModel.getSubMiniProgramAppId();
+        String rsaPublicKey = saveWeiXinPayAccountModel.getRsaPublicKey();
+        String subMchId = saveWeiXinPayAccountModel.getSubMchId();
+        String operationCertificate = saveWeiXinPayAccountModel.getOperationCertificate();
+        String operationCertificatePassword = saveWeiXinPayAccountModel.getOperationCertificatePassword();
+        SearchModel searchModel = new SearchModel(true);
+        boolean acceptanceModel = saveWeiXinPayAccountModel.getAcceptanceModel();
+        BigInteger userId = saveWeiXinPayAccountModel.getUserId();
+
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+        WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, searchModel);
+        if (weiXinPayAccount == null) {
+            weiXinPayAccount = new WeiXinPayAccount();
+            weiXinPayAccount.setTenantId(tenantId);
+            weiXinPayAccount.setBranchId(branchId);
+            weiXinPayAccount.setAppId(appId);
+            weiXinPayAccount.setMchId(mchId);
+            weiXinPayAccount.setApiSecretKey(apiSecretKey);
+            weiXinPayAccount.setAcceptanceModel(acceptanceModel);
+            if (StringUtils.isNotBlank(subPublicAccountAppId)) {
+                weiXinPayAccount.setSubOpenPlatformAppId(subPublicAccountAppId);
+            }
+
+            if (StringUtils.isNotBlank(subOpenPlatformAppId)) {
+                weiXinPayAccount.setSubOpenPlatformAppId(subOpenPlatformAppId);
+            }
+
+            if (StringUtils.isNotBlank(subMiniProgramAppId)) {
+                weiXinPayAccount.setSubMiniProgramAppId(subMiniProgramAppId);
+            }
+
+            if (StringUtils.isNotBlank(rsaPublicKey)) {
+                weiXinPayAccount.setRsaPublicKey(rsaPublicKey);
+            }
+
+            if (StringUtils.isNotBlank(subMchId)) {
+                weiXinPayAccount.setSubMchId(subMchId);
+            }
+
+            if (StringUtils.isNotBlank(operationCertificate)) {
+                weiXinPayAccount.setOperationCertificate(operationCertificate);
+            }
+
+            if (StringUtils.isNotBlank(operationCertificatePassword)) {
+                weiXinPayAccount.setOperationCertificatePassword(operationCertificatePassword);
+            }
+            weiXinPayAccount.setCreateUserId(userId);
+            weiXinPayAccount.setLastUpdateUserId(userId);
+            weiXinPayAccount.setLastUpdateRemark("新增微信支付账号！");
+            DatabaseHelper.insert(weiXinPayAccount);
+        } else {
+            weiXinPayAccount.setAppId(appId);
+            weiXinPayAccount.setMchId(mchId);
+            weiXinPayAccount.setApiSecretKey(apiSecretKey);
+            weiXinPayAccount.setAcceptanceModel(acceptanceModel);
+            weiXinPayAccount.setSubPublicAccountAppId(StringUtils.isNotBlank(subPublicAccountAppId) ? subPublicAccountAppId : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setSubOpenPlatformAppId(StringUtils.isNotBlank(subOpenPlatformAppId) ? subOpenPlatformAppId : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setSubMiniProgramAppId(StringUtils.isNotBlank(subMiniProgramAppId) ? subMiniProgramAppId : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setRsaPublicKey(StringUtils.isNotBlank(rsaPublicKey) ? rsaPublicKey : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setSubMchId(StringUtils.isNotBlank(subMchId) ? subMchId : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setOperationCertificate(StringUtils.isNotBlank(operationCertificate) ? operationCertificate : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setOperationCertificatePassword(StringUtils.isNotBlank(operationCertificatePassword) ? operationCertificatePassword : Constants.VARCHAR_DEFAULT_VALUE);
+            weiXinPayAccount.setLastUpdateUserId(userId);
+            weiXinPayAccount.setLastUpdateRemark("修改微信支付账号！");
+            DatabaseHelper.update(weiXinPayAccount);
+        }
+
+        CacheUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
+        ApiRest apiRest = new ApiRest();
+        apiRest.setSuccessful(true);
+        apiRest.setMessage("保存微信支付账号成功！");
         return apiRest;
     }
 }

@@ -2,14 +2,18 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AlipayAccount;
-import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.CacheUtils;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.alipay.SaveAlipayAccountModel;
+import build.dream.platform.utils.DatabaseHelper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class AlipayService {
@@ -51,7 +55,7 @@ public class AlipayService {
             alipayAccount.setAccount(account);
             alipayAccount.setAppId(appId);
             alipayAccount.setPartnerId(partnerId);
-            alipayAccount.setStoreId(storeId);
+            alipayAccount.setStoreId(StringUtils.isNotBlank(storeId) ? storeId : Constants.VARCHAR_DEFAULT_VALUE);
             alipayAccount.setAlipayPublicKey(alipayPublicKey);
             alipayAccount.setApplicationPublicKey(applicationPublicKey);
             alipayAccount.setApplicationPrivateKey(applicationPrivateKey);
@@ -61,9 +65,18 @@ public class AlipayService {
             DatabaseHelper.update(alipayAccount);
         }
 
+        CacheUtils.hset(Constants.KEY_ALIPAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(alipayAccount));
+
         ApiRest apiRest = new ApiRest();
         apiRest.setMessage("保存支付宝账号成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlipayAccount> findAllAlipayAccounts() {
+        SearchModel searchModel = new SearchModel(true);
+        List<AlipayAccount> alipayAccounts = DatabaseHelper.findAll(AlipayAccount.class, searchModel);
+        return alipayAccounts;
     }
 }

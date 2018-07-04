@@ -1,14 +1,16 @@
 package build.dream.platform.listeners;
 
 import build.dream.common.listeners.BasicServletContextListener;
+import build.dream.common.saas.domains.AlipayAccount;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.ConfigurationUtils;
+import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
-import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.mappers.CommonMapper;
+import build.dream.platform.services.AlipayService;
 import build.dream.platform.services.TenantSecretKeyService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.util.Map;
 @WebListener
 public class PlatformServiceServletContextListener extends BasicServletContextListener {
     @Autowired
+    private AlipayService alipayService;
+    @Autowired
     private TenantSecretKeyService tenantSecretKeyService;
     @Autowired
     private JobScheduler jobScheduler;
@@ -31,8 +35,18 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         super.contextInitialized(servletContextEvent);
         super.previousInjectionBean(servletContextEvent.getServletContext(), CommonMapper.class);
         try {
-            SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-            List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll(tenantSecretKeySearchModel);
+            List<AlipayAccount> alipayAccounts = alipayService.findAllAlipayAccounts();
+            Map<String, String> alipayAccountMap = new HashMap<String, String>();
+            for (AlipayAccount alipayAccount : alipayAccounts) {
+                alipayAccountMap.put(alipayAccount.getTenantId() + "_" + alipayAccount.getBranchId(), GsonUtils.toJson(alipayAccount));
+            }
+
+            CacheUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
+            if (MapUtils.isNotEmpty(alipayAccountMap)) {
+                CacheUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
+            }
+
+            List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll();
             Map<String, String> tenantPublicKeys = new HashMap<String, String>();
             for (TenantSecretKey tenantSecretKey : tenantSecretKeys) {
                 tenantPublicKeys.put(tenantSecretKey.getTenantId().toString(), tenantSecretKey.getPublicKey());
