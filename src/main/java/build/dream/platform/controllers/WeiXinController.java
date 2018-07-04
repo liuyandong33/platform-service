@@ -2,10 +2,7 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
-import build.dream.platform.models.weixin.DeleteWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.ObtainWeiXinOpenPlatformApplicationModel;
-import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
-import build.dream.platform.models.weixin.SaveWeiXinPublicAccountModel;
+import build.dream.platform.models.weixin.*;
 import build.dream.platform.services.WeiXinService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -61,6 +58,18 @@ public class WeiXinController extends BasicController {
     @ResponseBody
     @ApiRestAction(modelClass = ObtainWeiXinPublicAccountModel.class, serviceClass = WeiXinService.class, serviceMethodName = "obtainWeiXinPublicAccount", error = "获取微信公众号失败")
     public String obtainWeiXinPublicAccount() {
+        return null;
+    }
+
+    /**
+     * 保存微信支付账号
+     *
+     * @return
+     */
+    @RequestMapping(value = "/saveWeiXinPayAccount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SaveWeiXinPayAccountModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinPayAccount", error = "保存微信支付账号失败")
+    public String saveWeiXinPayAccount() {
         return null;
     }
 }
