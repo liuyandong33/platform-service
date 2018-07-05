@@ -15,6 +15,10 @@ public class SaveNotifyRecordModel extends BasicModel {
 
     private String alipaySignType;
 
+    private String weiXinPayApiSecretKey;
+
+    private String weiXinPaySignType;
+
     public String getUuid() {
         return uuid;
     }
@@ -45,5 +49,21 @@ public class SaveNotifyRecordModel extends BasicModel {
 
     public void setAlipaySignType(String alipaySignType) {
         this.alipaySignType = alipaySignType;
+    }
+
+    public String getWeiXinPayApiSecretKey() {
+        return weiXinPayApiSecretKey;
+    }
+
+    public void setWeiXinPayApiSecretKey(String weiXinPayApiSecretKey) {
+        this.weiXinPayApiSecretKey = weiXinPayApiSecretKey;
+    }
+
+    public String getWeiXinPaySignType() {
+        return weiXinPaySignType;
+    }
+
+    public void setWeiXinPaySignType(String weiXinPaySignType) {
+        this.weiXinPaySignType = weiXinPaySignType;
     }
 }
