@@ -19,7 +19,7 @@ public class RegisterController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/registerTenant", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/registerTenant", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = RegisterTenantModel.class, serviceClass = RegisterService.class, serviceMethodName = "registerTenant", error = "注册商户失败")
     public String registerTenant() {
@@ -31,7 +31,7 @@ public class RegisterController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/registerAgent", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/registerAgent", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = RegisterAgentModel.class, serviceClass = RegisterService.class, serviceMethodName = "registerAgent", error = "注册代理商失败")
     public String registerAgent() {

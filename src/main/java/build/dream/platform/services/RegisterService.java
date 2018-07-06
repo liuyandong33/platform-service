@@ -141,7 +141,7 @@ public class RegisterService {
         tenantGoods.setExpireTime(DateUtils.addDays(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00"), Integer.valueOf(basicServicesGoodsFreeTrialDays)));
         tenantGoods.setCreateUserId(userId);
         tenantGoods.setLastUpdateUserId(userId);
-        tenantGoods.setLastUpdateRemark("注册商户，创建使用商品！");
+        tenantGoods.setLastUpdateRemark("注册商户，创建试用商品！");
         DatabaseHelper.insert(tenantGoods);
 
         CacheUtils.hset(Constants.KEY_TENANT_PUBLIC_KEYS, tenant.getId().toString(), publicKey);
