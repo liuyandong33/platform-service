@@ -14,9 +14,8 @@ public class JobScheduler {
     SchedulerFactoryBean schedulerFactoryBean;
 
     public void scheduler() {
+        Scheduler scheduler = schedulerFactoryBean.getScheduler();
         try {
-            Scheduler scheduler = schedulerFactoryBean.getScheduler();
-
             // 启动同步门店信息定时任务
             String synchronizeBranchInfoJobCronExpression = ConfigurationUtils.getConfiguration(Constants.SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION);
             if (StringUtils.isNotBlank(synchronizeBranchInfoJobCronExpression)) {
