@@ -96,4 +96,10 @@ public class TenantService {
         data.put("weiXin", weiXinPayAccount);
         return new ApiRest(data, "获取付款账号成功！");
     }
+
+    @Transactional(readOnly = true)
+    public List<Tenant> obtainAllTenantInfos() {
+        SearchModel searchModel = new SearchModel(true);
+        return DatabaseHelper.findAll(Tenant.class, searchModel);
+    }
 }

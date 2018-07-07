@@ -2,6 +2,7 @@ package build.dream.platform.listeners;
 
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.saas.domains.AlipayAccount;
+import build.dream.common.saas.domains.Tenant;
 import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.ConfigurationUtils;
@@ -12,6 +13,7 @@ import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.mappers.CommonMapper;
 import build.dream.platform.services.AlipayService;
 import build.dream.platform.services.TenantSecretKeyService;
+import build.dream.platform.services.TenantService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +29,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private AlipayService alipayService;
     @Autowired
     private TenantSecretKeyService tenantSecretKeyService;
+    @Autowired
+    private TenantService tenantService;
     @Autowired
     private JobScheduler jobScheduler;
 
@@ -57,6 +61,18 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             }
 
             CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
+
+            CacheUtils.delete(Constants.KEY_TENANT_INFOS);
+            List<Tenant> tenants = tenantService.obtainAllTenantInfos();
+            Map<String, String> tenantInfos = new HashMap<String, String>();
+            for (Tenant tenant : tenants) {
+                String tenantInfo = GsonUtils.toJson(tenant);
+                tenantInfos.put(tenant.getId().toString(), tenantInfo);
+                tenantInfos.put(tenant.getCode(), tenantInfo);
+            }
+            if (MapUtils.isNotEmpty(tenantInfos)) {
+                CacheUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+            }
 
             // 启动所有定时任务
             jobScheduler.scheduler();
