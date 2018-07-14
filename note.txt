@@ -86,3 +86,38 @@ OSSClient client = new OSSClient(endpoint, accessId, accessKey);
 String postPolicy = client.generatePostPolicy(expiration, policyConditions);
 String encodedPolicy = Base64.encodeBase64String(postPolicy.getBytes(Constants.CHARSET_NAME_UTF_8));
 String signature = client.calculatePostSignature(postPolicy);
+
+
+CHANGE MASTER TO MASTER_HOST = '192.168.31.196',
+MASTER_USER = 'root', MASTER_PASSWORD = 'root',
+MASTER_LOG_FILE = 'mysql-bin.000001',
+MASTER_LOG_POS = 13134;
+
+START SLAVE;
+
+STOP SLAVE;
+
+SHOW SLAVE STATUS;
+
+
+#主节点
+[mysqld]
+log-bin=mysql-bin #开启二进制日志
+server-id=1 #设置server-id
+
+CREATE USER 'repl'@'%' IDENTIFIED BY '123456';
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+
+SHOW MASTER STATUS;
+
+FLUSH PRIVILEGES;
+
+#从节点
+server-id=2 #设置server-id，必须唯一
+CHANGE MASTER TO MASTER_HOST = '192.168.31.196',
+MASTER_USER = 'rep1',
+MASTER_PASSWORD = '123456',
+MASTER_LOG_FILE = 'mysql-bin.000001',
+MASTER_LOG_POS = 794;
+
+START SLAVE;
