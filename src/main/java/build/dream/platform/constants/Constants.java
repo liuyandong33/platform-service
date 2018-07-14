@@ -58,4 +58,7 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer AGENT_CONTRACT_STATUS_EXECUTING = 3;
     public static final Integer AGENT_CONTRACT_STATUS_TERMINATED = 4;
     public static final Integer AGENT_CONTRACT_STATUS_EXPIRED = 5;
+
+    public static final String PRIMARY_DATA_SOURCE = "primaryDataSource";
+    public static final String SECONDARY_DATA_SOURCE = "secondaryDataSource";
 }

@@ -1,17 +1,17 @@
 package build.dream.platform.configurations;
 
 public class DataSourceContextHolder {
-    private static final ThreadLocal<String> CONTEXT_HOLDER = new ThreadLocal<String>();
+    private static final ThreadLocal<String> DATA_SOURCE_CONTEXT_HOLDER = new ThreadLocal<String>();
 
     public static void setDataSourceType(String dataSourceType) {
-        CONTEXT_HOLDER.set(dataSourceType);
+        DATA_SOURCE_CONTEXT_HOLDER.set(dataSourceType);
     }
 
     public static String getDataSourceType() {
-        return CONTEXT_HOLDER.get();
+        return DATA_SOURCE_CONTEXT_HOLDER.get();
     }
 
     public static void clearDataSourceType() {
-        CONTEXT_HOLDER.remove();
+        DATA_SOURCE_CONTEXT_HOLDER.remove();
     }
 }
