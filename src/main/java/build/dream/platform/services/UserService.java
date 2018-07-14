@@ -1,6 +1,5 @@
 package build.dream.platform.services;
 
-import build.dream.common.annotations.DataSourceType;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
@@ -39,7 +38,6 @@ public class UserService {
      * @throws IOException
      */
     @Transactional(readOnly = true)
-    @DataSourceType(type = Constants.DATA_SOURCE_TYPE_READ)
     public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) throws IOException {
         String loginName = obtainUserInfoModel.getLoginName();
 
