@@ -2,10 +2,12 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
-import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
-import build.dream.platform.models.tenant.FindGoodsInfoModel;
-import build.dream.platform.models.tenant.ObtainPayAccountsModel;
-import build.dream.platform.models.tenant.ObtainTenantInfoModel;
+import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.ValidateUtils;
+import build.dream.platform.constants.Constants;
+import build.dream.platform.models.tenant.*;
 import build.dream.platform.services.TenantService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -53,10 +55,25 @@ public class TenantController extends BasicController {
         return null;
     }
 
+    /**
+     * 获取支付账号
+     * @return
+     */
     @RequestMapping(value = "/obtainPayAccounts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = ObtainPayAccountsModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainPayAccounts", error = "获取支付账号失败")
     public String obtainPayAccounts() {
+        return null;
+    }
+
+    /**
+     * 获取商户秘钥
+     * @return
+     */
+    @RequestMapping(value = "/obtainTenantSecretKey", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = ObtainTenantSecretKeyModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainTenantSecretKey", error = "获取商户秘钥失败")
+    public String obtainTenantSecretKey() {
         return null;
     }
 }

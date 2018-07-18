@@ -3,16 +3,15 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AlipayAccount;
 import build.dream.common.saas.domains.Tenant;
+import build.dream.common.saas.domains.TenantSecretKey;
 import build.dream.common.saas.domains.WeiXinPayAccount;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchCondition;
 import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.ValidateUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
-import build.dream.platform.models.tenant.FindAllGoodsInfosModel;
-import build.dream.platform.models.tenant.FindGoodsInfoModel;
-import build.dream.platform.models.tenant.ObtainPayAccountsModel;
-import build.dream.platform.models.tenant.ObtainTenantInfoModel;
-import build.dream.common.utils.DatabaseHelper;
+import build.dream.platform.models.tenant.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,12 @@ public class TenantService {
     @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
 
+    /**
+     * 获取商户信息系
+     *
+     * @param obtainTenantInfoModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainTenantInfo(ObtainTenantInfoModel obtainTenantInfoModel) {
         BigInteger tenantId = obtainTenantInfoModel.getTenantId();
@@ -49,6 +54,12 @@ public class TenantService {
         return apiRest;
     }
 
+    /**
+     * 获取商户购买的所有商品
+     *
+     * @param findAllGoodsInfosModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest findAllGoodsInfos(FindAllGoodsInfosModel findAllGoodsInfosModel) {
         List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(findAllGoodsInfosModel.getTenantId(), findAllGoodsInfosModel.getBranchId());
@@ -59,6 +70,12 @@ public class TenantService {
         return apiRest;
     }
 
+    /**
+     * 获取商户购买商品信息
+     *
+     * @param findGoodsInfoModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest findGoodsInfo(FindGoodsInfoModel findGoodsInfoModel) {
         Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(findGoodsInfoModel.getTenantId(), findGoodsInfoModel.getBranchId(), findGoodsInfoModel.getGoodsId());
@@ -72,6 +89,12 @@ public class TenantService {
         return apiRest;
     }
 
+    /**
+     * 获取支付账号
+     *
+     * @param obtainPayAccountsModel
+     * @return
+     */
     @Transactional(readOnly = true)
     public ApiRest obtainPayAccounts(ObtainPayAccountsModel obtainPayAccountsModel) {
         BigInteger tenantId = obtainPayAccountsModel.getTenantId();
@@ -97,9 +120,36 @@ public class TenantService {
         return new ApiRest(data, "获取付款账号成功！");
     }
 
+    /**
+     * 获取所有商户信息
+     *
+     * @return
+     */
     @Transactional(readOnly = true)
     public List<Tenant> obtainAllTenantInfos() {
         SearchModel searchModel = new SearchModel(true);
         return DatabaseHelper.findAll(Tenant.class, searchModel);
+    }
+
+    /**
+     * 获取商户秘钥
+     *
+     * @param obtainTenantSecretKeyModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest obtainTenantSecretKey(ObtainTenantSecretKeyModel obtainTenantSecretKeyModel) {
+        BigInteger tenantId = obtainTenantSecretKeyModel.getTenantId();
+        SearchModel tenantSecretKeySearchModel = new SearchModel(true);
+        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
+        ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
+
+        ApiRest apiRest = new ApiRest();
+        apiRest.setData(tenantSecretKey);
+        apiRest.setClassName(TenantSecretKey.class.getName());
+        apiRest.setMessage("获取商户秘钥成功！");
+        apiRest.setSuccessful(true);
+        return apiRest;
     }
 }
