@@ -307,7 +307,7 @@ public class OrderService {
         ApiRest apiRest = null;
         String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
         int paidScene = doPayModel.getPaidScene();
-        if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_H5 || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_MINI_PROGRAM) {
+        if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB || paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
             requestParameters.put("body", "订单支付");
             requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
             requestParameters.put("totalFee", String.valueOf(orderInfo.getPayableAmount().multiply(BigDecimal.valueOf(100)).longValue()));
@@ -315,15 +315,15 @@ public class OrderService {
             requestParameters.put("notifyUrl", notifyUrl);
 
             String tradeType = null;
-            if (paidScene == Constants.PAID_SCENE_WEI_XIN_PUBLIC_ACCOUNT) {
+            if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_JSAPI;
-            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_H5) {
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_MWEB;
             } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_APP) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_APP;
-            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE) {
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_NATIVE;
-            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_MINI_PROGRAM) {
+            } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_MINI_PROGRAM;
             }
             requestParameters.put("tradeType", tradeType);
