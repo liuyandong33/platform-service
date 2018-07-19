@@ -294,6 +294,10 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public ApiRest doPay(DoPayModel doPayModel) throws IOException {
+        BigInteger orderInfoId = doPayModel.getOrderInfoId();
+        BigInteger userId = doPayModel.getUserId();
+        int paidScene = doPayModel.getPaidScene();
+
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, doPayModel.getOrderInfoId());
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
@@ -306,7 +310,6 @@ public class OrderService {
 
         ApiRest apiRest = null;
         String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
-        int paidScene = doPayModel.getPaidScene();
         if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB || paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
             requestParameters.put("body", "订单支付");
             requestParameters.put("outTradeNo", orderInfo.getOrderNumber());
