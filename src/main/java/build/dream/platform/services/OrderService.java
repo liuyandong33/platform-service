@@ -299,14 +299,14 @@ public class OrderService {
         int paidScene = doPayModel.getPaidScene();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, doPayModel.getOrderInfoId());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         Map<String, String> requestParameters = new HashMap<String, String>();
         requestParameters.put("tenantId", "0");
         requestParameters.put("branchId", "0");
-        requestParameters.put("userId", doPayModel.getUserId().toString());
+        requestParameters.put("userId", userId.toString());
 
         ApiRest apiRest = null;
         String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
