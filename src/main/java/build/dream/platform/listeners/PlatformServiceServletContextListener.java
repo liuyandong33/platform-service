@@ -4,6 +4,7 @@ import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.saas.domains.AlipayAccount;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.GsonUtils;
@@ -13,6 +14,7 @@ import build.dream.platform.mappers.CommonMapper;
 import build.dream.platform.services.AlipayService;
 import build.dream.platform.services.TenantSecretKeyService;
 import build.dream.platform.services.TenantService;
+import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +34,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private TenantService tenantService;
     @Autowired
     private JobScheduler jobScheduler;
+    @Autowired
+    private WeiXinService weiXinService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -46,6 +50,16 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         CacheUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayAccountMap)) {
             CacheUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
+        }
+
+        List<WeiXinPayAccount> weiXinPayAccounts = weiXinService.findAllWeiXinPayAccounts();
+        Map<String, String> weiXinPayAccountMap = new HashMap<String, String>();
+        for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
+            weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), GsonUtils.toJson(weiXinPayAccount));
+        }
+        CacheUtils.delete(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
+        if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
+            CacheUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
         }
 
         List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll();

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class WeiXinService {
@@ -215,5 +216,12 @@ public class WeiXinService {
         apiRest.setSuccessful(true);
         apiRest.setMessage("保存微信支付账号成功！");
         return apiRest;
+    }
+
+    @Transactional(readOnly = true)
+    public List<WeiXinPayAccount> findAllWeiXinPayAccounts() {
+        SearchModel searchModel = new SearchModel(true);
+        List<WeiXinPayAccount> weiXinPayAccounts = DatabaseHelper.findAll(WeiXinPayAccount.class, searchModel);
+        return weiXinPayAccounts;
     }
 }
