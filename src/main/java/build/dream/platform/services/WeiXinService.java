@@ -1,6 +1,8 @@
 package build.dream.platform.services;
 
+import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.WeiXinAuthorizerToken;
 import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
 import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.saas.domains.WeiXinPublicAccount;
@@ -12,10 +14,13 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -223,5 +228,26 @@ public class WeiXinService {
         SearchModel searchModel = new SearchModel(true);
         List<WeiXinPayAccount> weiXinPayAccounts = DatabaseHelper.findAll(WeiXinPayAccount.class, searchModel);
         return weiXinPayAccounts;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveWeiXinAuthorizerToken(SaveWeiXinAuthorizerTokenModel saveWeiXinAuthorizerTokenModel) {
+        String componentAppId = saveWeiXinAuthorizerTokenModel.getComponentAppId();
+        String authorizerAppId = saveWeiXinAuthorizerTokenModel.getAuthorizerAppId();
+        String authorizerAccessToken = saveWeiXinAuthorizerTokenModel.getAuthorizerAccessToken();
+        Long expiresIn = saveWeiXinAuthorizerTokenModel.getExpiresIn();
+        String authorizerRefreshToken = saveWeiXinAuthorizerTokenModel.getAuthorizerRefreshToken();
+        Date fetchTime = saveWeiXinAuthorizerTokenModel.getFetchTime();
+
+        WeiXinAuthorizerToken weiXinAuthorizerToken = new WeiXinAuthorizerToken();
+        weiXinAuthorizerToken.setComponentAppId(componentAppId);
+        weiXinAuthorizerToken.setAuthorizerAppId(authorizerAppId);
+        weiXinAuthorizerToken.setAuthorizerAccessToken(authorizerAccessToken);
+        weiXinAuthorizerToken.setExpiresIn(expiresIn);
+        weiXinAuthorizerToken.setAuthorizerRefreshToken(authorizerRefreshToken);
+        weiXinAuthorizerToken.setFetchTime(fetchTime);
+        DatabaseHelper.insert(weiXinAuthorizerToken);
+
+        return ApiRest.builder().message("保存微信授权token成功").successful(true).build();
     }
 }

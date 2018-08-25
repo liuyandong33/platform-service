@@ -72,4 +72,11 @@ public class WeiXinController extends BasicController {
     public String saveWeiXinPayAccount() {
         return null;
     }
+
+    @RequestMapping(value = "/saveWeiXinAuthorizerToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SaveWeiXinAuthorizerTokenModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinAuthorizerToken", error = "保存微信授权token失败")
+    public String saveWeiXinAuthorizerToken() {
+        return null;
+    }
 }
