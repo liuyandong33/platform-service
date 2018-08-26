@@ -5,10 +5,7 @@ import build.dream.common.saas.domains.WeiXinAuthorizerToken;
 import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
 import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.saas.domains.WeiXinPublicAccount;
-import build.dream.common.utils.CacheUtils;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.*;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +61,19 @@ public class WeiXinService {
         apiRest.setMessage("查询微信开放平台应用成功！");
         apiRest.setSuccessful(true);
         return apiRest;
+    }
+
+    /**
+     * 查询微信开放平台应用
+     *
+     * @param appId
+     * @return
+     */
+    public WeiXinOpenPlatformApplication findWeiXinOpenPlatformApplication(String appId) {
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
+        WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
+        return weiXinOpenPlatformApplication;
     }
 
     /**
@@ -263,5 +273,17 @@ public class WeiXinService {
     public List<WeiXinAuthorizerToken> findAllWeiXinAuthorizerTokens() {
         SearchModel searchModel = new SearchModel(true);
         return DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void refreshWeiXinAuthorizerToken(String componentAccessToken, String componentAppId, String authorizerAppId, String authorizerRefreshToken, BigInteger id) {
+        WeiXinAuthorizerToken weiXinAuthorizerToken = WeiXinUtils.apiAuthorizerToken(componentAccessToken, componentAppId, authorizerAppId, authorizerRefreshToken);
+        weiXinAuthorizerToken.setId(id);
+        DatabaseHelper.update(weiXinAuthorizerToken);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateWeiXinAuthorizerToken(WeiXinAuthorizerToken weiXinAuthorizerToken) {
+        DatabaseHelper.update(weiXinAuthorizerToken);
     }
 }

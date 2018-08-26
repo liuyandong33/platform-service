@@ -61,4 +61,6 @@ public class Constants extends build.dream.common.constants.Constants {
 
     public static final String PRIMARY_DATA_SOURCE = "primaryDataSource";
     public static final String SECONDARY_DATA_SOURCE = "secondaryDataSource";
+
+    public static final String REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION = "refresh.wei.xin.authorizer.token.job.cron.expression";
 }

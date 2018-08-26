@@ -33,6 +33,15 @@ public class JobScheduler {
                 Trigger disableBranchGoodsJobCronTrigger = TriggerBuilder.newTrigger().withIdentity("disableBranchGoodsJobTrigger", "platformJobGroup").withSchedule(cronScheduleBuilder).build();
                 scheduler.scheduleJob(disableBranchGoodsJobDetail, disableBranchGoodsJobCronTrigger);
             }
+
+            // 启动刷新微信授权token定时任务
+            String refreshWeiXinAuthorizerTokenJobCronExpression = ConfigurationUtils.getConfiguration(Constants.REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION);
+            if (StringUtils.isNotBlank(refreshWeiXinAuthorizerTokenJobCronExpression)) {
+                JobDetail refreshWeiXinAuthorizerTokenJobDetail = JobBuilder.newJob(RefreshWeiXinAuthorizerTokenJob.class).withIdentity("refreshWeiXinAuthorizerTokenJob", "platformJobGroup").build();
+                CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(refreshWeiXinAuthorizerTokenJobCronExpression);
+                Trigger refreshWeiXinAuthorizerTokenJobCronTrigger = TriggerBuilder.newTrigger().withIdentity("refreshWeiXinAuthorizerTokenJobTrigger", "platformJobGroup").withSchedule(cronScheduleBuilder).build();
+                scheduler.scheduleJob(refreshWeiXinAuthorizerTokenJobDetail, refreshWeiXinAuthorizerTokenJobCronTrigger);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
