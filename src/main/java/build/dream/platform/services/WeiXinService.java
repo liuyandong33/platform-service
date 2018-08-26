@@ -235,7 +235,7 @@ public class WeiXinService {
         String componentAppId = saveWeiXinAuthorizerTokenModel.getComponentAppId();
         String authorizerAppId = saveWeiXinAuthorizerTokenModel.getAuthorizerAppId();
         String authorizerAccessToken = saveWeiXinAuthorizerTokenModel.getAuthorizerAccessToken();
-        Long expiresIn = saveWeiXinAuthorizerTokenModel.getExpiresIn();
+        Integer expiresIn = saveWeiXinAuthorizerTokenModel.getExpiresIn();
         String authorizerRefreshToken = saveWeiXinAuthorizerTokenModel.getAuthorizerRefreshToken();
         Date fetchTime = saveWeiXinAuthorizerTokenModel.getFetchTime();
 

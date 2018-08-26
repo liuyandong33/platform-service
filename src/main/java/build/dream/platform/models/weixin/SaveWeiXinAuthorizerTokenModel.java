@@ -20,7 +20,7 @@ public class SaveWeiXinAuthorizerTokenModel extends BasicModel {
     private String authorizerAccessToken;
 
     @NotNull
-    private Long expiresIn;
+    private Integer expiresIn;
 
     @NotNull
     @Length(max = 255)
@@ -53,11 +53,11 @@ public class SaveWeiXinAuthorizerTokenModel extends BasicModel {
         this.authorizerAccessToken = authorizerAccessToken;
     }
 
-    public Long getExpiresIn() {
+    public Integer getExpiresIn() {
         return expiresIn;
     }
 
-    public void setExpiresIn(Long expiresIn) {
+    public void setExpiresIn(Integer expiresIn) {
         this.expiresIn = expiresIn;
     }
 
