@@ -1,10 +1,7 @@
 package build.dream.platform.listeners;
 
 import build.dream.common.listeners.BasicServletContextListener;
-import build.dream.common.saas.domains.AlipayAccount;
-import build.dream.common.saas.domains.Tenant;
-import build.dream.common.saas.domains.TenantSecretKey;
-import build.dream.common.saas.domains.WeiXinPayAccount;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.GsonUtils;
@@ -72,7 +69,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
         }
 
-        CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfigurationSafe(Constants.PLATFORM_PRIVATE_KEY));
+        CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
 
         CacheUtils.delete(Constants.KEY_TENANT_INFOS);
         List<Tenant> tenants = tenantService.obtainAllTenantInfos();
@@ -84,6 +81,17 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         }
         if (MapUtils.isNotEmpty(tenantInfos)) {
             CacheUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+        }
+
+        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.findAllWeiXinAuthorizerTokens();
+        Map<String, String> weiXinAuthorizerTokenMap = new HashMap<String, String>();
+        for (WeiXinAuthorizerToken weiXinAuthorizerToken : weiXinAuthorizerTokens) {
+            weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), GsonUtils.toJson(weiXinAuthorizerToken));
+        }
+
+        CacheUtils.delete(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
+            CacheUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
         }
 
         // 启动所有定时任务

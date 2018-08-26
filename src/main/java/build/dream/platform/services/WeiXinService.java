@@ -1,6 +1,5 @@
 package build.dream.platform.services;
 
-import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.WeiXinAuthorizerToken;
 import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
@@ -14,11 +13,9 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
@@ -230,6 +227,12 @@ public class WeiXinService {
         return weiXinPayAccounts;
     }
 
+    /**
+     * 保存微信授权token
+     *
+     * @param saveWeiXinAuthorizerTokenModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinAuthorizerToken(SaveWeiXinAuthorizerTokenModel saveWeiXinAuthorizerTokenModel) {
         String componentAppId = saveWeiXinAuthorizerTokenModel.getComponentAppId();
@@ -249,5 +252,16 @@ public class WeiXinService {
         DatabaseHelper.insert(weiXinAuthorizerToken);
 
         return ApiRest.builder().message("保存微信授权token成功").successful(true).build();
+    }
+
+    /**
+     * 查询所有微信授权token
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<WeiXinAuthorizerToken> findAllWeiXinAuthorizerTokens() {
+        SearchModel searchModel = new SearchModel(true);
+        return DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
     }
 }
