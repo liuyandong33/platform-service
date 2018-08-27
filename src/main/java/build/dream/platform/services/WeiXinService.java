@@ -1,10 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.WeiXinAuthorizerToken;
-import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
-import build.dream.common.saas.domains.WeiXinPayAccount;
-import build.dream.common.saas.domains.WeiXinPublicAccount;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.*;
@@ -285,5 +282,39 @@ public class WeiXinService {
     @Transactional(rollbackFor = Exception.class)
     public void updateWeiXinAuthorizerToken(WeiXinAuthorizerToken weiXinAuthorizerToken) {
         DatabaseHelper.update(weiXinAuthorizerToken);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveWeiXinAuthorizerInfo(SaveWeiXinAuthorizerInfoModel saveWeiXinAuthorizerInfoModel) {
+        BigInteger tenantId = saveWeiXinAuthorizerInfoModel.getTenantId();
+        String nickName = saveWeiXinAuthorizerInfoModel.getNickName();
+        String headImg = saveWeiXinAuthorizerInfoModel.getHeadImg();
+        Integer serviceTypeInfo = saveWeiXinAuthorizerInfoModel.getServiceTypeInfo();
+        Integer verifyTypeInfo = saveWeiXinAuthorizerInfoModel.getVerifyTypeInfo();
+        String originalId = saveWeiXinAuthorizerInfoModel.getOriginalId();
+        String principalName = saveWeiXinAuthorizerInfoModel.getPrincipalName();
+        String alias = saveWeiXinAuthorizerInfoModel.getAlias();
+        String businessInfo = saveWeiXinAuthorizerInfoModel.getBusinessInfo();
+        String qrcodeUrl = saveWeiXinAuthorizerInfoModel.getQrcodeUrl();
+        String authorizationAppId = saveWeiXinAuthorizerInfoModel.getAuthorizationAppId();
+        String funcInfo = saveWeiXinAuthorizerInfoModel.getFuncInfo();
+
+        WeiXinAuthorizerInfo weiXinAuthorizerInfo = WeiXinAuthorizerInfo.builder()
+                .tenantId(tenantId)
+                .nickName(nickName)
+                .headImg(headImg)
+                .serviceTypeInfo(serviceTypeInfo)
+                .verifyTypeInfo(verifyTypeInfo)
+                .originalId(originalId)
+                .principalName(principalName)
+                .alias(StringUtils.isNotBlank(alias) ? alias : Constants.VARCHAR_DEFAULT_VALUE)
+                .businessInfo(businessInfo)
+                .qrcodeUrl(qrcodeUrl)
+                .authorizationAppId(authorizationAppId)
+                .funcInfo(funcInfo)
+                .build();
+        DatabaseHelper.insert(weiXinAuthorizerInfo);
+
+        return ApiRest.builder().message("保存微信授权信息成功！").successful(true).build();
     }
 }

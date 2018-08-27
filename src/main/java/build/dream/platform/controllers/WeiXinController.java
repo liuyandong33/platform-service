@@ -73,10 +73,27 @@ public class WeiXinController extends BasicController {
         return null;
     }
 
+    /**
+     * 保存微信公众号或小程序授权token
+     *
+     * @return
+     */
     @RequestMapping(value = "/saveWeiXinAuthorizerToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = SaveWeiXinAuthorizerTokenModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinAuthorizerToken", error = "保存微信授权token失败")
     public String saveWeiXinAuthorizerToken() {
+        return null;
+    }
+
+    /**
+     * 保存微信公众号或小程序授权信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/saveWeiXinAuthorizerToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SaveWeiXinAuthorizerInfoModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinAuthorizerInfo", error = "保存微信授权信息失败")
+    public String saveWeiXinAuthorizerInfo() {
         return null;
     }
 }
