@@ -287,20 +287,24 @@ public class WeiXinService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinAuthorizerInfo(SaveWeiXinAuthorizerInfoModel saveWeiXinAuthorizerInfoModel) {
         BigInteger tenantId = saveWeiXinAuthorizerInfoModel.getTenantId();
+        Integer authorizerType = saveWeiXinAuthorizerInfoModel.getAuthorizerType();
         String nickName = saveWeiXinAuthorizerInfoModel.getNickName();
         String headImg = saveWeiXinAuthorizerInfoModel.getHeadImg();
-        Integer serviceTypeInfo = saveWeiXinAuthorizerInfoModel.getServiceTypeInfo();
-        Integer verifyTypeInfo = saveWeiXinAuthorizerInfoModel.getVerifyTypeInfo();
+        String serviceTypeInfo = saveWeiXinAuthorizerInfoModel.getServiceTypeInfo();
+        String verifyTypeInfo = saveWeiXinAuthorizerInfoModel.getVerifyTypeInfo();
         String originalId = saveWeiXinAuthorizerInfoModel.getOriginalId();
         String principalName = saveWeiXinAuthorizerInfoModel.getPrincipalName();
         String alias = saveWeiXinAuthorizerInfoModel.getAlias();
         String businessInfo = saveWeiXinAuthorizerInfoModel.getBusinessInfo();
         String qrcodeUrl = saveWeiXinAuthorizerInfoModel.getQrcodeUrl();
+        String signature = saveWeiXinAuthorizerInfoModel.getSignature();
+        String miniProgramInfo = saveWeiXinAuthorizerInfoModel.getMiniProgramInfo();
         String authorizationAppId = saveWeiXinAuthorizerInfoModel.getAuthorizationAppId();
         String funcInfo = saveWeiXinAuthorizerInfoModel.getFuncInfo();
 
         WeiXinAuthorizerInfo weiXinAuthorizerInfo = WeiXinAuthorizerInfo.builder()
                 .tenantId(tenantId)
+                .authorizerType(authorizerType)
                 .nickName(nickName)
                 .headImg(headImg)
                 .serviceTypeInfo(serviceTypeInfo)
@@ -310,6 +314,8 @@ public class WeiXinService {
                 .alias(StringUtils.isNotBlank(alias) ? alias : Constants.VARCHAR_DEFAULT_VALUE)
                 .businessInfo(businessInfo)
                 .qrcodeUrl(qrcodeUrl)
+                .signature(StringUtils.isNotBlank(signature) ? signature : Constants.VARCHAR_DEFAULT_VALUE)
+                .miniProgramInfo(StringUtils.isNotBlank(miniProgramInfo) ? miniProgramInfo : Constants.VARCHAR_DEFAULT_VALUE)
                 .authorizationAppId(authorizationAppId)
                 .funcInfo(funcInfo)
                 .build();

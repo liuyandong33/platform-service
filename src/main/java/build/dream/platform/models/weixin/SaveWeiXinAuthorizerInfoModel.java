@@ -1,5 +1,6 @@
 package build.dream.platform.models.weixin;
 
+import build.dream.common.constraints.InList;
 import build.dream.common.models.BasicModel;
 import org.hibernate.validator.constraints.Length;
 
@@ -11,6 +12,9 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
     private BigInteger tenantId;
 
     @NotNull
+    private Integer authorizerType;
+
+    @NotNull
     @Length(max = 20)
     private String nickName;
 
@@ -19,10 +23,12 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
     private String headImg;
 
     @NotNull
-    private Integer serviceTypeInfo;
+    @Length(max = 255)
+    private String serviceTypeInfo;
 
     @NotNull
-    private Integer verifyTypeInfo;
+    @Length(max = 255)
+    private String verifyTypeInfo;
 
     @NotNull
     @Length(max = 50)
@@ -43,6 +49,12 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
     @Length(max = 255)
     private String qrcodeUrl;
 
+    @Length(max = 255)
+    private String signature;
+
+    @Length(max = 255)
+    private String miniProgramInfo;
+
     @NotNull
     @Length(max = 50)
     private String authorizationAppId;
@@ -57,6 +69,14 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
 
     public void setTenantId(BigInteger tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public Integer getAuthorizerType() {
+        return authorizerType;
+    }
+
+    public void setAuthorizerType(Integer authorizerType) {
+        this.authorizerType = authorizerType;
     }
 
     public String getNickName() {
@@ -75,19 +95,19 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
         this.headImg = headImg;
     }
 
-    public Integer getServiceTypeInfo() {
+    public String getServiceTypeInfo() {
         return serviceTypeInfo;
     }
 
-    public void setServiceTypeInfo(Integer serviceTypeInfo) {
+    public void setServiceTypeInfo(String serviceTypeInfo) {
         this.serviceTypeInfo = serviceTypeInfo;
     }
 
-    public Integer getVerifyTypeInfo() {
+    public String getVerifyTypeInfo() {
         return verifyTypeInfo;
     }
 
-    public void setVerifyTypeInfo(Integer verifyTypeInfo) {
+    public void setVerifyTypeInfo(String verifyTypeInfo) {
         this.verifyTypeInfo = verifyTypeInfo;
     }
 
@@ -129,6 +149,22 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
 
     public void setQrcodeUrl(String qrcodeUrl) {
         this.qrcodeUrl = qrcodeUrl;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getMiniProgramInfo() {
+        return miniProgramInfo;
+    }
+
+    public void setMiniProgramInfo(String miniProgramInfo) {
+        this.miniProgramInfo = miniProgramInfo;
     }
 
     public String getAuthorizationAppId() {
