@@ -4,6 +4,7 @@ import build.dream.common.models.BasicModel;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 import java.util.Date;
 
 public class SaveWeiXinAuthorizerTokenModel extends BasicModel {
@@ -28,6 +29,9 @@ public class SaveWeiXinAuthorizerTokenModel extends BasicModel {
 
     @NotNull
     private Date fetchTime;
+
+    @NotNull
+    private BigInteger userId;
 
     public String getComponentAppId() {
         return componentAppId;
@@ -75,5 +79,13 @@ public class SaveWeiXinAuthorizerTokenModel extends BasicModel {
 
     public void setFetchTime(Date fetchTime) {
         this.fetchTime = fetchTime;
+    }
+
+    public BigInteger getUserId() {
+        return userId;
+    }
+
+    public void setUserId(BigInteger userId) {
+        this.userId = userId;
     }
 }

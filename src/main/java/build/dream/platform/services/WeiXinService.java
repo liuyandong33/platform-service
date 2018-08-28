@@ -248,6 +248,7 @@ public class WeiXinService {
         Integer expiresIn = saveWeiXinAuthorizerTokenModel.getExpiresIn();
         String authorizerRefreshToken = saveWeiXinAuthorizerTokenModel.getAuthorizerRefreshToken();
         Date fetchTime = saveWeiXinAuthorizerTokenModel.getFetchTime();
+        BigInteger userId = saveWeiXinAuthorizerTokenModel.getUserId();
 
         WeiXinAuthorizerToken weiXinAuthorizerToken = new WeiXinAuthorizerToken();
         weiXinAuthorizerToken.setComponentAppId(componentAppId);
@@ -256,6 +257,8 @@ public class WeiXinService {
         weiXinAuthorizerToken.setExpiresIn(expiresIn);
         weiXinAuthorizerToken.setAuthorizerRefreshToken(authorizerRefreshToken);
         weiXinAuthorizerToken.setFetchTime(fetchTime);
+        weiXinAuthorizerToken.setCreateUserId(userId);
+        weiXinAuthorizerToken.setLastUpdateUserId(userId);
         DatabaseHelper.insert(weiXinAuthorizerToken);
 
         return ApiRest.builder().message("保存微信授权token成功").successful(true).build();
