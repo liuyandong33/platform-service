@@ -279,15 +279,17 @@ public class WeiXinService {
      * 刷新微信授权token
      *
      * @param componentAccessToken
-     * @param componentAppId
-     * @param authorizerAppId
-     * @param authorizerRefreshToken
-     * @param id
+     * @param weiXinAuthorizerToken
+     * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public WeiXinAuthorizerToken refreshWeiXinAuthorizerToken(String componentAccessToken, String componentAppId, String authorizerAppId, String authorizerRefreshToken, BigInteger id) {
-        WeiXinAuthorizerToken weiXinAuthorizerToken = WeiXinUtils.apiAuthorizerToken(componentAccessToken, componentAppId, authorizerAppId, authorizerRefreshToken);
-        weiXinAuthorizerToken.setId(id);
+    public WeiXinAuthorizerToken refreshWeiXinAuthorizerToken(String componentAccessToken, WeiXinAuthorizerToken weiXinAuthorizerToken) {
+        WeiXinAuthorizerToken newWeiXinAuthorizerToken = WeiXinUtils.apiAuthorizerToken(componentAccessToken, weiXinAuthorizerToken.getComponentAppId(), weiXinAuthorizerToken.getAuthorizerAppId(), weiXinAuthorizerToken.getAuthorizerRefreshToken());
+
+        weiXinAuthorizerToken.setAuthorizerAccessToken(newWeiXinAuthorizerToken.getAuthorizerAccessToken());
+        weiXinAuthorizerToken.setExpiresIn(newWeiXinAuthorizerToken.getExpiresIn());
+        weiXinAuthorizerToken.setAuthorizerRefreshToken(newWeiXinAuthorizerToken.getAuthorizerRefreshToken());
+        weiXinAuthorizerToken.setFetchTime(newWeiXinAuthorizerToken.getFetchTime());
         DatabaseHelper.update(weiXinAuthorizerToken);
         return weiXinAuthorizerToken;
     }
