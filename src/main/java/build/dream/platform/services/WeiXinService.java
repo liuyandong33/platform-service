@@ -272,6 +272,15 @@ public class WeiXinService {
         return DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
     }
 
+    /**
+     * 刷新微信授权token
+     *
+     * @param componentAccessToken
+     * @param componentAppId
+     * @param authorizerAppId
+     * @param authorizerRefreshToken
+     * @param id
+     */
     @Transactional(rollbackFor = Exception.class)
     public void refreshWeiXinAuthorizerToken(String componentAccessToken, String componentAppId, String authorizerAppId, String authorizerRefreshToken, BigInteger id) {
         WeiXinAuthorizerToken weiXinAuthorizerToken = WeiXinUtils.apiAuthorizerToken(componentAccessToken, componentAppId, authorizerAppId, authorizerRefreshToken);
@@ -279,11 +288,22 @@ public class WeiXinService {
         DatabaseHelper.update(weiXinAuthorizerToken);
     }
 
+    /**
+     * 修改微信授权token
+     *
+     * @param weiXinAuthorizerToken
+     */
     @Transactional(rollbackFor = Exception.class)
     public void updateWeiXinAuthorizerToken(WeiXinAuthorizerToken weiXinAuthorizerToken) {
         DatabaseHelper.update(weiXinAuthorizerToken);
     }
 
+    /**
+     * 保存微信授权信息
+     *
+     * @param saveWeiXinAuthorizerInfoModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinAuthorizerInfo(SaveWeiXinAuthorizerInfoModel saveWeiXinAuthorizerInfoModel) {
         BigInteger tenantId = saveWeiXinAuthorizerInfoModel.getTenantId();
@@ -322,5 +342,19 @@ public class WeiXinService {
         DatabaseHelper.insert(weiXinAuthorizerInfo);
 
         return ApiRest.builder().message("保存微信授权信息成功！").successful(true).build();
+    }
+
+    /**
+     * 获取微信授权信息
+     *
+     * @param obtainWeiXinAuthorizerInfoModel
+     * @return
+     */
+    public ApiRest obtainWeiXinAuthorizerInfo(ObtainWeiXinAuthorizerInfoModel obtainWeiXinAuthorizerInfoModel) {
+        BigInteger tenantId = obtainWeiXinAuthorizerInfoModel.getTenantId();
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
+        return ApiRest.builder().data(weiXinAuthorizerInfo).message("获取微信授权信息成功！").successful(true).build();
     }
 }
