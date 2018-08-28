@@ -11,6 +11,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
             }
             weiXinAuthorizerToken.setLastUpdateRemark(lastUpdateRemark);
             weiXinAuthorizerToken.setDeleted(true);
+            weiXinAuthorizerToken.setDeleteTime(new Date());
             weiXinService.updateWeiXinAuthorizerToken(weiXinAuthorizerToken);
         } catch (Exception e) {
             LogUtils.error("删除微信授权token失败", CLASS_NAME, "deleteWeiXinAuthorizerTokenSafe", e);
