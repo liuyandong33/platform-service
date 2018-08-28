@@ -285,10 +285,11 @@ public class WeiXinService {
      * @param id
      */
     @Transactional(rollbackFor = Exception.class)
-    public void refreshWeiXinAuthorizerToken(String componentAccessToken, String componentAppId, String authorizerAppId, String authorizerRefreshToken, BigInteger id) {
+    public WeiXinAuthorizerToken refreshWeiXinAuthorizerToken(String componentAccessToken, String componentAppId, String authorizerAppId, String authorizerRefreshToken, BigInteger id) {
         WeiXinAuthorizerToken weiXinAuthorizerToken = WeiXinUtils.apiAuthorizerToken(componentAccessToken, componentAppId, authorizerAppId, authorizerRefreshToken);
         weiXinAuthorizerToken.setId(id);
         DatabaseHelper.update(weiXinAuthorizerToken);
+        return weiXinAuthorizerToken;
     }
 
     /**
