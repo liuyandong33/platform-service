@@ -57,7 +57,7 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
 
     @NotNull
     @Length(max = 50)
-    private String authorizationAppId;
+    private String authorizerAppId;
 
     @NotNull
     @Length(max = 255)
@@ -167,12 +167,12 @@ public class SaveWeiXinAuthorizerInfoModel extends BasicModel {
         this.miniProgramInfo = miniProgramInfo;
     }
 
-    public String getAuthorizationAppId() {
-        return authorizationAppId;
+    public String getAuthorizerAppId() {
+        return authorizerAppId;
     }
 
-    public void setAuthorizationAppId(String authorizationAppId) {
-        this.authorizationAppId = authorizationAppId;
+    public void setAuthorizerAppId(String authorizerAppId) {
+        this.authorizerAppId = authorizerAppId;
     }
 
     public String getFuncInfo() {

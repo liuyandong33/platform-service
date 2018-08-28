@@ -322,7 +322,7 @@ public class WeiXinService {
         String qrcodeUrl = saveWeiXinAuthorizerInfoModel.getQrcodeUrl();
         String signature = saveWeiXinAuthorizerInfoModel.getSignature();
         String miniProgramInfo = saveWeiXinAuthorizerInfoModel.getMiniProgramInfo();
-        String authorizationAppId = saveWeiXinAuthorizerInfoModel.getAuthorizationAppId();
+        String authorizerAppId = saveWeiXinAuthorizerInfoModel.getAuthorizerAppId();
         String funcInfo = saveWeiXinAuthorizerInfoModel.getFuncInfo();
 
         WeiXinAuthorizerInfo weiXinAuthorizerInfo = WeiXinAuthorizerInfo.builder()
@@ -339,7 +339,7 @@ public class WeiXinService {
                 .qrcodeUrl(qrcodeUrl)
                 .signature(StringUtils.isNotBlank(signature) ? signature : Constants.VARCHAR_DEFAULT_VALUE)
                 .miniProgramInfo(StringUtils.isNotBlank(miniProgramInfo) ? miniProgramInfo : Constants.VARCHAR_DEFAULT_VALUE)
-                .authorizationAppId(authorizationAppId)
+                .authorizerAppId(authorizerAppId)
                 .funcInfo(funcInfo)
                 .build();
         DatabaseHelper.insert(weiXinAuthorizerInfo);
