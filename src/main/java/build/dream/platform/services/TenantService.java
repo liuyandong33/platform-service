@@ -152,4 +152,27 @@ public class TenantService {
         apiRest.setSuccessful(true);
         return apiRest;
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest updateTenantInfo(UpdateTenantInfoModel updateTenantInfoModel) {
+        BigInteger id = updateTenantInfoModel.getId();
+        String name = updateTenantInfoModel.getName();
+        Integer vipSharedType = updateTenantInfoModel.getVipSharedType();
+        BigInteger userId = updateTenantInfoModel.getUserId();
+
+        Tenant tenant = DatabaseHelper.find(Tenant.class, id);
+        ValidateUtils.notNull(tenant, "商户不存在！");
+        if (StringUtils.isNotBlank(name)) {
+            tenant.setName(name);
+        }
+
+        if (vipSharedType != null) {
+            tenant.setVipSharedType(vipSharedType);
+        }
+
+        tenant.setLastUpdateUserId(userId);
+        DatabaseHelper.update(tenant);
+
+        return ApiRest.builder().message("修改商户信息成功！").successful(true).build();
+    }
 }
