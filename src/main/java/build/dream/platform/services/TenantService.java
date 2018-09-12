@@ -111,14 +111,19 @@ public class TenantService {
         SearchModel bankAccountSearchModel = new SearchModel();
         bankAccountSearchModel.setSearchConditions(searchConditions);
 
+        SearchModel miyaAccountSearchModel = new SearchModel();
+        miyaAccountSearchModel.setSearchConditions(searchConditions);
+
         AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, alipayAccountSearchModel);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, weiXinPayAccountSearchModel);
         BankAccount bankAccount = DatabaseHelper.find(BankAccount.class, bankAccountSearchModel);
+        MiyaAccount miyaAccount = DatabaseHelper.find(MiyaAccount.class, miyaAccountSearchModel);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("alipay", alipayAccount);
         data.put("weiXin", weiXinPayAccount);
         data.put("bank", bankAccount);
+        data.put("miya", miyaAccount);
         return new ApiRest(data, "获取付款账号成功！");
     }
 
