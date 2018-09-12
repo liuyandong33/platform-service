@@ -1,12 +1,14 @@
 package build.dream.platform.controllers;
 
+import build.dream.common.models.newland.BarcodePayModel;
+import build.dream.common.utils.ApplicationHandler;
+import build.dream.common.utils.GsonUtils;
+import build.dream.common.utils.NewLandUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/demo")
@@ -14,11 +16,13 @@ public class DemoController {
     @RequestMapping(value = "/demo")
     @ResponseBody
     public String demo() {
-        List<byte[]> list = new ArrayList<byte[]>();
-        boolean flag = true;
-        while (flag) {
-            list.add(new byte[1024 * 1024]);
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        try {
+            BarcodePayModel barcodePayModel = ApplicationHandler.instantiateObject(BarcodePayModel.class, requestParameters);
+            Map<String, String> result = NewLandUtils.barcodePay("1", "1", barcodePayModel);
+            return GsonUtils.toJson(result);
+        } catch (Exception e) {
+            return e.getMessage();
         }
-        return UUID.randomUUID().toString();
     }
 }
