@@ -43,47 +43,45 @@ public class TenantService {
         }
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setClassName(Tenant.class.getName());
-        apiRest.setData(tenant);
-        apiRest.setMessage("查询商户信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().className(Tenant.class.getName()).data(tenant).message("查询商户信息成功！").successful(true).build();
     }
 
     /**
      * 获取商户购买的所有商品
      *
-     * @param findAllGoodsInfosModel
+     * @param obtainAllGoodsInfosModel
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest findAllGoodsInfos(FindAllGoodsInfosModel findAllGoodsInfosModel) {
-        List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(findAllGoodsInfosModel.getTenantId(), findAllGoodsInfosModel.getBranchId());
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(goodsInfos);
-        apiRest.setMessage("查询产品购买信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+    public ApiRest obtainAllGoodsInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
+        BigInteger tenantId = obtainAllGoodsInfosModel.getTenantId();
+        BigInteger branchId = obtainAllGoodsInfosModel.getBranchId();
+
+        List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(tenantId, branchId);
+
+        return ApiRest.builder().data(goodsInfos).message("查询产品购买信息成功！").successful(true).build();
     }
 
     /**
      * 获取商户购买商品信息
      *
-     * @param findGoodsInfoModel
+     * @param obtainGoodsInfoModel
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest findGoodsInfo(FindGoodsInfoModel findGoodsInfoModel) {
-        Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(findGoodsInfoModel.getTenantId(), findGoodsInfoModel.getBranchId(), findGoodsInfoModel.getGoodsId());
+    public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
+        BigInteger tenantId = obtainGoodsInfoModel.getTenantId();
+        BigInteger branchId = obtainGoodsInfoModel.getBranchId();
+        BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
+
+        Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(tenantId, branchId, goodsId);
         Validate.notEmpty(goodsInfo, "未检索到产品购买信息！");
+
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("goods", goodsInfo);
         data.put("currentTime", new Date());
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setMessage("查询产品购买信息成功！");
-        return apiRest;
+
+        return ApiRest.builder().data(data).message("查询产品购买信息成功！").successful(true).build();
     }
 
     /**
@@ -124,7 +122,8 @@ public class TenantService {
         data.put("weiXin", weiXinPayAccount);
         data.put("bank", bankAccount);
         data.put("miya", miyaAccount);
-        return new ApiRest(data, "获取付款账号成功！");
+
+        return ApiRest.builder().data(data).message("获取付款账号成功！").successful(true).build();
     }
 
     /**
@@ -152,12 +151,7 @@ public class TenantService {
         TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
         ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(tenantSecretKey);
-        apiRest.setClassName(TenantSecretKey.class.getName());
-        apiRest.setMessage("获取商户秘钥成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(tenantSecretKey).className(TenantSecretKey.class.getName()).message("获取商户秘钥成功！").successful(true).build();
     }
 
     @Transactional(rollbackFor = Exception.class)

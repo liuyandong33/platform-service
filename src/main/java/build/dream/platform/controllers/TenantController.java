@@ -30,10 +30,10 @@ public class TenantController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/findAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/obtainAllGoodsInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = FindAllGoodsInfosModel.class, serviceClass = TenantService.class, serviceMethodName = "findAllGoodsInfos", error = "查询产品购买信息失败")
-    public String findAllGoodsInfos() {
+    @ApiRestAction(modelClass = ObtainAllGoodsInfosModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainAllGoodsInfos", error = "查询产品购买信息失败")
+    public String obtainAllGoodsInfos() {
         return null;
     }
 
@@ -43,10 +43,10 @@ public class TenantController extends BasicController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findGoodsInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/obtainGoodsInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = FindGoodsInfoModel.class, serviceClass = TenantService.class, serviceMethodName = "findGoodsInfo", error = "查询产品购买信息失败")
-    public String findGoodsInfo() {
+    @ApiRestAction(modelClass = ObtainGoodsInfoModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainGoodsInfo", error = "查询产品购买信息失败")
+    public String obtainGoodsInfo() {
         return null;
     }
 
