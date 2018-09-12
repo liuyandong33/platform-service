@@ -75,10 +75,7 @@ public class UserService {
         data.put("posPrivileges", posPrivileges);
         data.put("backgroundPrivileges", backgroundPrivileges);
         data.put("branch", obtainBranchInfoApiRest.getData());
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(data).message("获取用户信息成功！").successful(true).build();
     }
 
     /**
@@ -89,10 +86,12 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public ApiRest batchObtainUser(BatchGetUsersModel batchGetUsersModel) {
+        List<BigInteger> userIds = batchGetUsersModel.getUserIds();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", "IN", batchGetUsersModel.getUserIds());
+        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, userIds);
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
-        return new ApiRest(systemUsers, "批量获取用户信息成功！");
+        return ApiRest.builder().data(systemUsers).message("批量获取用户信息成功！").successful(true).build();
     }
 
     /**
@@ -111,11 +110,7 @@ public class UserService {
         } else if (Constants.PRIVILEGE_TYPE_POS.equals(obtainAllPrivilegesModel.getType())) {
             data = posPrivilegeMapper.findAllPosPrivileges(obtainAllPrivilegesModel.getUserId());
         }
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setMessage("查询权限成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(data).message("查询权限成功！").successful(true).build();
     }
 
     /**
@@ -126,17 +121,17 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest batchDeleteUser(BatchDeleteUserModel batchDeleteUserModel) {
+        BigInteger userId = batchDeleteUserModel.getUserId();
+        List<BigInteger> userIds = batchDeleteUserModel.getUserIds();
+
         UpdateModel updateModel = new UpdateModel(true);
         updateModel.setTableName("system_user");
         updateModel.addContentValue("deleted", 1);
-        updateModel.addContentValue("last_update_user_id", batchDeleteUserModel.getUserId());
+        updateModel.addContentValue("last_update_user_id", userId);
         updateModel.addContentValue("last_update_remark", "删除用户信息！");
-        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, batchDeleteUserModel.getUserIds());
+        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, userIds);
         DatabaseHelper.universalUpdate(updateModel);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("批量删除用户成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("批量删除用户成功！").successful(true).build();
     }
 }
