@@ -1,10 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AlipayAccount;
-import build.dream.common.saas.domains.Tenant;
-import build.dream.common.saas.domains.TenantSecretKey;
-import build.dream.common.saas.domains.WeiXinPayAccount;
+import build.dream.common.saas.domains.*;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchCondition;
 import build.dream.common.utils.SearchModel;
@@ -105,18 +102,23 @@ public class TenantService {
         searchConditions.add(new SearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, branchId));
         searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
 
-        SearchModel alipayAccountSearchModel = new SearchModel(true);
+        SearchModel alipayAccountSearchModel = new SearchModel();
         alipayAccountSearchModel.setSearchConditions(searchConditions);
 
-        SearchModel weiXinPayAccountSearchModel = new SearchModel(true);
+        SearchModel weiXinPayAccountSearchModel = new SearchModel();
         weiXinPayAccountSearchModel.setSearchConditions(searchConditions);
+
+        SearchModel bankAccountSearchModel = new SearchModel();
+        bankAccountSearchModel.setSearchConditions(searchConditions);
 
         AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, alipayAccountSearchModel);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, weiXinPayAccountSearchModel);
+        BankAccount bankAccount = DatabaseHelper.find(BankAccount.class, bankAccountSearchModel);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("alipay", alipayAccount);
         data.put("weiXin", weiXinPayAccount);
+        data.put("bank", bankAccount);
         return new ApiRest(data, "获取付款账号成功！");
     }
 
