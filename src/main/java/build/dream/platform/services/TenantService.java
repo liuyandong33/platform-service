@@ -96,9 +96,9 @@ public class TenantService {
         BigInteger branchId = obtainPayAccountsModel.getBranchId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, tenantId));
-        searchConditions.add(new SearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, branchId));
-        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
+        searchConditions.add(new SearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
+        searchConditions.add(new SearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
+        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
         SearchModel alipayAccountSearchModel = new SearchModel();
         alipayAccountSearchModel.setSearchConditions(searchConditions);
