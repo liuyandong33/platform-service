@@ -67,11 +67,11 @@ class MediaController {
     /**
       * 显示外部图片，绕过防盗链
       */
-    @RequestMapping(value = Array("/doGetOriginal"))
+    @RequestMapping(value = Array("/doGet"))
     @ResponseBody
-    def doGetOriginal(): ResponseEntity[Array[Byte]] = {
+    def doGet(): ResponseEntity[Array[Byte]] = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val url: String = requestParameters.get("url")
-        OutUtils.doGetOriginal(url, null)
+        OutUtils.doGet(url, null)
     }
 }
