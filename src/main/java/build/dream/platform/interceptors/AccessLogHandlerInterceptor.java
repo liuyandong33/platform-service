@@ -1,10 +1,11 @@
 package build.dream.platform.interceptors;
 
 import build.dream.common.annotations.NotSaveAccessLog;
-import build.dream.common.saas.domains.AccessLog;
+import build.dream.common.saas.domains.RequestLog;
 import build.dream.common.saas.domains.ResponseLog;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.ConfigurationUtils;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -16,8 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.UUID;
+import java.math.BigInteger;
+import java.util.*;
 
 @Component
 public class AccessLogHandlerInterceptor implements HandlerInterceptor {
@@ -33,18 +34,20 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
         if (notSaveAccessLog == null) {
             String uuid = UUID.randomUUID().toString();
             request.setAttribute("uuid", uuid);
-            AccessLog accessLog = new AccessLog();
-            accessLog.setUuid(uuid);
-            accessLog.setDeploymentEnvironment(DEPLOYMENT_ENVIRONMENT);
-            accessLog.setPartitionCode(PARTITION_CODE);
-            accessLog.setServiceName(SERVICE_NAME);
-            accessLog.setClassName(handlerMethod.getBeanType().getName());
-            accessLog.setMethodName(method.getName());
-            accessLog.setAccessTime(new Date());
-            accessLog.setRequestParameters(ApplicationHandler.getRequestParameters(request));
-            accessLog.setHeaders(ApplicationHandler.getRequestHeaders(request));
-            accessLog.setCookies(ApplicationHandler.getCookies(request));
-            System.out.println(GsonUtils.toJson(accessLog));
+            RequestLog requestLog = new RequestLog();
+            requestLog.setUuid(uuid);
+            requestLog.setDeploymentEnvironment(DEPLOYMENT_ENVIRONMENT);
+            requestLog.setPartitionCode(PARTITION_CODE);
+            requestLog.setServiceName(SERVICE_NAME);
+            requestLog.setClassName(handlerMethod.getBeanType().getName());
+            requestLog.setMethodName(method.getName());
+            requestLog.setRequestTime(new Date());
+            requestLog.setRequestParameters(GsonUtils.toJson(ApplicationHandler.getRequestParameters(request)));
+            requestLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getRequestHeaders(request))));
+            requestLog.setCookies(GsonUtils.toJson(ApplicationHandler.getCookies(request)));
+            requestLog.setCreateUserId(BigInteger.ONE);
+            requestLog.setLastUpdateUserId(BigInteger.ONE);
+            DatabaseHelper.insert(requestLog);
         }
         return true;
     }
@@ -58,14 +61,31 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             String uuid = (String) request.getAttribute("uuid");
             ResponseLog responseLog = new ResponseLog();
             responseLog.setUuid(uuid);
-            responseLog.setResponseBody("");
-            responseLog.setHeaders(ApplicationHandler.getResponseHeaders(response));
-            System.out.println(GsonUtils.toJson(responseLog));
+            responseLog.setResponseTime(new Date());
+            responseLog.setResponseContent((String) request.getAttribute(Constants.RESPONSE_CONTENT));
+            responseLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getResponseHeaders(response))));
+            responseLog.setCreateUserId(BigInteger.ONE);
+            responseLog.setLastUpdateUserId(BigInteger.ONE);
+            DatabaseHelper.insert(responseLog);
         }
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
+    }
+
+    private Map<String, Object> obtainHeaders(Map<String, List<String>> headers) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (Map.Entry<String, List<String>> responseHeader : headers.entrySet()) {
+            String key = responseHeader.getKey();
+            List<String> value = responseHeader.getValue();
+            if (value.size() > 1) {
+                map.put(key, value);
+            } else {
+                map.put(key, value.get(0));
+            }
+        }
+        return map;
     }
 }

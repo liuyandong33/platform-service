@@ -3,6 +3,7 @@ package build.dream.platform.aspects;
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.annotations.ModelAndViewAction;
 import build.dream.common.api.ApiRest;
+import build.dream.common.constants.Constants;
 import build.dream.common.exceptions.ApiException;
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
@@ -18,6 +19,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -40,7 +42,8 @@ public class CallActionAspect {
 
     @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(apiRestAction)")
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
-        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
+        HttpServletRequest httpServletRequest = ApplicationHandler.getHttpServletRequest();
+        Map<String, String> requestParameters = ApplicationHandler.getRequestParameters(httpServletRequest);
         Object returnValue = null;
 
         Throwable throwable = null;
@@ -60,6 +63,7 @@ public class CallActionAspect {
                 returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
             }
         }
+        httpServletRequest.setAttribute(Constants.RESPONSE_CONTENT, returnValue);
         return returnValue;
     }
 
