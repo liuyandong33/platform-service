@@ -61,9 +61,6 @@ public class NotifyService {
             DatabaseHelper.update(notifyRecord);
         }
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("保存支付回调记录成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("保存支付回调记录成功！").successful(true).build();
     }
 }

@@ -6,15 +6,11 @@ import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.BackgroundPrivilege;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.saas.domains.Tenant;
-import build.dream.common.utils.ApplicationHandler;
-import build.dream.common.utils.CacheUtils;
-import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.SystemUserMapper;
 import build.dream.platform.models.login.LoginModel;
-import build.dream.common.utils.DatabaseHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,9 +72,6 @@ public class LoginService {
         sessionMap.put(SessionConstants.KEY_AUTHORITY_CODES, GsonUtils.toJson(authorityCodes));
         CacheUtils.setAttributesToSession(sessionId, sessionMap);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("登录成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("登录成功！").successful(true).build();
     }
 }

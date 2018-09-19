@@ -4,6 +4,7 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.GoodsType;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchCondition;
 import build.dream.common.utils.SearchModel;
@@ -12,7 +13,6 @@ import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainGoodsInfoModel;
 import build.dream.platform.models.goods.SaveGoodsModel;
-import build.dream.common.utils.DatabaseHelper;
 import build.dream.platform.utils.GoodsUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -56,7 +56,7 @@ public class GoodsService {
             goodsInfo.put("goodsSpecification", goodsSpecificationInfoMap.get(goods.getId()));
             goodsInfos.add(goodsInfo);
         }
-        return new ApiRest(goodsInfos, "获取商品信息成功！");
+        return ApiRest.builder().data(goodsInfos).message("获取商品信息成功！").successful(true).build();
     }
 
     /**
@@ -86,7 +86,7 @@ public class GoodsService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", total);
         data.put("rows", goodses);
-        return new ApiRest(data, "分页查询商品列表成功！");
+        return ApiRest.builder().data(data).message("分页查询商品列表成功！").successful(true).build();
     }
 
     /**
@@ -112,7 +112,7 @@ public class GoodsService {
         Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
         goodsInfo.put("goodsSpecification", goodsSpecificationInfos);
 
-        return new ApiRest(goodsInfo, "获取商品信息成功！");
+        return ApiRest.builder().data(goodsInfo).message("获取商品信息成功！").successful(true).build();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -201,6 +201,6 @@ public class GoodsService {
                 DatabaseHelper.insert(goodsSpecification);
             }
         }
-        return new ApiRest(goods, "保存商品信息成功！");
+        return ApiRest.builder().data(goods).message("保存商品信息成功！").successful(true).build();
     }
 }

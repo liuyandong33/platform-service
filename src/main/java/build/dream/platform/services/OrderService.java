@@ -119,11 +119,7 @@ public class OrderService {
         orderInfo.setLastUpdateRemark("保存订单信息！");
         DatabaseHelper.update(orderInfo);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(OrderUtils.buildOrderInfo(orderInfo, orderDetails));
-        apiRest.setMessage("保存订单成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(OrderUtils.buildOrderInfo(orderInfo, orderDetails)).message("保存订单成功！").successful(true).build();
     }
 
     /**
@@ -144,11 +140,7 @@ public class OrderService {
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(OrderUtils.buildOrderInfo(orderInfo, orderDetails));
-        apiRest.setMessage("获取订单信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(OrderUtils.buildOrderInfo(orderInfo, orderDetails)).message("获取订单信息成功！").successful(true).build();
     }
 
     /**
@@ -213,11 +205,7 @@ public class OrderService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("rows", orders);
         data.put("total", total);
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setMessage("获取订单信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(data).message("获取订单信息成功！").successful(true).build();
     }
 
     /**
@@ -246,10 +234,7 @@ public class OrderService {
         orderDetailUpdateModel.addContentValue("last_update_remark", "删除订单详情信息！");
         orderDetailUpdateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
         DatabaseHelper.universalUpdate(orderDetailUpdateModel);
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("删除订单信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
     }
 
     /**
@@ -280,10 +265,7 @@ public class OrderService {
         updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         DatabaseHelper.universalUpdate(updateModel);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("删除订单信息成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
     }
 
     /**
@@ -346,7 +328,7 @@ public class OrderService {
             }
         }
         Validate.isTrue(apiRest.isSuccessful(), apiRest.getError());
-        return new ApiRest(apiRest.getData(), "发起支付成功！");
+        return ApiRest.builder().data(apiRest.getData()).message("发起支付成功！").successful(true).build();
     }
 
     /**

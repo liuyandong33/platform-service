@@ -67,10 +67,7 @@ public class AlipayService {
 
         CacheUtils.hset(Constants.KEY_ALIPAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(alipayAccount));
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("保存支付宝账号成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("保存支付宝账号成功！").successful(true).build();
     }
 
     @Transactional(readOnly = true)

@@ -41,7 +41,7 @@ public class AgentService {
         }
 
         Agent agent = DatabaseHelper.find(Agent.class, searchModel);
-        return new ApiRest(agent, "获取代理商信息成功！");
+        return ApiRest.builder().data(agent).message("获取代理商信息成功！").successful(true).build();
     }
 
     /**
@@ -74,6 +74,6 @@ public class AgentService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", count);
         data.put("rows", agents);
-        return new ApiRest(data, "查询代理商信息成功！");
+        return ApiRest.builder().data(data).message("查询代理商信息成功！").successful(true).build();
     }
 }
