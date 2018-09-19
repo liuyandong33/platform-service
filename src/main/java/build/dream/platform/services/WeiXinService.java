@@ -32,12 +32,7 @@ public class WeiXinService {
         weiXinOpenPlatformApplication.setDeleted(true);
         DatabaseHelper.update(weiXinOpenPlatformApplication);
 
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(weiXinOpenPlatformApplication);
-        apiRest.setClassName(WeiXinOpenPlatformApplication.class.getName());
-        apiRest.setMessage("删除微信开放平台应用成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(weiXinOpenPlatformApplication).className(WeiXinOpenPlatformApplication.class.getName()).message("删除微信开放平台应用成功！").successful(true).build();
     }
 
     /**
@@ -52,12 +47,7 @@ public class WeiXinService {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(weiXinOpenPlatformApplication);
-        apiRest.setClassName(WeiXinOpenPlatformApplication.class.getName());
-        apiRest.setMessage("查询微信开放平台应用成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(weiXinOpenPlatformApplication).className(WeiXinOpenPlatformApplication.class.getName()).message("查询微信开放平台应用成功！").successful(true).build();
     }
 
     /**
@@ -111,11 +101,7 @@ public class WeiXinService {
             weiXinPublicAccount.setLastUpdateRemark("修改微信公众号！");
             DatabaseHelper.update(weiXinPublicAccount);
         }
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(weiXinPublicAccount);
-        apiRest.setMessage("保存微信公众号成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(weiXinPublicAccount).message("保存微信公众号成功！").successful(true).build();
     }
 
     /**
