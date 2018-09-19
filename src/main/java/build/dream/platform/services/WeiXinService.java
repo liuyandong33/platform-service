@@ -26,7 +26,7 @@ public class WeiXinService {
     public ApiRest deleteWeiXinOpenPlatformApplication(DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel) {
         String appId = deleteWeiXinOpenPlatformApplicationModel.getAppId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
+        searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         Validate.notNull(weiXinOpenPlatformApplication, "微信开放平台应用不存在！");
         weiXinOpenPlatformApplication.setDeleted(true);
@@ -50,7 +50,7 @@ public class WeiXinService {
     public ApiRest obtainWeiXinOpenPlatformApplication(ObtainWeiXinOpenPlatformApplicationModel obtainWeiXinOpenPlatformApplicationModel) {
         String appId = obtainWeiXinOpenPlatformApplicationModel.getAppId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
+        searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         ApiRest apiRest = new ApiRest();
         apiRest.setData(weiXinOpenPlatformApplication);
@@ -68,7 +68,7 @@ public class WeiXinService {
      */
     public WeiXinOpenPlatformApplication findWeiXinOpenPlatformApplication(String appId) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("app_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
+        searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
         return weiXinOpenPlatformApplication;
     }
@@ -89,7 +89,7 @@ public class WeiXinService {
         BigInteger userId = saveWeiXinPublicAccountModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(WeiXinPublicAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
         if (weiXinPublicAccount == null) {
             weiXinPublicAccount = new WeiXinPublicAccount();
@@ -126,15 +126,12 @@ public class WeiXinService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinPublicAccount(ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel) {
+        BigInteger tenantId = obtainWeiXinPublicAccountModel.getTenantId();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, obtainWeiXinPublicAccountModel.getTenantId());
+        searchModel.addSearchCondition(WeiXinPublicAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(weiXinPublicAccount);
-        apiRest.setClassName(WeiXinPublicAccount.class.getName());
-        apiRest.setMessage("查询微信公众号成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(weiXinPublicAccount).className(WeiXinPublicAccount.class.getName()).message("查询微信公众号成功！").successful(true).build();
     }
 
     /**
@@ -161,8 +158,8 @@ public class WeiXinService {
         boolean acceptanceModel = saveWeiXinPayAccountModel.getAcceptanceModel();
         BigInteger userId = saveWeiXinPayAccountModel.getUserId();
 
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+        searchModel.addSearchCondition(WeiXinPayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(WeiXinPayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, searchModel);
         if (weiXinPayAccount == null) {
             weiXinPayAccount = new WeiXinPayAccount();
@@ -221,10 +218,7 @@ public class WeiXinService {
         }
 
         CacheUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
-        ApiRest apiRest = new ApiRest();
-        apiRest.setSuccessful(true);
-        apiRest.setMessage("保存微信支付账号成功！");
-        return apiRest;
+        return ApiRest.builder().message("保存微信支付账号成功！").successful(true).build();
     }
 
     @Transactional(readOnly = true)
@@ -358,9 +352,11 @@ public class WeiXinService {
      */
     public ApiRest obtainWeiXinAuthorizerInfo(ObtainWeiXinAuthorizerInfoModel obtainWeiXinAuthorizerInfoModel) {
         BigInteger tenantId = obtainWeiXinAuthorizerInfoModel.getTenantId();
+
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
+
         return ApiRest.builder().data(weiXinAuthorizerInfo).message("获取微信授权信息成功！").successful(true).build();
     }
 }

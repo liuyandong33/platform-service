@@ -36,10 +36,10 @@ public class TenantService {
 
         SearchModel searchModel = new SearchModel(true);
         if (tenantId != null) {
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+            searchModel.addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         }
         if (StringUtils.isNotBlank(tenantCode)) {
-            searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantCode);
+            searchModel.addSearchCondition(Tenant.ColumnName.CODE, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantCode);
         }
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
 
@@ -96,9 +96,9 @@ public class TenantService {
         BigInteger branchId = obtainPayAccountsModel.getBranchId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
-        searchConditions.add(new SearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
-        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
+        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
+        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
         SearchModel alipayAccountSearchModel = new SearchModel();
         alipayAccountSearchModel.setSearchConditions(searchConditions);
@@ -146,8 +146,9 @@ public class TenantService {
     @Transactional(readOnly = true)
     public ApiRest obtainTenantSecretKey(ObtainTenantSecretKeyModel obtainTenantSecretKeyModel) {
         BigInteger tenantId = obtainTenantSecretKeyModel.getTenantId();
+
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        tenantSecretKeySearchModel.addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
         ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
 

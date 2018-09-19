@@ -32,8 +32,8 @@ public class AlipayService {
         BigInteger userId = saveAlipayAccountModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        searchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+        searchModel.addSearchCondition(AlipayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(AlipayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, searchModel);
         if (alipayAccount == null) {
             alipayAccount = new AlipayAccount();
