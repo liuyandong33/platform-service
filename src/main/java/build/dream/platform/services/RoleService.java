@@ -4,6 +4,7 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AppRole;
 import build.dream.common.saas.domains.BackgroundRole;
 import build.dream.common.saas.domains.PosRole;
+import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
@@ -13,7 +14,6 @@ import build.dream.platform.mappers.PosRoleMapper;
 import build.dream.platform.models.role.ListRolePrivilegesModel;
 import build.dream.platform.models.role.ListRolesModel;
 import build.dream.platform.models.role.SaveRolePrivilegesModel;
-import build.dream.common.utils.DatabaseHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,11 +68,7 @@ public class RoleService {
             data.put("total", total);
             data.put("rows", posRoles);
         }
-        ApiRest apiRest = new ApiRest();
-        apiRest.setData(data);
-        apiRest.setMessage("查询权限列表成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().data(data).message("查询权限列表成功！").successful(true).build();
     }
 
     @Transactional(readOnly = true)
@@ -85,7 +81,7 @@ public class RoleService {
         } else if (Constants.ROLE_TYPE_POS.equals(listRolePrivilegesModel.getType())) {
             data = backgroundRoleMapper.listRolePrivileges(listRolePrivilegesModel.getRoleId());
         }
-        return new ApiRest(data, "查询角色权限列表成功！");
+        return ApiRest.builder().data(data).message("查询角色权限列表成功！").successful(true).build();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -100,9 +96,6 @@ public class RoleService {
             posRoleMapper.deleteRolePrivileges(saveRolePrivilegesModel.getRoleId());
             posRoleMapper.saveRolePrivileges(saveRolePrivilegesModel.getRoleId(), saveRolePrivilegesModel.getPrivilegeIds());
         }
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("保存角色权限成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("保存角色权限成功！").successful(true).build();
     }
 }

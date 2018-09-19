@@ -149,8 +149,7 @@ public class RegisterService {
         data.put("user", systemUser);
         data.put("tenant", tenant);
         data.put("branch", branchInfo);
-        ApiRest apiRest = new ApiRest(data, "注册商户成功！");
-        return apiRest;
+        return ApiRest.builder().data(data).message("注册商户成功！").successful(true).build();
     }
 
     private boolean mobileIsUnique(String mobile) {
@@ -212,6 +211,6 @@ public class RegisterService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("agent", agent);
-        return new ApiRest(data, "注册代理商成功！");
+        return ApiRest.builder().data(data).message("注册代理商成功！").successful(true).build();
     }
 }
