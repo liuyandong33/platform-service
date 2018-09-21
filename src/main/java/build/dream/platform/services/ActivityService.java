@@ -45,7 +45,7 @@ public class ActivityService {
 
         // 查询出涉及的所有商品
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
+        goodsSearchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
         List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
         Map<BigInteger, Goods> goodsMap = new HashMap<BigInteger, Goods>();
         for (Goods goods : goodses) {
@@ -54,7 +54,7 @@ public class ActivityService {
 
         // 查询出涉及的所有商品规格
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
+        goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
         Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
@@ -73,16 +73,19 @@ public class ActivityService {
 
         List<SpecialGoodsActivity> specialGoodsActivities = new ArrayList<SpecialGoodsActivity>();
         for (SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo specialGoodsActivityInfo : specialGoodsActivityInfos) {
-            Goods goods = goodsMap.get(specialGoodsActivityInfo.getGoodsId());
+            BigInteger goodsId = specialGoodsActivityInfo.getGoodsId();
+            BigInteger goodsSpecificationId = specialGoodsActivityInfo.getGoodsSpecificationId();
+
+            Goods goods = goodsMap.get(goodsId);
             Validate.notNull(goods, "商品不存在！");
 
-            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(specialGoodsActivityInfo.getGoodsSpecificationId());
+            GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationId);
             Validate.notNull(goodsSpecification, "商品规格不存在！");
 
             SpecialGoodsActivity specialGoodsActivity = new SpecialGoodsActivity();
             specialGoodsActivity.setActivityId(activity.getId());
-            specialGoodsActivity.setGoodsId(goods.getId());
-            specialGoodsActivity.setGoodsSpecificationId(goodsSpecification.getId());
+            specialGoodsActivity.setGoodsId(goodsId);
+            specialGoodsActivity.setGoodsSpecificationId(goodsSpecificationId);
             Integer discountType = specialGoodsActivity.getDiscountType();
             if (discountType == 1) {
                 specialGoodsActivity.setTenantSpecialPrice(specialGoodsActivity.getTenantSpecialPrice());
@@ -97,17 +100,13 @@ public class ActivityService {
             specialGoodsActivities.add(specialGoodsActivity);
         }
         DatabaseHelper.insertAll(specialGoodsActivities);
-
-        ApiRest apiRest = new ApiRest();
-        apiRest.setMessage("保存特价商品活动成功！");
-        apiRest.setSuccessful(true);
-        return apiRest;
+        return ApiRest.builder().message("保存特价商品活动成功！").successful(true).build();
     }
 
     @Transactional(readOnly = true)
     public ApiRest obtainAllActivities(ObtainAllActivitiesModel obtainAllActivitiesModel) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUAL, 2);
+        searchModel.addSearchCondition(Activity.ColumnName.STATUS, Constants.SQL_OPERATION_SYMBOL_EQUAL, 2);
         List<Activity> activities = DatabaseHelper.findAll(Activity.class, searchModel);
 
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
@@ -124,6 +123,6 @@ public class ActivityService {
             }
             data.add(activityInfo);
         }
-        return new ApiRest(data, "查询活动成功！");
+        return ApiRest.builder().data(data).message("查询活动成功！").successful(true).build();
     }
 }
