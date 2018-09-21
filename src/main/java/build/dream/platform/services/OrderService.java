@@ -15,7 +15,6 @@ import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -275,7 +274,7 @@ public class OrderService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest doPay(DoPayModel doPayModel) throws IOException {
+    public ApiRest doPay(DoPayModel doPayModel) {
         BigInteger orderInfoId = doPayModel.getOrderInfoId();
         BigInteger userId = doPayModel.getUserId();
         int paidScene = doPayModel.getPaidScene();
@@ -339,7 +338,7 @@ public class OrderService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public String handleCallback(String orderNumber, int paidType) throws IOException, ParseException {
+    public String handleCallback(String orderNumber, int paidType) throws ParseException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderNumber);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);

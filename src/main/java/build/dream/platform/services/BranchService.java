@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,11 +29,9 @@ public class BranchService {
 
     /**
      * 同步门店信息
-     *
-     * @throws IOException
      */
     @Transactional(rollbackFor = Exception.class)
-    public void synchronizeBranchInfo() throws IOException {
+    public void synchronizeBranchInfo() {
         String sql = "SELECT COUNT(1) AS count FROM information_schema.TABLES WHERE table_name = #{tableName} AND table_schema = #{tableSchema};";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("sql", sql);
@@ -159,10 +156,9 @@ public class BranchService {
      * 禁用门店产品
      *
      * @throws ParseException
-     * @throws IOException
      */
     @Transactional(readOnly = true)
-    public void disableGoods() throws ParseException, IOException {
+    public void disableGoods() throws ParseException {
         Date expireTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00");
         List<Map<String, Object>> expiredBranches = tenantGoodsMapper.findAllExpiredBranches(expireTime);
         for (Map<String, Object> expiredBranch : expiredBranches) {

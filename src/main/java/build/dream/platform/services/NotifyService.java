@@ -11,13 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 @Service
 public class NotifyService {
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest saveNotifyRecord(SaveNotifyRecordModel saveNotifyRecordModel) throws IOException {
+    public ApiRest saveNotifyRecord(SaveNotifyRecordModel saveNotifyRecordModel) {
         String uuid = saveNotifyRecordModel.getUuid();
         String notifyUrl = saveNotifyRecordModel.getNotifyUrl();
         String alipayPublicKey = saveNotifyRecordModel.getAlipayPublicKey();

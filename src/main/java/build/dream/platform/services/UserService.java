@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +34,9 @@ public class UserService {
      *
      * @param obtainUserInfoModel
      * @return
-     * @throws IOException
      */
     @Transactional(readOnly = true)
-    public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) throws IOException {
+    public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) {
         String loginName = obtainUserInfoModel.getLoginName();
 
         SearchModel userSearchModel = new SearchModel(true);

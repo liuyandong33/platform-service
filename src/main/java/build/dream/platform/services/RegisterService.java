@@ -16,7 +16,6 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -32,12 +31,11 @@ public class RegisterService {
      *
      * @param registerTenantModel
      * @return
-     * @throws IOException
      * @throws NoSuchAlgorithmException
      * @throws ParseException
      */
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws IOException, NoSuchAlgorithmException, ParseException {
+    public ApiRest registerTenant(RegisterTenantModel registerTenantModel) throws NoSuchAlgorithmException, ParseException {
         String mobile = registerTenantModel.getMobile();
         String email = registerTenantModel.getEmail();
         SearchModel mobileCountSearchModel = new SearchModel(true);
@@ -171,10 +169,9 @@ public class RegisterService {
      *
      * @param registerAgentModel
      * @return
-     * @throws IOException
      */
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest registerAgent(RegisterAgentModel registerAgentModel) throws IOException {
+    public ApiRest registerAgent(RegisterAgentModel registerAgentModel) {
         String mobile = registerAgentModel.getMobile();
         String email = registerAgentModel.getEmail();
         Validate.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
