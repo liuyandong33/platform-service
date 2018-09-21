@@ -14,6 +14,7 @@ import build.dream.platform.models.user.ObtainUserInfoModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scala.Tuple3;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class UserService {
         List<BigInteger> userIds = batchGetUsersModel.getUserIds();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, userIds);
+        searchModel.addSearchCondition(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds);
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         return ApiRest.builder().data(systemUsers).message("批量获取用户信息成功！").successful(true).build();
     }
@@ -122,13 +123,8 @@ public class UserService {
         BigInteger userId = batchDeleteUserModel.getUserId();
         List<BigInteger> userIds = batchDeleteUserModel.getUserIds();
 
-        UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName("system_user");
-        updateModel.addContentValue("deleted", 1);
-        updateModel.addContentValue("last_update_user_id", userId);
-        updateModel.addContentValue("last_update_remark", "删除用户信息！");
-        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, userIds);
-        DatabaseHelper.universalUpdate(updateModel);
+        Tuple3[] searchConditions = {TupleUtils.buildTuple3(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds)};
+        DatabaseHelper.markedDelete(SystemUser.class, userId, "删除用户信息！", searchConditions);
 
         return ApiRest.builder().message("批量删除用户成功！").successful(true).build();
     }
