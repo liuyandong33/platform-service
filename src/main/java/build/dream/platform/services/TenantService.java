@@ -2,10 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.SearchCondition;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.ValidateUtils;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.models.tenant.*;
@@ -178,5 +175,40 @@ public class TenantService {
         DatabaseHelper.update(tenant);
 
         return ApiRest.builder().message("修改商户信息成功！").successful(true).build();
+    }
+
+    /**
+     * 分页查询商户信息
+     *
+     * @param listTenantInfosModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest listTenantInfos(ListTenantInfosModel listTenantInfosModel) {
+        int page = listTenantInfosModel.getPage();
+        int rows = listTenantInfosModel.getRows();
+
+        List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
+        searchConditions.add(new SearchCondition(Tenant.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+
+        SearchModel searchModel = new SearchModel();
+        searchModel.setSearchConditions(searchConditions);
+        long count = DatabaseHelper.count(Tenant.class, searchModel);
+
+        List<Tenant> tenants = null;
+        if (count > 0) {
+            PagedSearchModel pagedSearchModel = new PagedSearchModel();
+            pagedSearchModel.setPage(page);
+            pagedSearchModel.setRows(rows);
+            tenants = DatabaseHelper.findAllPaged(Tenant.class, pagedSearchModel);
+        } else {
+            tenants = new ArrayList<Tenant>();
+        }
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("total", count);
+        data.put("rows", tenants);
+
+        return ApiRest.builder().data(data).message("查询成功！").successful(true).build();
     }
 }

@@ -85,4 +85,16 @@ public class TenantController extends BasicController {
     public String updateTenantInfo() {
         return null;
     }
+
+    /**
+     * 查询商户列表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/listTenantInfos", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = ListTenantInfosModel.class, serviceClass = TenantService.class, serviceMethodName = "listTenantInfos", error = "查询商户信息失败")
+    public String listTenantInfos() {
+        return null;
+    }
 }
