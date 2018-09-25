@@ -11,7 +11,7 @@
         FROM tenant_goods
         LEFT OUTER JOIN goods ON tenant_goods.goods_id = goods.id
         WHERE tenant_goods.tenant_id = #{tenantId}
-        AND tenant_goods.branch_id = #{branchId}
+        AND tenant_goods.branch_id IN (#{branchId}, 0)
     </select>
 
     <select id="findGoodsInfo" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
@@ -22,8 +22,9 @@
         tenant_goods.goods_id,
         goods.name
         FROM tenant_goods
-        LEFT OUTER JOIN goods ON tenant_goods.goods_id = goods.id
+        INNER JOIN goods ON tenant_goods.goods_id = goods.id
         WHERE tenant_goods.tenant_id = #{tenantId}
+        AND tenant_goods.branch_id IN (#{branchId}, 0)
         AND tenant_goods.goods_id = #{goodsId}
     </select>
     

@@ -10,7 +10,6 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.models.tenant.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,8 +57,11 @@ public class TenantService {
         BigInteger branchId = obtainAllGoodsInfosModel.getBranchId();
 
         List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(tenantId, branchId);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("goodsInfos", goodsInfos);
+        data.put("currentTime", new Date());
 
-        return ApiRest.builder().data(goodsInfos).message("查询产品购买信息成功！").successful(true).build();
+        return ApiRest.builder().data(data).message("查询产品购买信息成功！").successful(true).build();
     }
 
     /**
@@ -75,10 +77,10 @@ public class TenantService {
         BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
 
         Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(tenantId, branchId, goodsId);
-        Validate.notEmpty(goodsInfo, "未检索到产品购买信息！");
+        ValidateUtils.notEmpty(goodsInfo, "未检索到产品购买信息！");
 
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("goods", goodsInfo);
+        data.put("goodsInfo", goodsInfo);
         data.put("currentTime", new Date());
 
         return ApiRest.builder().data(data).message("查询产品购买信息成功！").successful(true).build();
