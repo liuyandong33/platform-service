@@ -187,12 +187,22 @@ public class TenantService {
     public ApiRest listTenantInfos(ListTenantInfosModel listTenantInfosModel) {
         int page = listTenantInfosModel.getPage();
         int rows = listTenantInfosModel.getRows();
+        String keyword = listTenantInfosModel.getKeyword();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
         searchConditions.add(new SearchCondition(Tenant.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
+        String whereClause = null;
+        if (StringUtils.isNotBlank(keyword)) {
+            whereClause = "(code LIKE #{keyword} OR name LIKE #{keyword})";
+        }
+
         SearchModel searchModel = new SearchModel();
         searchModel.setSearchConditions(searchConditions);
+        if (StringUtils.isNotBlank(whereClause)) {
+            searchModel.setWhereClause(whereClause);
+            searchModel.addNamedParameter("keyword", "%" + keyword + "%");
+        }
         long count = DatabaseHelper.count(Tenant.class, searchModel);
 
         List<Tenant> tenants = null;
@@ -200,6 +210,10 @@ public class TenantService {
             PagedSearchModel pagedSearchModel = new PagedSearchModel();
             pagedSearchModel.setPage(page);
             pagedSearchModel.setRows(rows);
+            if (StringUtils.isNotBlank(whereClause)) {
+                pagedSearchModel.setWhereClause(whereClause);
+                pagedSearchModel.addNamedParameter("keyword", "%" + keyword + "%");
+            }
             tenants = DatabaseHelper.findAllPaged(Tenant.class, pagedSearchModel);
         } else {
             tenants = new ArrayList<Tenant>();

@@ -1,6 +1,7 @@
 package build.dream.platform.models.tenant;
 
 import build.dream.common.models.BasicModel;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -16,6 +17,9 @@ public class ListTenantInfosModel extends BasicModel {
     @Max(value = 500)
     private Integer rows;
 
+    @Length(max = 200)
+    private String keyword;
+
     public Integer getPage() {
         return page;
     }
@@ -30,5 +34,13 @@ public class ListTenantInfosModel extends BasicModel {
 
     public void setRows(Integer rows) {
         this.rows = rows;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 }
