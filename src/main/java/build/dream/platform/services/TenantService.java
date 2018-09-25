@@ -2,9 +2,13 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.*;
+import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.SearchCondition;
+import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.ValidateUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
+import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.tenant.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,8 @@ import java.util.*;
 public class TenantService {
     @Autowired
     private TenantGoodsMapper tenantGoodsMapper;
+    @Autowired
+    private TenantMapper tenantMapper;
 
     /**
      * 获取商户信息系
@@ -188,40 +194,22 @@ public class TenantService {
         int page = listTenantInfosModel.getPage();
         int rows = listTenantInfosModel.getRows();
         String keyword = listTenantInfosModel.getKeyword();
-
-        List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition(Tenant.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
-
-        String whereClause = null;
         if (StringUtils.isNotBlank(keyword)) {
-            whereClause = "(code LIKE #{keyword} OR name LIKE #{keyword})";
+            keyword = "%" + keyword + "%";
         }
 
-        SearchModel searchModel = new SearchModel();
-        searchModel.setSearchConditions(searchConditions);
-        if (StringUtils.isNotBlank(whereClause)) {
-            searchModel.setWhereClause(whereClause);
-            searchModel.addNamedParameter("keyword", "%" + keyword + "%");
-        }
-        long count = DatabaseHelper.count(Tenant.class, searchModel);
+        long count = tenantMapper.count(keyword);
 
-        List<Tenant> tenants = null;
+        List<Map<String, Object>> tenantInfos = null;
         if (count > 0) {
-            PagedSearchModel pagedSearchModel = new PagedSearchModel();
-            pagedSearchModel.setPage(page);
-            pagedSearchModel.setRows(rows);
-            if (StringUtils.isNotBlank(whereClause)) {
-                pagedSearchModel.setWhereClause(whereClause);
-                pagedSearchModel.addNamedParameter("keyword", "%" + keyword + "%");
-            }
-            tenants = DatabaseHelper.findAllPaged(Tenant.class, pagedSearchModel);
+            tenantInfos = tenantMapper.listTenantInfos(keyword, page, rows);
         } else {
-            tenants = new ArrayList<Tenant>();
+            tenantInfos = new ArrayList<Map<String, Object>>();
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", count);
-        data.put("rows", tenants);
+        data.put("rows", tenantInfos);
 
         return ApiRest.builder().data(data).message("查询成功！").successful(true).build();
     }

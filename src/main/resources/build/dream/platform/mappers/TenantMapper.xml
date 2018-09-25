@@ -8,4 +8,35 @@
             (#{branchInfo.id}, #{branchInfo.code}, #{branchInfo.name}, #{branchInfo.type}, #{branchInfo.status}, #{branchInfo.tenantId})
         </foreach>
     </insert>
+
+    <select id="count" resultType="long">
+        SELECT
+        COUNT(1)
+        FROM tenant
+        LEFT OUTER JOIN agent ON agent.id = tenant.agent_id AND agent.deleted = 0
+        WHERE tenant.deleted = 0
+        <if test="@org.apache.commons.lang.StringUtils@isNotBlank(keyword)">
+            AND (tenant.code LIKE #{keyword} OR tenant.name LIKE #{keyword} OR agent.code LIKE #{keyword} OR agent.name LIKE #{keyword})
+        </if>
+    </select>
+
+    <select id="listTenantInfos" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        <bind name="offset" value="(page - 1) * rows"></bind>
+        SELECT
+        tenant.id AS tenant_id,
+        tenant.code AS tenant_code,
+        tenant.name AS tenant_name,
+        tenant.business,
+        tenant.tenant_type,
+        tenant.create_time,
+        agent.id AS agent_id,
+        agent.name AS agent_name
+        FROM tenant
+        LEFT OUTER JOIN agent ON agent.id = tenant.agent_id AND agent.deleted = 0
+        WHERE tenant.deleted = 0
+        <if test="@org.apache.commons.lang.StringUtils@isNotBlank(keyword)">
+            AND (tenant.code LIKE #{keyword} OR tenant.name LIKE #{keyword} OR agent.code LIKE #{keyword} OR agent.name LIKE #{keyword})
+        </if>
+        LIMIT #{offset}, #{rows}
+    </select>
 </mapper>
