@@ -2,10 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.SearchCondition;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.ValidateUtils;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.TenantMapper;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -212,5 +210,23 @@ public class TenantService {
         data.put("rows", tenantInfos);
 
         return ApiRest.builder().data(data).message("查询成功！").successful(true).build();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest updateBranchCount(UpdateBranchCountModel updateBranchCountModel) {
+        BigInteger tenantId = updateBranchCountModel.getTenantId();
+        int changeCount = updateBranchCountModel.getChangeCount();
+        int type = updateBranchCountModel.getType();
+
+        UpdateModel updateModel = new UpdateModel();
+        updateModel.setTableName("tenant");
+        updateModel.addContentValue(Tenant.ColumnName.DELETED, 1);
+        updateModel.addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.BIG_INTEGER_ONE);
+
+        DatabaseHelper.universalUpdate(updateModel);
+
+        int a = 1 / 0;
+
+        return ApiRest.builder().message("更新门店数量成功！").successful(true).build();
     }
 }

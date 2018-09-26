@@ -97,4 +97,12 @@ public class TenantController extends BasicController {
     public String listTenantInfos() {
         return null;
     }
+
+
+    @RequestMapping(value = "/updateBranchCount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = UpdateBranchCountModel.class, serviceClass = TenantService.class, serviceMethodName = "changeBranchCount", error = "修改门店数量失败")
+    public String updateBranchCount() {
+        return null;
+    }
 }

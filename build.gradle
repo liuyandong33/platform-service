@@ -59,6 +59,9 @@ dependencies {
 
     compile group: "org.apache.poi", name: "poi-ooxml", version: "3.17"
     compile group: "com.belerweb", name: "pinyin4j", version: "2.5.1"
+
+//    compile("com.codingapi:transaction-springcloud:4.1.0")
+
 //    compile 'com.aliyun.oss:aliyun-sdk-oss:2.0.6'
 //    compile 'com.aliyun:aliyun-java-sdk-sts:2.1.6'
 //    compile 'com.aliyun:aliyun-java-sdk-core:2.1.7'
