@@ -4,10 +4,7 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.GoodsType;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.PagedSearchModel;
-import build.dream.common.utils.SearchCondition;
-import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.goods.ListGoodsInfosModel;
 import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
@@ -40,20 +37,22 @@ public class GoodsService {
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
-        Map<BigInteger, List<Map<String, Object>>> goodsSpecificationInfoMap = new HashMap<BigInteger, List<Map<String, Object>>>();
+
+        Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = new HashMap<BigInteger, List<GoodsSpecification>>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
-            List<Map<String, Object>> goodsSpecificationInfos = goodsSpecificationInfoMap.get(goodsSpecification.getGoodsId());
-            if (goodsSpecificationInfos == null) {
-                goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
-                goodsSpecificationInfoMap.put(goodsSpecification.getGoodsId(), goodsSpecificationInfos);
+            BigInteger goodsId = goodsSpecification.getGoodsId();
+            List<GoodsSpecification> goodsSpecificationList = goodsSpecificationsMap.get(goodsId);
+            if (goodsSpecificationList == null) {
+                goodsSpecificationList = new ArrayList<GoodsSpecification>();
+                goodsSpecificationsMap.put(goodsId, goodsSpecificationList);
             }
-            goodsSpecificationInfos.add(GoodsUtils.buildGoodsSpecificationInfo(goodsSpecification));
+            goodsSpecificationList.add(goodsSpecification);
         }
 
         List<Map<String, Object>> goodsInfos = new ArrayList<Map<String, Object>>();
         for (Goods goods : goodses) {
-            Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
-            goodsInfo.put("goodsSpecification", goodsSpecificationInfoMap.get(goods.getId()));
+            Map<String, Object> goodsInfo = ApplicationHandler.toMap(goods);
+            goodsInfo.put("goodsSpecifications", goodsSpecificationsMap.get(goods.getId()));
             goodsInfos.add(goodsInfo);
         }
         return ApiRest.builder().data(goodsInfos).message("获取商品信息成功！").successful(true).build();
@@ -67,24 +66,34 @@ public class GoodsService {
      */
     @Transactional(readOnly = true)
     public ApiRest listGoodsInfos(ListGoodsInfosModel listGoodsInfosModel) {
+        int page = listGoodsInfosModel.getPage();
+        int rows = listGoodsInfosModel.getRows();
+        String keyword = listGoodsInfosModel.getKeyword();
+
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        String searchString = listGoodsInfosModel.getSearchString();
-        if (StringUtils.isNotBlank(searchString)) {
-            searchConditions.add(new SearchCondition("name", Constants.SQL_OPERATION_SYMBOL_LIKE, "%" + searchString + "%"));
+        searchConditions.add(new SearchCondition(Goods.ColumnName.DELETE_TIME, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+
+        if (StringUtils.isNotBlank(keyword)) {
+            searchConditions.add(new SearchCondition(Goods.ColumnName.NAME, Constants.SQL_OPERATION_SYMBOL_LIKE, "%" + keyword + "%"));
         }
+
         SearchModel searchModel = new SearchModel(true);
         searchModel.setSearchConditions(searchConditions);
-        long total = DatabaseHelper.count(Goods.class, searchModel);
-        List<Goods> goodses = new ArrayList<Goods>();
-        if (total > 0) {
+        long count = DatabaseHelper.count(Goods.class, searchModel);
+
+        List<Goods> goodses = null;
+        if (count > 0) {
             PagedSearchModel pagedSearchModel = new PagedSearchModel(true);
             pagedSearchModel.setSearchConditions(searchConditions);
-            pagedSearchModel.setPage(listGoodsInfosModel.getPage());
-            pagedSearchModel.setRows(listGoodsInfosModel.getRows());
+            pagedSearchModel.setPage(page);
+            pagedSearchModel.setRows(rows);
             goodses = DatabaseHelper.findAllPaged(Goods.class, pagedSearchModel);
+        } else {
+            goodses = new ArrayList<Goods>();
         }
+
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("total", total);
+        data.put("total", count);
         data.put("rows", goodses);
         return ApiRest.builder().data(data).message("分页查询商品列表成功！").successful(true).build();
     }
@@ -95,22 +104,21 @@ public class GoodsService {
      * @param obtainGoodsInfoModel
      * @return
      */
+    @Transactional(readOnly = true)
     public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
         BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
+
         SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+        goodsSearchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
         Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
         Validate.notNull(goods, "商品不存在！");
 
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+        goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
-        List<Map<String, Object>> goodsSpecificationInfos = new ArrayList<Map<String, Object>>();
-        for (GoodsSpecification goodsSpecification : goodsSpecifications) {
-            goodsSpecificationInfos.add(GoodsUtils.buildGoodsSpecificationInfo(goodsSpecification));
-        }
-        Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
-        goodsInfo.put("goodsSpecification", goodsSpecificationInfos);
+
+        Map<String, Object> goodsInfo = ApplicationHandler.toMap(goods);
+        goodsInfo.put("goodsSpecifications", goodsSpecifications);
 
         return ApiRest.builder().data(goodsInfo).message("获取商品信息成功！").successful(true).build();
     }

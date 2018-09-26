@@ -11,7 +11,7 @@ public class ListGoodsInfosModel extends BasicModel {
     @NotNull
     private Integer rows;
 
-    private String searchString;
+    private String keyword;
 
     public Integer getPage() {
         return page;
@@ -29,11 +29,11 @@ public class ListGoodsInfosModel extends BasicModel {
         this.rows = rows;
     }
 
-    public String getSearchString() {
-        return searchString;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setSearchString(String searchString) {
-        this.searchString = searchString;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 }
