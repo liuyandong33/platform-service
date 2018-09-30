@@ -81,7 +81,7 @@ public class UserService {
      * @return
      */
     @Transactional(readOnly = true)
-    public ApiRest batchObtainUser(BatchGetUsersModel batchGetUsersModel) {
+    public ApiRest batchGetUsers(BatchGetUsersModel batchGetUsersModel) {
         List<BigInteger> userIds = batchGetUsersModel.getUserIds();
 
         SearchModel searchModel = new SearchModel(true);

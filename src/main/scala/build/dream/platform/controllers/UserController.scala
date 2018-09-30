@@ -46,7 +46,7 @@ class UserController extends BasicController {
       */
     @RequestMapping(value = Array("/batchGetUsers"), method = Array(RequestMethod.GET), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[BatchGetUsersModel], serviceClass = classOf[UserService], serviceMethodName = "batchObtainUser", error = "获取用户信息失败")
+    @ApiRestAction(modelClass = classOf[BatchGetUsersModel], serviceClass = classOf[UserService], serviceMethodName = "batchGetUsers", error = "获取用户信息失败")
     def batchGetUsers: String = {
         null
     }
