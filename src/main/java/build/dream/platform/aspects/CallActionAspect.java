@@ -9,6 +9,7 @@ import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.ZipUtils;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -62,6 +63,9 @@ public class CallActionAspect {
             } else {
                 returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
             }
+        }
+        if (apiRestAction.isZip()) {
+            returnValue = ZipUtils.zipText(returnValue.toString());
         }
         httpServletRequest.setAttribute(Constants.RESPONSE_CONTENT, returnValue);
         return returnValue;
