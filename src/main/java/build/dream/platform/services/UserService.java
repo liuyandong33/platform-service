@@ -2,7 +2,10 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.*;
+import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.SearchModel;
+import build.dream.common.utils.TupleUtils;
+import build.dream.common.utils.ValidateUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppPrivilegeMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
@@ -61,11 +64,6 @@ public class UserService {
         List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
         List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId);
 
-        Map<String, String> obtainBranchInfoRequestParameters = new HashMap<String, String>();
-        obtainBranchInfoRequestParameters.put("tenantId", tenantId.toString());
-        obtainBranchInfoRequestParameters.put("userId", userId.toString());
-        ApiRest obtainBranchInfoApiRest = ProxyUtils.doGetWithRequestParameters(tenant.getPartitionCode(), CommonUtils.getServiceName(tenant.getBusiness()), "branch", "obtainBranchInfo", obtainBranchInfoRequestParameters);
-        ValidateUtils.isTrue(obtainBranchInfoApiRest.isSuccessful(), obtainBranchInfoApiRest.getError());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);
@@ -73,7 +71,6 @@ public class UserService {
         data.put("appPrivileges", appPrivileges);
         data.put("posPrivileges", posPrivileges);
         data.put("backgroundPrivileges", backgroundPrivileges);
-        data.put("branch", obtainBranchInfoApiRest.getData());
         return ApiRest.builder().data(data).message("获取用户信息成功！").successful(true).build();
     }
 
