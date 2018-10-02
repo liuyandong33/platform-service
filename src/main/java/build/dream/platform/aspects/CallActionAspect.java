@@ -59,14 +59,35 @@ public class CallActionAspect {
         if (throwable != null) {
             LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
             if (throwable instanceof ApiException) {
-                returnValue = GsonUtils.toJson(new ApiRest(throwable));
+                returnValue = new ApiRest(throwable);
             } else {
-                returnValue = GsonUtils.toJson(new ApiRest(apiRestAction.error()));
+                returnValue = ApiRest.builder().error(apiRestAction.error()).build();
             }
         }
-        if (apiRestAction.isZip()) {
-            returnValue = ZipUtils.zipText(returnValue.toString());
+
+        String datePattern = apiRestAction.datePattern();
+
+        if (apiRestAction.zipped()) {
+            ApiRest apiRest = null;
+            if (returnValue instanceof String) {
+                apiRest = ApiRest.fromJson(returnValue.toString(), datePattern);
+            } else {
+                apiRest = (ApiRest) returnValue;
+            }
+            Object data = apiRest.getData();
+            if (data instanceof String) {
+                apiRest.setData(ZipUtils.zipText(data.toString()));
+            } else {
+                apiRest.setData(ZipUtils.zipText(GsonUtils.toJson(data)));
+            }
+            apiRest.setZipped(true);
+            returnValue = GsonUtils.toJson(apiRest, datePattern);
+        } else {
+            if (!(returnValue instanceof String)) {
+                returnValue = GsonUtils.toJson(returnValue, datePattern);
+            }
         }
+
         httpServletRequest.setAttribute(Constants.RESPONSE_CONTENT, returnValue);
         return returnValue;
     }
@@ -107,9 +128,6 @@ public class CallActionAspect {
             method.setAccessible(true);
 
             returnValue = method.invoke(obtainService(serviceClass), model);
-            if (!(returnValue instanceof String)) {
-                returnValue = GsonUtils.toJson(returnValue);
-            }
         } else {
             returnValue = proceedingJoinPoint.proceed();
         }
