@@ -121,3 +121,27 @@ MASTER_LOG_FILE = 'mysql-bin.000001',
 MASTER_LOG_POS = 794;
 
 START SLAVE;
+
+
+Class.forName("com.mysql.cj.jdbc.Driver");
+Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/saas-db?serverTimezone=GMT%2B8&useSSL=true", "root", "root");
+DatabaseMetaData databaseMetaData = connection.getMetaData();
+ResultSet resultSet = databaseMetaData.getColumns(null, "%", "tenant", "%");
+while (resultSet.next()) {
+    String columnName = resultSet.getString("COLUMN_NAME");
+    String typeName = resultSet.getString("TYPE_NAME");
+    String fieldName = NamingStrategyUtils.underscoreToCamelCase(columnName);
+
+    String fieldType = null;
+    if ("BIGINT".equals(typeName)) {
+        fieldType = BigInteger.class.getName();
+    } else if ("VARCHAR".equals(typeName)) {
+        fieldType = String.class.getName();
+    } else if ("TINYINT".equals(typeName)) {
+        fieldType = Integer.class.getName();
+    } else if ("DATETIME".equals(typeName)) {
+        fieldType = Date.class.getName();
+    }
+
+    System.out.println("private " + fieldType + " " + fieldName + ";");
+}
