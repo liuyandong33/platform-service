@@ -50,27 +50,34 @@ public class UserService {
         ValidateUtils.notNull(systemUser, "用户不存在！");
 
         BigInteger userId = systemUser.getId();
-
-        Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
-        ValidateUtils.notNull(tenant, "商户不存在！");
-        BigInteger tenantId = tenant.getId();
-
-        SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-        tenantSecretKeySearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
-        ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
-
-        List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
-        List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
-        List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId);
+        int userType = systemUser.getUserType();
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
-        data.put("tenant", tenant);
-        data.put("tenantSecretKey", tenantSecretKey);
-        data.put("appPrivileges", appPrivileges);
-        data.put("posPrivileges", posPrivileges);
-        data.put("backgroundPrivileges", backgroundPrivileges);
+        if (userType == Constants.USER_TYPE_TENANT || userType == Constants.USER_TYPE_TENANT_EMPLOYEE) {
+            Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
+            ValidateUtils.notNull(tenant, "商户不存在！");
+            BigInteger tenantId = tenant.getId();
+
+            SearchModel tenantSecretKeySearchModel = new SearchModel(true);
+            tenantSecretKeySearchModel.addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+            TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
+            ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！");
+
+            List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
+            List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
+            List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId);
+
+            data.put("tenant", tenant);
+            data.put("tenantSecretKey", tenantSecretKey);
+            data.put("appPrivileges", appPrivileges);
+            data.put("posPrivileges", posPrivileges);
+            data.put("backgroundPrivileges", backgroundPrivileges);
+        } else if (userType == Constants.USER_TYPE_AGENT) {
+            Agent agent = DatabaseHelper.find(Agent.class, systemUser.getAgentId());
+            ValidateUtils.notNull(agent, "代理商不存在！");
+            data.put("agent", agent);
+        }
         return ApiRest.builder().data(data).message("获取用户信息成功！").successful(true).build();
     }
 
