@@ -67,26 +67,28 @@ public class CallActionAspect {
 
         String datePattern = apiRestAction.datePattern();
 
+        ApiRest apiRest = null;
+        if (returnValue instanceof String) {
+            apiRest = ApiRest.fromJson(returnValue.toString(), datePattern);
+        } else {
+            apiRest = (ApiRest) returnValue;
+        }
+
         if (apiRestAction.zipped()) {
-            ApiRest apiRest = null;
-            if (returnValue instanceof String) {
-                apiRest = ApiRest.fromJson(returnValue.toString(), datePattern);
-            } else {
-                apiRest = (ApiRest) returnValue;
-            }
             Object data = apiRest.getData();
             if (data instanceof String) {
                 apiRest.setData(ZipUtils.zipText(data.toString()));
             } else {
-                apiRest.setData(ZipUtils.zipText(GsonUtils.toJson(data)));
+                apiRest.setData(ZipUtils.zipText(GsonUtils.toJson(data, datePattern)));
             }
             apiRest.setZipped(true);
-            returnValue = GsonUtils.toJson(apiRest, datePattern);
-        } else {
-            if (!(returnValue instanceof String)) {
-                returnValue = GsonUtils.toJson(returnValue, datePattern);
-            }
         }
+
+        if (apiRestAction.signed()) {
+            apiRest.sign();
+        }
+
+        returnValue = GsonUtils.toJson(apiRest, datePattern);
 
         httpServletRequest.setAttribute(Constants.RESPONSE_CONTENT, returnValue);
         return returnValue;
