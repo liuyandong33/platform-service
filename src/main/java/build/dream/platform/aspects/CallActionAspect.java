@@ -85,7 +85,7 @@ public class CallActionAspect {
         }
 
         if (apiRestAction.signed()) {
-            apiRest.sign();
+            apiRest.sign(datePattern);
         }
 
         returnValue = GsonUtils.toJson(apiRest, datePattern);
