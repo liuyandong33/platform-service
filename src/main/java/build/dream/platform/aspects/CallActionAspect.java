@@ -44,11 +44,11 @@ public class CallActionAspect {
     public Object callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, ApiRestAction apiRestAction) {
         HttpServletRequest httpServletRequest = ApplicationHandler.getHttpServletRequest();
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters(httpServletRequest);
-        Object returnValue = null;
+        ApiRest apiRest = null;
 
         Throwable throwable = null;
         try {
-            returnValue = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
+            apiRest = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
         } catch (Throwable t) {
@@ -58,20 +58,13 @@ public class CallActionAspect {
         if (throwable != null) {
             LogUtils.error(apiRestAction.error(), proceedingJoinPoint.getTarget().getClass().getName(), proceedingJoinPoint.getSignature().getName(), throwable, requestParameters);
             if (throwable instanceof ApiException) {
-                returnValue = new ApiRest(throwable);
+                apiRest = new ApiRest(throwable);
             } else {
-                returnValue = ApiRest.builder().error(apiRestAction.error()).build();
+                apiRest = ApiRest.builder().error(apiRestAction.error()).build();
             }
         }
 
         String datePattern = apiRestAction.datePattern();
-
-        ApiRest apiRest = null;
-        if (returnValue instanceof String) {
-            apiRest = ApiRest.fromJson(returnValue.toString(), datePattern);
-        } else {
-            apiRest = (ApiRest) returnValue;
-        }
 
         if (apiRestAction.zipped()) {
             apiRest.zipData(datePattern);
@@ -81,7 +74,7 @@ public class CallActionAspect {
             apiRest.sign(datePattern);
         }
 
-        returnValue = GsonUtils.toJson(apiRest, datePattern);
+        String returnValue = GsonUtils.toJson(apiRest, datePattern);
 
         httpServletRequest.setAttribute(Constants.RESPONSE_CONTENT, returnValue);
         return returnValue;
@@ -113,7 +106,7 @@ public class CallActionAspect {
         return modelAndView;
     }
 
-    private Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
+    private ApiRest callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
         Object returnValue = null;
         if (modelClass != BasicModel.class && serviceClass != Object.class && StringUtils.isNotBlank(serviceMethodName)) {
             BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters);
@@ -126,6 +119,13 @@ public class CallActionAspect {
         } else {
             returnValue = proceedingJoinPoint.proceed();
         }
-        return returnValue;
+
+        ApiRest apiRest = null;
+        if (returnValue instanceof String) {
+            apiRest = ApiRest.fromJson(returnValue.toString());
+        } else {
+            apiRest = (ApiRest) returnValue;
+        }
+        return apiRest;
     }
 }
