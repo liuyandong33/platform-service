@@ -75,13 +75,7 @@ public class CallActionAspect {
         }
 
         if (apiRestAction.zipped()) {
-            Object data = apiRest.getData();
-            if (data instanceof String) {
-                apiRest.setData(ZipUtils.zipText(data.toString()));
-            } else {
-                apiRest.setData(ZipUtils.zipText(GsonUtils.toJson(data, datePattern)));
-            }
-            apiRest.setZipped(true);
+            apiRest.zipData(datePattern);
         }
 
         if (apiRestAction.signed()) {
