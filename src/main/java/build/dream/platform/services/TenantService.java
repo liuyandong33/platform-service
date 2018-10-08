@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -103,28 +102,27 @@ public class TenantService {
         searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
         searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
-        SearchModel alipayAccountSearchModel = new SearchModel();
-        alipayAccountSearchModel.setSearchConditions(searchConditions);
-
-        SearchModel weiXinPayAccountSearchModel = new SearchModel();
-        weiXinPayAccountSearchModel.setSearchConditions(searchConditions);
-
-        SearchModel bankAccountSearchModel = new SearchModel();
-        bankAccountSearchModel.setSearchConditions(searchConditions);
-
-        SearchModel miyaAccountSearchModel = new SearchModel();
-        miyaAccountSearchModel.setSearchConditions(searchConditions);
+        SearchModel alipayAccountSearchModel = new SearchModel(searchConditions);
+        SearchModel weiXinPayAccountSearchModel = new SearchModel(searchConditions);
+        SearchModel bankAccountSearchModel = new SearchModel(searchConditions);
+        SearchModel miyaAccountSearchModel = new SearchModel(searchConditions);
+        SearchModel umPayAccountSearchModel = new SearchModel(searchConditions);
+        SearchModel newLandAccountSearchModel = new SearchModel(searchConditions);
 
         AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, alipayAccountSearchModel);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, weiXinPayAccountSearchModel);
         BankAccount bankAccount = DatabaseHelper.find(BankAccount.class, bankAccountSearchModel);
         MiyaAccount miyaAccount = DatabaseHelper.find(MiyaAccount.class, miyaAccountSearchModel);
+        UmPayAccount umPayAccount = DatabaseHelper.find(UmPayAccount.class, umPayAccountSearchModel);
+        NewLandAccount newLandAccount = DatabaseHelper.find(NewLandAccount.class, newLandAccountSearchModel);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("alipay", alipayAccount);
         data.put("weiXin", weiXinPayAccount);
         data.put("bank", bankAccount);
         data.put("miya", miyaAccount);
+        data.put("umPay", umPayAccount);
+        data.put("newLand", newLandAccount);
 
         return ApiRest.builder().data(data).message("获取付款账号成功！").successful(true).build();
     }
