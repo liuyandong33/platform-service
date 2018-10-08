@@ -11,7 +11,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,11 +39,11 @@ public class RegisterService {
         String email = registerTenantModel.getEmail();
         SearchModel mobileCountSearchModel = new SearchModel(true);
         mobileCountSearchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile);
-        Validate.isTrue(DatabaseHelper.count(SystemUser.class, mobileCountSearchModel) == 0, "手机号码已注册！");
+        ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, mobileCountSearchModel) == 0, "手机号码已注册！");
 
         SearchModel emailCountSearchModel = new SearchModel(true);
         emailCountSearchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUAL, email);
-        Validate.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
+        ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
         String business = registerTenantModel.getBusiness();
 
         SearchModel searchModel = new SearchModel(true);
@@ -52,7 +51,7 @@ public class RegisterService {
         searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUAL, 1);
         searchModel.addSearchCondition("business", Constants.SQL_OPERATION_SYMBOL_EQUAL, business);
         Goods goods = DatabaseHelper.find(Goods.class, searchModel);
-        Validate.notNull(goods, "未查询到基础服务商品！");
+        ValidateUtils.notNull(goods, "未查询到基础服务商品！");
 
         Tenant tenant = new Tenant();
         tenant.setName(registerTenantModel.getName());
@@ -65,7 +64,7 @@ public class RegisterService {
             partitionCode = ConfigurationUtils.getConfiguration(Constants.RETAIL_CURRENT_PARTITION_CODE);
         }
         Integer currentPartitionQuantity = SequenceUtils.nextValue(partitionCode);
-        Validate.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
+        ValidateUtils.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
         tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("tenant_code")));
         tenant.setTenantType(registerTenantModel.getTenantType());
@@ -122,7 +121,7 @@ public class RegisterService {
         initializeBranchRequestParameters.put("contactPhone", registerTenantModel.getContactPhone());
         initializeBranchRequestParameters.put("smartRestaurantStatus", Constants.SMART_RESTAURANT_STATUS_DISABLED.toString());
         ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
-        Validate.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
+        ValidateUtils.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
 
         Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchApiRest.getData());
         BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
@@ -174,11 +173,10 @@ public class RegisterService {
     public ApiRest registerAgent(RegisterAgentModel registerAgentModel) {
         String mobile = registerAgentModel.getMobile();
         String email = registerAgentModel.getEmail();
-        Validate.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
-        Validate.isTrue(emailIsUnique(email), "邮箱已经注册！");
+        ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
+        ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
-        userId = BigInteger.ZERO;
 
         Agent agent = new Agent();
         agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("agent_code")));
