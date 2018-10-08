@@ -66,7 +66,7 @@ public class RegisterService {
         Integer currentPartitionQuantity = SequenceUtils.nextValue(partitionCode);
         ValidateUtils.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
         tenant.setPartitionCode(partitionCode);
-        tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("tenant_code")));
+        tenant.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_TENANT_CODE)));
         tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
@@ -179,7 +179,7 @@ public class RegisterService {
         BigInteger userId = CommonUtils.getServiceSystemUserId();
 
         Agent agent = new Agent();
-        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("agent_code")));
+        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE)));
         agent.setName(registerAgentModel.getName());
         agent.setCreateUserId(userId);
         agent.setLastUpdateUserId(userId);
