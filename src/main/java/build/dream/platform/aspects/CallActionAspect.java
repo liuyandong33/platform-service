@@ -48,7 +48,7 @@ public class CallActionAspect {
 
         Throwable throwable = null;
         try {
-            apiRest = callAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
+            apiRest = callApiRestAction(proceedingJoinPoint, requestParameters, apiRestAction.modelClass(), apiRestAction.serviceClass(), apiRestAction.serviceMethodName());
         } catch (InvocationTargetException e) {
             throwable = e.getTargetException();
         } catch (Throwable t) {
@@ -80,6 +80,17 @@ public class CallActionAspect {
         return returnValue;
     }
 
+    private ApiRest callApiRestAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
+        Object returnValue = callAction(proceedingJoinPoint, requestParameters, modelClass, serviceClass, serviceMethodName);
+        ApiRest apiRest = null;
+        if (returnValue instanceof String) {
+            apiRest = ApiRest.fromJson(returnValue.toString());
+        } else {
+            apiRest = (ApiRest) returnValue;
+        }
+        return apiRest;
+    }
+
     @Around(value = "execution(public * build.dream.platform.controllers.*.*(..)) && @annotation(modelAndViewAction)")
     public Object callModelAndViewAction(ProceedingJoinPoint proceedingJoinPoint, ModelAndViewAction modelAndViewAction) {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
@@ -106,7 +117,7 @@ public class CallActionAspect {
         return modelAndView;
     }
 
-    private ApiRest callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
+    private Object callAction(ProceedingJoinPoint proceedingJoinPoint, Map<String, String> requestParameters, Class<? extends BasicModel> modelClass, Class<?> serviceClass, String serviceMethodName) throws Throwable {
         Object returnValue = null;
         if (modelClass != BasicModel.class && serviceClass != Object.class && StringUtils.isNotBlank(serviceMethodName)) {
             BasicModel model = ApplicationHandler.instantiateObject(modelClass, requestParameters);
@@ -119,13 +130,6 @@ public class CallActionAspect {
         } else {
             returnValue = proceedingJoinPoint.proceed();
         }
-
-        ApiRest apiRest = null;
-        if (returnValue instanceof String) {
-            apiRest = ApiRest.fromJson(returnValue.toString());
-        } else {
-            apiRest = (ApiRest) returnValue;
-        }
-        return apiRest;
+        return returnValue;
     }
 }
