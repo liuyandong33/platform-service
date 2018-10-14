@@ -1,6 +1,5 @@
 package build.dream.platform.configurations;
 
-import build.dream.platform.constants.Constants;
 import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -24,17 +23,20 @@ public class QuartzSchedulerConfiguration {
     private DataSource dataSource;
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
+    public static final String SCHEDULER_NAME = "quartzScheduler";
+    public static final String APPLICATION_CONTEXT = "applicationContext";
+    public static final String QUARTZ_PROPERTIES = "quartz.properties";
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory) {
         SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
         schedulerFactoryBean.setJobFactory(jobFactory);
-        Resource configLocation = new ClassPathResource(Constants.QUARTZ_PROPERTIES);
+        Resource configLocation = new ClassPathResource(QUARTZ_PROPERTIES);
         schedulerFactoryBean.setConfigLocation(configLocation);
         schedulerFactoryBean.setDataSource(dataSource);
         schedulerFactoryBean.setTransactionManager(platformTransactionManager);
-        schedulerFactoryBean.setSchedulerName(Constants.SCHEDULER_NAME);
-        schedulerFactoryBean.setApplicationContextSchedulerContextKey(Constants.APPLICATION_CONTEXT);
+        schedulerFactoryBean.setSchedulerName(SCHEDULER_NAME);
+        schedulerFactoryBean.setApplicationContextSchedulerContextKey(APPLICATION_CONTEXT);
         return schedulerFactoryBean;
     }
 

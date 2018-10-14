@@ -60,7 +60,4 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final String SECONDARY_DATA_SOURCE = "secondaryDataSource";
 
     public static final String REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION = "refresh.wei.xin.authorizer.token.job.cron.expression";
-    public static final String SCHEDULER_NAME = "quartzScheduler";
-    public static final String APPLICATION_CONTEXT = "applicationContext";
-    public static final String QUARTZ_PROPERTIES = "quartz.properties";
 }
