@@ -67,13 +67,13 @@ public class CallActionAspect {
 
         String datePattern = apiRestAction.datePattern();
 
+        if (apiRestAction.zipped()) {
+            apiRest.zipData(datePattern);
+        }
+
         if (apiRestAction.encrypted()) {
             String publicKey = requestParameters.get(Constants.PUBLIC_KEY);
             apiRest.encryptData(publicKey, datePattern);
-        }
-
-        if (apiRestAction.zipped()) {
-            apiRest.zipData(datePattern);
         }
 
         if (apiRestAction.signed()) {
