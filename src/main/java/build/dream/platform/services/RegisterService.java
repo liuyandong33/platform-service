@@ -140,8 +140,6 @@ public class RegisterService {
         tenantGoods.setLastUpdateRemark("注册商户，创建试用商品！");
         DatabaseHelper.insert(tenantGoods);
 
-        CacheUtils.hset(Constants.KEY_TENANT_PUBLIC_KEYS, tenant.getId().toString(), publicKey);
-
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
         data.put("tenant", tenant);

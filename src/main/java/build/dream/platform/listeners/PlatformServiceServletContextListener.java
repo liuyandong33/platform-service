@@ -59,17 +59,6 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             CacheUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
         }
 
-        // 缓存商户秘钥
-        List<TenantSecretKey> tenantSecretKeys = tenantSecretKeyService.findAll();
-        Map<String, String> tenantPublicKeys = new HashMap<String, String>();
-        for (TenantSecretKey tenantSecretKey : tenantSecretKeys) {
-            tenantPublicKeys.put(tenantSecretKey.getTenantId().toString(), tenantSecretKey.getPublicKey());
-        }
-        CacheUtils.delete(Constants.KEY_TENANT_PUBLIC_KEYS);
-        if (MapUtils.isNotEmpty(tenantPublicKeys)) {
-            CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
-        }
-
         // 缓存商户信息
         List<Tenant> tenants = tenantService.obtainAllTenantInfos();
         Map<String, String> tenantInfos = new HashMap<String, String>();
