@@ -15,9 +15,6 @@ public class Constants extends build.dream.common.constants.Constants {
     public static final Integer ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_SUCCESS = 1;
     public static final Integer ELEME_CALLBACK_MESSAGE_HANDLE_RESULT_FAILURE = 2;
 
-    public static final String PLATFORM_PUBLIC_KEY = "platform.public.key";
-    public static final String PLATFORM_PRIVATE_KEY = "platform.private.key";
-
     public static final String PRIVILEGE_TYPE_BACKGROUND = "background";
     public static final String PRIVILEGE_TYPE_APP = "app";
     public static final String PRIVILEGE_TYPE_POS = "pos";

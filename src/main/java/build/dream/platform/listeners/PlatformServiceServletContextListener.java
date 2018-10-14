@@ -3,7 +3,6 @@ package build.dream.platform.listeners;
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CacheUtils;
-import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
@@ -70,9 +69,6 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         if (MapUtils.isNotEmpty(tenantPublicKeys)) {
             CacheUtils.hmset(Constants.KEY_TENANT_PUBLIC_KEYS, tenantPublicKeys);
         }
-
-        // 缓存平台私钥
-        CacheUtils.set(Constants.KEY_PLATFORM_PRIVATE_KEY, ConfigurationUtils.getConfiguration(Constants.PLATFORM_PRIVATE_KEY));
 
         // 缓存商户信息
         List<Tenant> tenants = tenantService.obtainAllTenantInfos();
