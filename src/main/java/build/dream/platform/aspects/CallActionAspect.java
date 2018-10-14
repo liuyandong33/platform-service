@@ -65,7 +65,7 @@ public class CallActionAspect {
         String datePattern = apiRestAction.datePattern();
 
         if (apiRestAction.encrypted()) {
-            String publicKey = requestParameters.get("publicKey");
+            String publicKey = requestParameters.get(Constants.PUBLIC_KEY);
             ValidateUtils.notNull(publicKey, "公钥不能为空！");
             apiRest.encryptData(publicKey, datePattern);
         }

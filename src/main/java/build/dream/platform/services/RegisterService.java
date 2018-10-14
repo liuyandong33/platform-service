@@ -38,18 +38,18 @@ public class RegisterService {
         String mobile = registerTenantModel.getMobile();
         String email = registerTenantModel.getEmail();
         SearchModel mobileCountSearchModel = new SearchModel(true);
-        mobileCountSearchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile);
+        mobileCountSearchModel.addSearchCondition(SystemUser.ColumnName.MOBILE, Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile);
         ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, mobileCountSearchModel) == 0, "手机号码已注册！");
 
         SearchModel emailCountSearchModel = new SearchModel(true);
-        emailCountSearchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUAL, email);
+        emailCountSearchModel.addSearchCondition(SystemUser.ColumnName.EMAIL, Constants.SQL_OPERATION_SYMBOL_EQUAL, email);
         ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
         String business = registerTenantModel.getBusiness();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, BigInteger.ONE);
-        searchModel.addSearchCondition("status", Constants.SQL_OPERATION_SYMBOL_EQUAL, 1);
-        searchModel.addSearchCondition("business", Constants.SQL_OPERATION_SYMBOL_EQUAL, business);
+        searchModel.addSearchCondition(Goods.ColumnName.GOODS_TYPE_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, BigInteger.ONE);
+        searchModel.addSearchCondition(Goods.ColumnName.STATUS, Constants.SQL_OPERATION_SYMBOL_EQUAL, 1);
+        searchModel.addSearchCondition(Goods.ColumnName.BUSINESS, Constants.SQL_OPERATION_SYMBOL_EQUAL, business);
         Goods goods = DatabaseHelper.find(Goods.class, searchModel);
         ValidateUtils.notNull(goods, "未查询到基础服务商品！");
 
@@ -94,9 +94,9 @@ public class RegisterService {
         tenantSecretKey.setTenantId(tenant.getId());
         tenantSecretKey.setTenantCode(tenant.getCode());
         Map<String, byte[]> rsaKeys = RSAUtils.generateKeyPair(2048);
-        String publicKey = Base64.encodeBase64String(rsaKeys.get("publicKey"));
+        String publicKey = Base64.encodeBase64String(rsaKeys.get(Constants.PUBLIC_KEY));
         tenantSecretKey.setPublicKey(publicKey);
-        tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get("privateKey")));
+        tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get(Constants.PRIVATE_KEY)));
         tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY));
         tenantSecretKey.setCreateUserId(userId);
         tenantSecretKey.setLastUpdateUserId(userId);
