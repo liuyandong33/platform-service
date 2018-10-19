@@ -3,16 +3,17 @@ package build.dream.platform.models.user;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 
 public class ObtainUserInfoModel extends BasicModel {
     @NotNull
-    private String loginName;
+    private BigInteger userId;
 
-    public String getLoginName() {
-        return loginName;
+    public BigInteger getUserId() {
+        return userId;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setUserId(BigInteger userId) {
+        this.userId = userId;
     }
 }

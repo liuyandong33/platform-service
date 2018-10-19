@@ -41,15 +41,11 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) {
-        String loginName = obtainUserInfoModel.getLoginName();
+        BigInteger userId = obtainUserInfoModel.getUserId();
 
-        SearchModel userSearchModel = new SearchModel(true);
-        userSearchModel.setWhereClause("login_name = #{loginName} OR email = #{loginName} OR mobile = #{loginName}");
-        userSearchModel.addNamedParameter("loginName", loginName);
-        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userSearchModel);
+        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userId);
         ValidateUtils.notNull(systemUser, "用户不存在！");
 
-        BigInteger userId = systemUser.getId();
         int userType = systemUser.getUserType();
 
         Map<String, Object> data = new HashMap<String, Object>();
