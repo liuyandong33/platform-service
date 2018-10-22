@@ -86,7 +86,7 @@ public class BranchService {
             pullBranchInfosRequestParameters.put("lastPullTime", lastPullTime);
             pullBranchInfosRequestParameters.put("reacquire", reacquire);
             ApiRest pullBranchInfosApiRest = ProxyUtils.doGetWithRequestParameters(systemPartition.getPartitionCode(), systemPartition.getServiceName(), "branch", "pullBranchInfos", pullBranchInfosRequestParameters);
-            Validate.isTrue(pullBranchInfosApiRest.isSuccessful(), pullBranchInfosApiRest.getError());
+            ValidateUtils.isTrue(pullBranchInfosApiRest.isSuccessful(), pullBranchInfosApiRest.getError());
             Map<String, Object> data = (Map<String, Object>) pullBranchInfosApiRest.getData();
             List<Map<String, Object>> insertBranchInfos = (List<Map<String, Object>>) data.get("insertBranchInfos");
             List<Map<String, Object>> updateBranchInfos = (List<Map<String, Object>>) data.get("updateBranchInfos");
@@ -175,7 +175,7 @@ public class BranchService {
             disableGoodsRequestParameters.put("branchId", branchId);
             disableGoodsRequestParameters.put("disableSql", disableSql);
             ApiRest disableGoodsApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, CommonUtils.getServiceName(business), "branch", "disableGoods", disableGoodsRequestParameters);
-            Validate.isTrue(disableGoodsApiRest.isSuccessful(), disableGoodsApiRest.getError());
+            ValidateUtils.isTrue(disableGoodsApiRest.isSuccessful(), disableGoodsApiRest.getError());
         }
     }
 }

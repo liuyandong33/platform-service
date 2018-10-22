@@ -201,7 +201,7 @@ class UserController extends BasicController {
 
                 val partitionCode: String = ""
                 val importGoodsApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, "", "goods", "importGoods", importGoodsRequestParameters)
-                Validate.isTrue(importGoodsApiRest.isSuccessful, importGoodsApiRest.getError)
+                ValidateUtils.isTrue(importGoodsApiRest.isSuccessful, importGoodsApiRest.getError)
             } else {
                 val tmpdir: String = System.getProperty("java.io.tmpdir")
                 xssfWorkbook.write(new FileOutputStream(tmpdir + File.separator + tenantId + "_" + branchId + ".xls"))

@@ -172,8 +172,8 @@ public class OrderService {
         if (total > 0) {
             PagedSearchModel pagedSearchModel = new PagedSearchModel();
             pagedSearchModel.setSearchConditions(searchConditions);
-            pagedSearchModel.setPage(obtainAllOrderInfosModel.getPage());
-            pagedSearchModel.setRows(obtainAllOrderInfosModel.getRows());
+            pagedSearchModel.setPage(page);
+            pagedSearchModel.setRows(rows);
             List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, pagedSearchModel);
 
             if (CollectionUtils.isNotEmpty(orderInfos)) {
@@ -326,7 +326,7 @@ public class OrderService {
                 apiRest = ProxyUtils.doPostWithRequestParameters(Constants.SERVICE_NAME_OUT, "alipay", "alipayTradeAppPay", requestParameters);
             }
         }
-        Validate.isTrue(apiRest.isSuccessful(), apiRest.getError());
+        ValidateUtils.isTrue(apiRest.isSuccessful(), apiRest.getError());
         return ApiRest.builder().data(apiRest.getData()).message("发起支付成功！").successful(true).build();
     }
 
@@ -424,7 +424,7 @@ public class OrderService {
                         renewCallbackRequestParameters.put("branchId", branchId.toString());
                         renewCallbackRequestParameters.put("renewSql", goodsType.getRenewSql());
                         ApiRest renewCallbackApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "renewCallback", renewCallbackRequestParameters);
-                        Validate.isTrue(renewCallbackApiRest.isSuccessful(), renewCallbackApiRest.getError());
+                        ValidateUtils.isTrue(renewCallbackApiRest.isSuccessful(), renewCallbackApiRest.getError());
                     }
                 } else if (meteringMode == 2) {
 
