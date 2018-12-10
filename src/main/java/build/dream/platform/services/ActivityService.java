@@ -67,9 +67,9 @@ public class ActivityService {
         activity.setEndTime(endTime);
         activity.setType(Constants.ACTIVITY_TYPE_SPECIAL_GOODS);
         activity.setStatus(Constants.ACTIVITY_STATUS_UNEXECUTED);
-        activity.setCreateUserId(userId);
-        activity.setLastUpdateUserId(userId);
-        activity.setLastUpdateRemark("保存活动信息！");
+        activity.setCreatedUserId(userId);
+        activity.setUpdatedUserId(userId);
+        activity.setUpdatedRemark("保存活动信息！");
 
         List<SpecialGoodsActivity> specialGoodsActivities = new ArrayList<SpecialGoodsActivity>();
         for (SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo specialGoodsActivityInfo : specialGoodsActivityInfos) {
@@ -94,9 +94,9 @@ public class ActivityService {
                 specialGoodsActivity.setTenantDiscountRate(specialGoodsActivity.getTenantDiscountRate());
                 specialGoodsActivity.setAgentDiscountRate(specialGoodsActivity.getAgentDiscountRate());
             }
-            specialGoodsActivity.setCreateUserId(userId);
-            specialGoodsActivity.setLastUpdateUserId(userId);
-            specialGoodsActivity.setLastUpdateRemark("保存特价活动！");
+            specialGoodsActivity.setCreatedUserId(userId);
+            specialGoodsActivity.setUpdatedUserId(userId);
+            specialGoodsActivity.setUpdatedRemark("保存特价活动！");
             specialGoodsActivities.add(specialGoodsActivity);
         }
         DatabaseHelper.insertAll(specialGoodsActivities);

@@ -45,8 +45,8 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             requestLog.setRequestParameters(GsonUtils.toJson(ApplicationHandler.getRequestParameters(request)));
             requestLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getRequestHeaders(request))));
             requestLog.setCookies(GsonUtils.toJson(ApplicationHandler.getCookies(request)));
-            requestLog.setCreateUserId(BigInteger.ONE);
-            requestLog.setLastUpdateUserId(BigInteger.ONE);
+            requestLog.setCreatedUserId(BigInteger.ONE);
+            requestLog.setUpdatedUserId(BigInteger.ONE);
             DatabaseHelper.insert(requestLog);
         }
         return true;
@@ -64,8 +64,8 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             responseLog.setResponseTime(new Date());
             responseLog.setResponseContent((String) request.getAttribute(Constants.RESPONSE_CONTENT));
             responseLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getResponseHeaders(response))));
-            responseLog.setCreateUserId(BigInteger.ONE);
-            responseLog.setLastUpdateUserId(BigInteger.ONE);
+            responseLog.setCreatedUserId(BigInteger.ONE);
+            responseLog.setUpdatedUserId(BigInteger.ONE);
             DatabaseHelper.insert(responseLog);
         }
     }

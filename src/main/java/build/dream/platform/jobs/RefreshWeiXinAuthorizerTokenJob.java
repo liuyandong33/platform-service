@@ -56,9 +56,9 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
             if (lastUpdateRemark.length() > 255) {
                 lastUpdateRemark = lastUpdateRemark.substring(0, 255);
             }
-            weiXinAuthorizerToken.setLastUpdateRemark(lastUpdateRemark);
+            weiXinAuthorizerToken.setUpdatedRemark(lastUpdateRemark);
             weiXinAuthorizerToken.setDeleted(true);
-            weiXinAuthorizerToken.setDeleteTime(new Date());
+            weiXinAuthorizerToken.setDeletedTime(new Date());
             weiXinService.updateWeiXinAuthorizerToken(weiXinAuthorizerToken);
         } catch (Exception e) {
             LogUtils.error("删除微信授权token失败", CLASS_NAME, "deleteWeiXinAuthorizerTokenSafe", e);

@@ -43,9 +43,9 @@ public class AgentContractService {
             agentContract.setStartTime(saveAgentContractModel.getStartTime());
             agentContract.setEndTime(saveAgentContractModel.getEndTime());
             agentContract.setStatus(Constants.AGENT_CONTRACT_STATUS_UNAUDITED);
-            agentContract.setCreateUserId(userId);
-            agentContract.setLastUpdateUserId(userId);
-            agentContract.setLastUpdateRemark("新增代理商合同！");
+            agentContract.setCreatedUserId(userId);
+            agentContract.setUpdatedUserId(userId);
+            agentContract.setUpdatedRemark("新增代理商合同！");
 
             List<SaveAgentContractModel.ContractPriceInfo> contractPriceInfos = saveAgentContractModel.getContractPriceInfos();
             List<BigInteger> goodsIds = new ArrayList<BigInteger>();
@@ -86,9 +86,9 @@ public class AgentContractService {
                 agentContractPriceInfo.setGoodsId(goods.getId());
                 agentContractPriceInfo.setGoodsSpecificationId(goodsSpecification.getId());
                 agentContractPriceInfo.setContractPrice(contractPrice);
-                agentContractPriceInfo.setCreateUserId(userId);
-                agentContractPriceInfo.setLastUpdateUserId(userId);
-                agentContractPriceInfo.setLastUpdateRemark("保存代理商合同价格信息！");
+                agentContractPriceInfo.setCreatedUserId(userId);
+                agentContractPriceInfo.setUpdatedUserId(userId);
+                agentContractPriceInfo.setUpdatedRemark("保存代理商合同价格信息！");
                 agentContractPriceInfos.add(agentContractPriceInfo);
             }
             DatabaseHelper.insertAll(agentContractPriceInfos);
@@ -118,15 +118,15 @@ public class AgentContractService {
                 AgentContractPriceInfo agentContractPriceInfo = agentContractPriceInfoMap.get(contractPriceInfo.getId());
                 Validate.notNull(agentContractPriceInfo, "代理商合同价格信息不存在！");
                 agentContractPriceInfo.setContractPrice(contractPriceInfo.getContractPrice());
-                agentContractPriceInfo.setLastUpdateUserId(userId);
-                agentContractPriceInfo.setLastUpdateRemark("修改合同价格信息！");
+                agentContractPriceInfo.setUpdatedUserId(userId);
+                agentContractPriceInfo.setUpdatedRemark("修改合同价格信息！");
                 DatabaseHelper.update(agentContractPriceInfo);
             }
 
             agentContract.setStartTime(saveAgentContractModel.getStartTime());
             agentContract.setEndTime(saveAgentContractModel.getEndTime());
-            agentContract.setLastUpdateUserId(userId);
-            agentContract.setLastUpdateRemark("修改代理商合同！");
+            agentContract.setUpdatedUserId(userId);
+            agentContract.setUpdatedRemark("修改代理商合同！");
             DatabaseHelper.update(agentContract);
         }
         return new ApiRest(agentContractId, "保存代理商合同成功！");
@@ -168,8 +168,8 @@ public class AgentContractService {
         } else {
             agentContract.setStatus(Constants.AGENT_CONTRACT_STATUS_UNEXECUTED);
         }
-        agentContract.setLastUpdateUserId(auditAgentContractModel.getUserId());
-        agentContract.setLastUpdateRemark("审核合同！");
+        agentContract.setUpdatedUserId(auditAgentContractModel.getUserId());
+        agentContract.setUpdatedRemark("审核合同！");
         DatabaseHelper.update(agentContract);
 
         ApiRest apiRest = new ApiRest();
@@ -198,8 +198,8 @@ public class AgentContractService {
         Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_EXECUTING, "只有执行中的代理商合同才能进行终止操作！");
 
         agentContract.setStatus(Constants.AGENT_CONTRACT_STATUS_TERMINATED);
-        agentContract.setLastUpdateUserId(userId);
-        agentContract.setLastUpdateRemark("终止代理合同！");
+        agentContract.setUpdatedUserId(userId);
+        agentContract.setUpdatedRemark("终止代理合同！");
         DatabaseHelper.update(agentContract);
 
         ApiRest apiRest = new ApiRest();

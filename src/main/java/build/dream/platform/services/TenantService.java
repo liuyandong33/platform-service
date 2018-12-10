@@ -173,7 +173,7 @@ public class TenantService {
             tenant.setVipSharedType(vipSharedType);
         }
 
-        tenant.setLastUpdateUserId(userId);
+        tenant.setUpdatedUserId(userId);
         DatabaseHelper.update(tenant);
 
         return ApiRest.builder().message("修改商户信息成功！").successful(true).build();

@@ -71,7 +71,7 @@ public class GoodsService {
         String keyword = listGoodsInfosModel.getKeyword();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition(Goods.ColumnName.DELETE_TIME, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+        searchConditions.add(new SearchCondition(Goods.ColumnName.DELETED_TIME, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
         if (StringUtils.isNotBlank(keyword)) {
             searchConditions.add(new SearchCondition(Goods.ColumnName.NAME, Constants.SQL_OPERATION_SYMBOL_LIKE, "%" + keyword + "%"));
@@ -153,8 +153,8 @@ public class GoodsService {
             goods.setStatus(saveGoodsModel.getStatus());
             goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
             goods.setBusiness(saveGoodsModel.getBusiness());
-            goods.setLastUpdateUserId(userId);
-            goods.setLastUpdateRemark("修改商品信息！");
+            goods.setUpdatedUserId(userId);
+            goods.setUpdatedRemark("修改商品信息！");
             DatabaseHelper.update(goods);
 
             List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
@@ -183,8 +183,8 @@ public class GoodsService {
                     goodsSpecification.setRenewalTime(goodsSpecificationModel.getRenewalTime());
                     goodsSpecification.setTenantPrice(goodsSpecificationModel.getTenantPrice());
                     goodsSpecification.setAgentPrice(goodsSpecificationModel.getAgentPrice());
-                    goodsSpecification.setLastUpdateUserId(userId);
-                    goodsSpecification.setLastUpdateRemark("修改商品规格！");
+                    goodsSpecification.setUpdatedUserId(userId);
+                    goodsSpecification.setUpdatedRemark("修改商品规格！");
                     DatabaseHelper.update(goodsSpecification);
                 } else {
                     GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
@@ -198,9 +198,9 @@ public class GoodsService {
             goods.setStatus(saveGoodsModel.getStatus());
             goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
             goods.setBusiness(saveGoodsModel.getBusiness());
-            goods.setCreateUserId(userId);
-            goods.setLastUpdateUserId(userId);
-            goods.setLastUpdateRemark("新增商品信息！");
+            goods.setCreatedUserId(userId);
+            goods.setUpdatedUserId(userId);
+            goods.setUpdatedRemark("新增商品信息！");
             DatabaseHelper.insert(goods);
 
             List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();

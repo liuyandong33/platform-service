@@ -47,9 +47,9 @@ public class AlipayService {
             alipayAccount.setApplicationPublicKey(applicationPublicKey);
             alipayAccount.setApplicationPrivateKey(applicationPrivateKey);
             alipayAccount.setSignType(signType);
-            alipayAccount.setCreateUserId(userId);
-            alipayAccount.setLastUpdateUserId(userId);
-            alipayAccount.setLastUpdateRemark("新增支付宝账号！");
+            alipayAccount.setCreatedUserId(userId);
+            alipayAccount.setUpdatedUserId(userId);
+            alipayAccount.setUpdatedRemark("新增支付宝账号！");
             DatabaseHelper.insert(alipayAccount);
         } else {
             alipayAccount.setAccount(account);
@@ -60,8 +60,8 @@ public class AlipayService {
             alipayAccount.setApplicationPublicKey(applicationPublicKey);
             alipayAccount.setApplicationPrivateKey(applicationPrivateKey);
             alipayAccount.setSignType(signType);
-            alipayAccount.setLastUpdateUserId(userId);
-            alipayAccount.setLastUpdateRemark("修改支付宝账号！");
+            alipayAccount.setUpdatedUserId(userId);
+            alipayAccount.setUpdatedRemark("修改支付宝账号！");
             DatabaseHelper.update(alipayAccount);
         }
 

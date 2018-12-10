@@ -88,17 +88,17 @@ public class WeiXinService {
             weiXinPublicAccount.setAppId(appId);
             weiXinPublicAccount.setAppSecret(appSecret);
             weiXinPublicAccount.setOriginalId(originalId);
-            weiXinPublicAccount.setCreateUserId(userId);
-            weiXinPublicAccount.setLastUpdateUserId(userId);
-            weiXinPublicAccount.setLastUpdateRemark("新增微信公众号！");
+            weiXinPublicAccount.setCreatedUserId(userId);
+            weiXinPublicAccount.setUpdatedUserId(userId);
+            weiXinPublicAccount.setUpdatedRemark("新增微信公众号！");
             DatabaseHelper.insert(weiXinPublicAccount);
         } else {
             weiXinPublicAccount.setName(name);
             weiXinPublicAccount.setAppId(appId);
             weiXinPublicAccount.setAppSecret(appSecret);
             weiXinPublicAccount.setOriginalId(appSecret);
-            weiXinPublicAccount.setLastUpdateUserId(userId);
-            weiXinPublicAccount.setLastUpdateRemark("修改微信公众号！");
+            weiXinPublicAccount.setUpdatedUserId(userId);
+            weiXinPublicAccount.setUpdatedRemark("修改微信公众号！");
             DatabaseHelper.update(weiXinPublicAccount);
         }
         return ApiRest.builder().data(weiXinPublicAccount).message("保存微信公众号成功！").successful(true).build();
@@ -182,9 +182,9 @@ public class WeiXinService {
             if (StringUtils.isNotBlank(operationCertificatePassword)) {
                 weiXinPayAccount.setOperationCertificatePassword(operationCertificatePassword);
             }
-            weiXinPayAccount.setCreateUserId(userId);
-            weiXinPayAccount.setLastUpdateUserId(userId);
-            weiXinPayAccount.setLastUpdateRemark("新增微信支付账号！");
+            weiXinPayAccount.setCreatedUserId(userId);
+            weiXinPayAccount.setUpdatedUserId(userId);
+            weiXinPayAccount.setUpdatedRemark("新增微信支付账号！");
             DatabaseHelper.insert(weiXinPayAccount);
         } else {
             weiXinPayAccount.setAppId(appId);
@@ -198,8 +198,8 @@ public class WeiXinService {
             weiXinPayAccount.setSubMchId(StringUtils.isNotBlank(subMchId) ? subMchId : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setOperationCertificate(StringUtils.isNotBlank(operationCertificate) ? operationCertificate : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setOperationCertificatePassword(StringUtils.isNotBlank(operationCertificatePassword) ? operationCertificatePassword : Constants.VARCHAR_DEFAULT_VALUE);
-            weiXinPayAccount.setLastUpdateUserId(userId);
-            weiXinPayAccount.setLastUpdateRemark("修改微信支付账号！");
+            weiXinPayAccount.setUpdatedUserId(userId);
+            weiXinPayAccount.setUpdatedRemark("修改微信支付账号！");
             DatabaseHelper.update(weiXinPayAccount);
         }
 
@@ -237,8 +237,8 @@ public class WeiXinService {
         weiXinAuthorizerToken.setExpiresIn(expiresIn);
         weiXinAuthorizerToken.setAuthorizerRefreshToken(authorizerRefreshToken);
         weiXinAuthorizerToken.setFetchTime(fetchTime);
-        weiXinAuthorizerToken.setCreateUserId(userId);
-        weiXinAuthorizerToken.setLastUpdateUserId(userId);
+        weiXinAuthorizerToken.setCreatedUserId(userId);
+        weiXinAuthorizerToken.setUpdatedUserId(userId);
         DatabaseHelper.insert(weiXinAuthorizerToken);
 
         return ApiRest.builder().message("保存微信授权token成功").successful(true).build();

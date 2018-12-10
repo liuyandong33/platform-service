@@ -70,8 +70,8 @@ public class RegisterService {
         tenant.setTenantType(registerTenantModel.getTenantType());
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
-        tenant.setCreateUserId(userId);
-        tenant.setLastUpdateUserId(userId);
+        tenant.setCreatedUserId(userId);
+        tenant.setUpdatedUserId(userId);
         DatabaseHelper.insert(tenant);
 
         SystemUser systemUser = new SystemUser();
@@ -86,8 +86,8 @@ public class RegisterService {
         systemUser.setAccountNonLocked(true);
         systemUser.setCredentialsNonExpired(true);
         systemUser.setEnabled(true);
-        systemUser.setCreateUserId(userId);
-        systemUser.setLastUpdateUserId(userId);
+        systemUser.setCreatedUserId(userId);
+        systemUser.setUpdatedUserId(userId);
         DatabaseHelper.insert(systemUser);
 
         TenantSecretKey tenantSecretKey = new TenantSecretKey();
@@ -98,9 +98,9 @@ public class RegisterService {
         tenantSecretKey.setPublicKey(publicKey);
         tenantSecretKey.setPrivateKey(Base64.encodeBase64String(rsaKeys.get(Constants.PRIVATE_KEY)));
         tenantSecretKey.setPlatformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY));
-        tenantSecretKey.setCreateUserId(userId);
-        tenantSecretKey.setLastUpdateUserId(userId);
-        tenantSecretKey.setLastUpdateRemark("新增商户，增加商户秘钥！");
+        tenantSecretKey.setCreatedUserId(userId);
+        tenantSecretKey.setUpdatedUserId(userId);
+        tenantSecretKey.setUpdatedRemark("新增商户，增加商户秘钥！");
         DatabaseHelper.insert(tenantSecretKey);
 
         String serviceName = CommonUtils.getServiceName(business);
@@ -135,9 +135,9 @@ public class RegisterService {
         tenantGoods.setBranchId(branchId);
         tenantGoods.setGoodsId(goods.getId());
         tenantGoods.setExpireTime(DateUtils.addDays(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + " 00:00:00"), Integer.valueOf(basicServicesGoodsFreeTrialDays)));
-        tenantGoods.setCreateUserId(userId);
-        tenantGoods.setLastUpdateUserId(userId);
-        tenantGoods.setLastUpdateRemark("注册商户，创建试用商品！");
+        tenantGoods.setCreatedUserId(userId);
+        tenantGoods.setUpdatedUserId(userId);
+        tenantGoods.setUpdatedRemark("注册商户，创建试用商品！");
         DatabaseHelper.insert(tenantGoods);
 
         Map<String, Object> data = new HashMap<String, Object>();
@@ -179,9 +179,9 @@ public class RegisterService {
         Agent agent = new Agent();
         agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE)));
         agent.setName(registerAgentModel.getName());
-        agent.setCreateUserId(userId);
-        agent.setLastUpdateUserId(userId);
-        agent.setLastUpdateRemark("新增代理商信息！");
+        agent.setCreatedUserId(userId);
+        agent.setUpdatedUserId(userId);
+        agent.setUpdatedRemark("新增代理商信息！");
         DatabaseHelper.insert(agent);
 
         SystemUser systemUser = new SystemUser();
@@ -196,9 +196,9 @@ public class RegisterService {
         systemUser.setAccountNonLocked(true);
         systemUser.setCredentialsNonExpired(true);
         systemUser.setEnabled(true);
-        systemUser.setCreateUserId(userId);
-        systemUser.setLastUpdateUserId(userId);
-        systemUser.setLastUpdateRemark("新增代理商登录账号！");
+        systemUser.setCreatedUserId(userId);
+        systemUser.setUpdatedUserId(userId);
+        systemUser.setUpdatedRemark("新增代理商登录账号！");
         DatabaseHelper.insert(systemUser);
 
         Map<String, Object> data = new HashMap<String, Object>();

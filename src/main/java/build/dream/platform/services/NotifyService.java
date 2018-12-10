@@ -45,9 +45,9 @@ public class NotifyService {
             if (StringUtils.isNotBlank(weiXinPaySignType)) {
                 notifyRecord.setWeiXinPaySignType(weiXinPaySignType);
             }
-            notifyRecord.setCreateUserId(userId);
-            notifyRecord.setLastUpdateUserId(userId);
-            notifyRecord.setLastUpdateRemark("保存回调记录！");
+            notifyRecord.setCreatedUserId(userId);
+            notifyRecord.setUpdatedUserId(userId);
+            notifyRecord.setUpdatedRemark("保存回调记录！");
             DatabaseHelper.insert(notifyRecord);
         } else {
             notifyRecord.setNotifyUrl(notifyUrl);
@@ -55,8 +55,8 @@ public class NotifyService {
             notifyRecord.setAlipaySignType(StringUtils.isNotBlank(alipaySignType) ? alipaySignType : Constants.VARCHAR_DEFAULT_VALUE);
             notifyRecord.setWeiXinPayApiSecretKey(StringUtils.isNotBlank(weiXinPayApiSecretKey) ? alipaySignType : Constants.VARCHAR_DEFAULT_VALUE);
             notifyRecord.setWeiXinPaySignType(StringUtils.isNotBlank(weiXinPaySignType) ? alipaySignType : Constants.VARCHAR_DEFAULT_VALUE);
-            notifyRecord.setLastUpdateUserId(userId);
-            notifyRecord.setLastUpdateRemark("修改回调记录！");
+            notifyRecord.setUpdatedUserId(userId);
+            notifyRecord.setUpdatedRemark("修改回调记录！");
             DatabaseHelper.update(notifyRecord);
         }
 

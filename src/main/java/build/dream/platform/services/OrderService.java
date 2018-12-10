@@ -7,7 +7,6 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
 import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.GoodsUtils;
-import build.dream.platform.utils.OrderUtils;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -69,8 +68,8 @@ public class OrderService {
         }
 
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_UNPAID);
-        orderInfo.setCreateUserId(userId);
-        orderInfo.setLastUpdateUserId(userId);
+        orderInfo.setCreatedUserId(userId);
+        orderInfo.setUpdatedUserId(userId);
         DatabaseHelper.insert(orderInfo);
 
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -104,9 +103,9 @@ public class OrderService {
             orderDetail.setQuantity(quantity);
             totalAmount = totalAmount.add(orderDetail.getTotalAmount());
             discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
-            orderDetail.setCreateUserId(userId);
-            orderDetail.setLastUpdateUserId(userId);
-            orderDetail.setLastUpdateRemark("保存订单详情信息！");
+            orderDetail.setCreatedUserId(userId);
+            orderDetail.setUpdatedUserId(userId);
+            orderDetail.setUpdatedRemark("保存订单详情信息！");
             orderDetails.add(orderDetail);
         }
         DatabaseHelper.insertAll(orderDetails);
@@ -115,10 +114,14 @@ public class OrderService {
         orderInfo.setDiscountAmount(discountAmount);
         orderInfo.setPayableAmount(totalAmount.subtract(discountAmount));
         orderInfo.setPaidAmount(BigDecimal.ZERO);
-        orderInfo.setLastUpdateRemark("保存订单信息！");
+        orderInfo.setUpdatedRemark("保存订单信息！");
         DatabaseHelper.update(orderInfo);
 
-        return ApiRest.builder().data(OrderUtils.buildOrderInfo(orderInfo, orderDetails)).message("保存订单成功！").successful(true).build();
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("orderInfo", orderInfo);
+        data.put("orderDetails", orderDetails);
+
+        return ApiRest.builder().data(data).message("保存订单成功！").successful(true).build();
     }
 
     /**
@@ -139,7 +142,10 @@ public class OrderService {
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
-        return ApiRest.builder().data(OrderUtils.buildOrderInfo(orderInfo, orderDetails)).message("获取订单信息成功！").successful(true).build();
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("orderInfo", orderInfo);
+        data.put("orderDetails", orderDetails);
+        return ApiRest.builder().data(data).message("获取订单信息成功！").successful(true).build();
     }
 
     /**
@@ -196,7 +202,10 @@ public class OrderService {
                 }
 
                 for (OrderInfo orderInfo : orderInfos) {
-                    orders.add(OrderUtils.buildOrderInfo(orderInfo, orderDetailsMap.get(orderInfo.getId())));
+                    Map<String, Object> order = new HashMap<String, Object>();
+                    order.put("orderInfo", orderInfo);
+                    order.put("orderDetails", orderDetails);
+                    orders.add(order);
                 }
             }
         }
@@ -220,18 +229,18 @@ public class OrderService {
 
         UpdateModel orderInfoUpdateModel = new UpdateModel(true);
         orderInfoUpdateModel.setTableName("order_info");
-        orderInfoUpdateModel.addContentValue("deleted", 1);
-        orderInfoUpdateModel.addContentValue("last_update_user_id", userId);
-        orderInfoUpdateModel.addContentValue("last_update_remark", "删除订单信息！");
-        orderInfoUpdateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
+        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.DELETED, 1);
+        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_USER_ID, userId);
+        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_REMARK, "删除订单信息！");
+        orderInfoUpdateModel.addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
         DatabaseHelper.universalUpdate(orderInfoUpdateModel);
 
         UpdateModel orderDetailUpdateModel = new UpdateModel(true);
         orderDetailUpdateModel.setTableName("order_detail");
-        orderDetailUpdateModel.addContentValue("deleted", 1);
-        orderDetailUpdateModel.addContentValue("last_update_user_id", userId);
-        orderDetailUpdateModel.addContentValue("last_update_remark", "删除订单详情信息！");
-        orderDetailUpdateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
+        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.DELETED, 1);
+        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
+        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");
+        orderDetailUpdateModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
         DatabaseHelper.universalUpdate(orderDetailUpdateModel);
         return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
     }
@@ -247,21 +256,21 @@ public class OrderService {
         BigInteger orderInfoId = deleteOrderModel.getOrderInfoId();
         BigInteger userId = deleteOrderModel.getUserId();
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
+        searchModel.addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
         Validate.notNull(orderInfo, "订单不存在！");
 
         orderInfo.setDeleted(true);
-        orderInfo.setLastUpdateUserId(userId);
-        orderInfo.setLastUpdateRemark("删除订单信息！");
+        orderInfo.setUpdatedUserId(userId);
+        orderInfo.setUpdatedRemark("删除订单信息！");
         DatabaseHelper.update(orderInfo);
 
         UpdateModel updateModel = new UpdateModel(true);
         updateModel.setTableName("order_detail");
-        updateModel.addContentValue("deleted", 1);
-        updateModel.addContentValue("last_update_user_id", userId);
-        updateModel.addContentValue("last_update_remark", "删除订单详情信息！");
-        updateModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
+        updateModel.addContentValue(OrderDetail.ColumnName.ID, 1);
+        updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
+        updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");
+        updateModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         DatabaseHelper.universalUpdate(updateModel);
 
         return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
@@ -357,8 +366,8 @@ public class OrderService {
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_PAID);
         orderInfo.setPaidAmount(orderInfo.getPayableAmount());
         orderInfo.setPaidType(paidType);
-        orderInfo.setLastUpdateUserId(userId);
-        orderInfo.setLastUpdateRemark("处理支付回调，修改订单状态！");
+        orderInfo.setUpdatedUserId(userId);
+        orderInfo.setUpdatedRemark("处理支付回调，修改订单状态！");
         DatabaseHelper.update(orderInfo);
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
@@ -400,8 +409,8 @@ public class OrderService {
                     TenantGoods tenantGoods = DatabaseHelper.find(TenantGoods.class, tenantGoodsSearchModel);
                     if (tenantGoods != null) {
                         tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(tenantGoods.getExpireTime(), goodsSpecification));
-                        tenantGoods.setLastUpdateUserId(userId);
-                        tenantGoods.setLastUpdateRemark("商户续费成功，增加商户商品有效期！");
+                        tenantGoods.setUpdatedUserId(userId);
+                        tenantGoods.setUpdatedRemark("商户续费成功，增加商户商品有效期！");
                         DatabaseHelper.update(tenantGoods);
                     } else {
                         tenantGoods = new TenantGoods();
@@ -409,9 +418,9 @@ public class OrderService {
                         tenantGoods.setBranchId(branchId);
                         tenantGoods.setGoodsId(goodsId);
                         tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification));
-                        tenantGoods.setCreateUserId(userId);
-                        tenantGoods.setLastUpdateUserId(userId);
-                        tenantGoods.setLastUpdateRemark("商户购买商品，新增商户商品信息！");
+                        tenantGoods.setCreatedUserId(userId);
+                        tenantGoods.setUpdatedUserId(userId);
+                        tenantGoods.setUpdatedRemark("商户购买商品，新增商户商品信息！");
                         DatabaseHelper.insert(tenantGoods);
                     }
 
@@ -441,9 +450,9 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
                 saleFlow.setPaidType(paidType);
-                saleFlow.setCreateUserId(userId);
-                saleFlow.setLastUpdateUserId(userId);
-                saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
+                saleFlow.setCreatedUserId(userId);
+                saleFlow.setUpdatedUserId(userId);
+                saleFlow.setUpdatedRemark("处理支付回调，生成销售流水！");
                 saleFlows.add(saleFlow);
             }
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
@@ -456,9 +465,9 @@ public class OrderService {
                     activationCodeInfo.setOrderId(orderInfo.getId());
                     activationCodeInfo.setStatus(Constants.ACTIVATION_CODE_STATUS_NOT_USED);
                     activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
-                    activationCodeInfo.setCreateUserId(userId);
-                    activationCodeInfo.setLastUpdateUserId(userId);
-                    activationCodeInfo.setLastUpdateRemark("处理支付回调，生成激活码！");
+                    activationCodeInfo.setCreatedUserId(userId);
+                    activationCodeInfo.setUpdatedUserId(userId);
+                    activationCodeInfo.setUpdatedRemark("处理支付回调，生成激活码！");
                     activationCodeInfo.setGoodsId(orderDetail.getGoodsId());
                     activationCodeInfo.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
                     activationCodeInfos.add(activationCodeInfo);
@@ -474,9 +483,9 @@ public class OrderService {
                 saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
                 saleFlow.setQuantity(orderDetail.getQuantity());
                 saleFlow.setPaidType(paidType);
-                saleFlow.setCreateUserId(userId);
-                saleFlow.setLastUpdateUserId(userId);
-                saleFlow.setLastUpdateRemark("处理支付回调，生成销售流水！");
+                saleFlow.setCreatedUserId(userId);
+                saleFlow.setUpdatedUserId(userId);
+                saleFlow.setUpdatedRemark("处理支付回调，生成销售流水！");
                 saleFlows.add(saleFlow);
             }
             DatabaseHelper.insertAll(activationCodeInfos);

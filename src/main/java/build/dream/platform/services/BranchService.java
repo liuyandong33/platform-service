@@ -66,17 +66,17 @@ public class BranchService {
             lastPullTimeSystemParameter = new SystemParameter();
             lastPullTimeSystemParameter.setParameterName(Constants.LAST_PULL_TIME);
             lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
-            lastPullTimeSystemParameter.setCreateUserId(userId);
-            lastPullTimeSystemParameter.setLastUpdateUserId(userId);
-            lastPullTimeSystemParameter.setLastUpdateRemark("保存最后拉取时间！");
+            lastPullTimeSystemParameter.setCreatedUserId(userId);
+            lastPullTimeSystemParameter.setUpdatedUserId(userId);
+            lastPullTimeSystemParameter.setUpdatedRemark("保存最后拉取时间！");
             DatabaseHelper.insert(lastPullTimeSystemParameter);
             lastPullTime = "1970-01-01 00:00:00";
             reacquire = "true";
         } else {
             lastPullTime = lastPullTimeSystemParameter.getParameterValue();
             lastPullTimeSystemParameter.setParameterValue(simpleDateFormat.format(date));
-            lastPullTimeSystemParameter.setLastUpdateUserId(userId);
-            lastPullTimeSystemParameter.setLastUpdateRemark("同步门店信息定时任务执行，修改最后拉取时间！");
+            lastPullTimeSystemParameter.setUpdatedUserId(userId);
+            lastPullTimeSystemParameter.setUpdatedRemark("同步门店信息定时任务执行，修改最后拉取时间！");
             DatabaseHelper.update(lastPullTimeSystemParameter);
             reacquire = "false";
         }

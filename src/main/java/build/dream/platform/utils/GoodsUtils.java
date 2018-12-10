@@ -61,9 +61,9 @@ public class GoodsUtils {
         goodsSpecification.setRenewalTime(renewalTime);
         goodsSpecification.setTenantPrice(tenantPrice);
         goodsSpecification.setAgentPrice(agentPrice);
-        goodsSpecification.setCreateUserId(userId);
-        goodsSpecification.setLastUpdateUserId(userId);
-        goodsSpecification.setLastUpdateRemark("新增商品规格！");
+        goodsSpecification.setCreatedUserId(userId);
+        goodsSpecification.setUpdatedUserId(userId);
+        goodsSpecification.setUpdatedRemark("新增商品规格！");
         return goodsSpecification;
     }
 }
