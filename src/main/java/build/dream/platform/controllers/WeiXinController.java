@@ -108,4 +108,15 @@ public class WeiXinController extends BasicController {
     public String obtainWeiXinAuthorizerInfo() {
         return null;
     }
+
+    /**
+     * 处理授权回调
+     * @return
+     */
+    @RequestMapping(value = "/handleAuthCallback", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = HandleAuthCallbackModel.class, serviceClass = WeiXinService.class, serviceMethodName = "handleAuthCallback", error = "处理授权回调失败")
+    public String handleAuthCallback() {
+        return null;
+    }
 }

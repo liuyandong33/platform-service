@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.beans.ComponentAccessToken;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
@@ -10,9 +11,12 @@ import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class WeiXinService {
@@ -344,5 +348,41 @@ public class WeiXinService {
         WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
 
         return ApiRest.builder().data(weiXinAuthorizerInfo).message("获取微信授权信息成功！").successful(true).build();
+    }
+
+    /**
+     * 处理微信授权回调
+     *
+     * @param handleAuthCallbackModel
+     * @return
+     * @throws IOException
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest handleAuthCallback(HandleAuthCallbackModel handleAuthCallbackModel) throws IOException {
+        BigInteger tenantId = handleAuthCallbackModel.getTenantId();
+        String componentAppId = handleAuthCallbackModel.getComponentAppId();
+        String authCode = handleAuthCallbackModel.getAuthCode();
+
+        WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, TupleUtils.buildTuple3(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, componentAppId));
+        ValidateUtils.notNull(weiXinOpenPlatformApplication, "开放平台应用不存在！");
+
+        String componentAppSecret = weiXinOpenPlatformApplication.getAppSecret();
+
+        ComponentAccessToken token = WeiXinUtils.obtainComponentAccessToken(componentAppId, componentAppSecret);
+
+        String componentAccessToken = token.getComponentAccessToken();
+        WeiXinAuthorizerToken weiXinAuthorizerToken = WeiXinUtils.apiQueryAuth(componentAccessToken, componentAppId, authCode);
+        DatabaseHelper.insert(weiXinAuthorizerToken);
+
+        String authorizerAppId = weiXinAuthorizerToken.getAuthorizerAppId();
+        WeiXinAuthorizerInfo weiXinAuthorizerInfo = WeiXinUtils.apiGetAuthorizerInfo(componentAccessToken, componentAppId, authorizerAppId);
+        weiXinAuthorizerInfo.setTenantId(tenantId);
+        DatabaseHelper.insert(weiXinAuthorizerInfo);
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("weiXinAuthorizerToken", weiXinAuthorizerToken);
+        data.put("weiXinAuthorizerInfo", weiXinAuthorizerInfo);
+
+        return ApiRest.builder().data(data).message("处理授权回调成功！").successful(true).build();
     }
 }
