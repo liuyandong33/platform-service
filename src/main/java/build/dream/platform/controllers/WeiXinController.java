@@ -1,8 +1,10 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
-import build.dream.common.controllers.BasicController;
-import build.dream.platform.models.weixin.*;
+import build.dream.platform.models.weixin.HandleAuthCallbackModel;
+import build.dream.platform.models.weixin.ObtainWeiXinMiniProgramsModel;
+import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
+import build.dream.platform.models.weixin.SaveWeiXinPayAccountModel;
 import build.dream.platform.services.WeiXinService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -12,45 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/weiXin")
-public class WeiXinController extends BasicController {
+public class WeiXinController {
     /**
-     * 删除微信开放平台应用
-     *
-     * @return
-     */
-    @RequestMapping(value = "/deleteWeiXinOpenPlatformApplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = DeleteWeiXinOpenPlatformApplicationModel.class, serviceClass = WeiXinService.class, serviceMethodName = "deleteWeiXinOpenPlatformApplication", error = "删除微信开放平台应用失败")
-    public String deleteWeiXinOpenPlatformApplication() {
-        return null;
-    }
-
-    /**
-     * 获取微信开放平台应用
-     *
-     * @return
-     */
-    @RequestMapping(value = "/obtainWeiXinOpenPlatformApplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = ObtainWeiXinOpenPlatformApplicationModel.class, serviceClass = WeiXinService.class, serviceMethodName = "obtainWeiXinOpenPlatformApplication", error = "查询微信开放平台应用失败")
-    public String obtainWeiXinOpenPlatformApplication() {
-        return null;
-    }
-
-    /**
-     * 保存微信公众平台账号
-     *
-     * @return
-     */
-    @RequestMapping(value = "/saveWeiXinPublicAccount", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = SaveWeiXinPublicAccountModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinPublicAccount", error = "保存微信公众号失败")
-    public String saveWeiXinPublicAccount() {
-        return null;
-    }
-
-    /**
-     * 获取微信公众平台账号
+     * 获取已授权的微信公众平台账号
      *
      * @return
      */
@@ -58,6 +24,18 @@ public class WeiXinController extends BasicController {
     @ResponseBody
     @ApiRestAction(modelClass = ObtainWeiXinPublicAccountModel.class, serviceClass = WeiXinService.class, serviceMethodName = "obtainWeiXinPublicAccount", error = "获取微信公众号失败")
     public String obtainWeiXinPublicAccount() {
+        return null;
+    }
+
+    /**
+     * 获取已授权的微信小程序
+     *
+     * @return
+     */
+    @RequestMapping(value = "/obtainWeiXinMiniPrograms", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = ObtainWeiXinMiniProgramsModel.class, serviceClass = WeiXinService.class, serviceMethodName = "obtainWeiXinMiniPrograms", error = "获取微信小程序失败")
+    public String obtainWeiXinMiniPrograms() {
         return null;
     }
 
@@ -73,44 +51,10 @@ public class WeiXinController extends BasicController {
         return null;
     }
 
-    /**
-     * 保存微信公众号或小程序授权token
-     *
-     * @return
-     */
-    @RequestMapping(value = "/saveWeiXinAuthorizerToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = SaveWeiXinAuthorizerTokenModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinAuthorizerToken", error = "保存微信授权token失败")
-    public String saveWeiXinAuthorizerToken() {
-        return null;
-    }
-
-    /**
-     * 保存微信公众号或小程序授权信息
-     *
-     * @return
-     */
-    @RequestMapping(value = "/saveWeiXinAuthorizerInfo", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = SaveWeiXinAuthorizerInfoModel.class, serviceClass = WeiXinService.class, serviceMethodName = "saveWeiXinAuthorizerInfo", error = "保存微信授权信息失败")
-    public String saveWeiXinAuthorizerInfo() {
-        return null;
-    }
-
-    /**
-     * 获取微信授权信息
-     *
-     * @return
-     */
-    @RequestMapping(value = "/obtainWeiXinAuthorizerInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = ObtainWeiXinAuthorizerInfoModel.class, serviceClass = WeiXinService.class, serviceMethodName = "obtainWeiXinAuthorizerInfo", error = "获取微信授权信息失败")
-    public String obtainWeiXinAuthorizerInfo() {
-        return null;
-    }
 
     /**
      * 处理授权回调
+     *
      * @return
      */
     @RequestMapping(value = "/handleAuthCallback", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

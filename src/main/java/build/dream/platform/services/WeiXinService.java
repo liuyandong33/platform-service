@@ -5,15 +5,16 @@ import build.dream.common.beans.ComponentAccessToken;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.weixin.*;
+import build.dream.platform.models.weixin.HandleAuthCallbackModel;
+import build.dream.platform.models.weixin.ObtainWeiXinMiniProgramsModel;
+import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
+import build.dream.platform.models.weixin.SaveWeiXinPayAccountModel;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,46 +22,13 @@ import java.util.Map;
 @Service
 public class WeiXinService {
     /**
-     * 删除微信开放平台应用
-     *
-     * @param deleteWeiXinOpenPlatformApplicationModel
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest deleteWeiXinOpenPlatformApplication(DeleteWeiXinOpenPlatformApplicationModel deleteWeiXinOpenPlatformApplicationModel) {
-        String appId = deleteWeiXinOpenPlatformApplicationModel.getAppId();
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
-        WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
-        Validate.notNull(weiXinOpenPlatformApplication, "微信开放平台应用不存在！");
-        weiXinOpenPlatformApplication.setDeleted(true);
-        DatabaseHelper.update(weiXinOpenPlatformApplication);
-
-        return ApiRest.builder().data(weiXinOpenPlatformApplication).className(WeiXinOpenPlatformApplication.class.getName()).message("删除微信开放平台应用成功！").successful(true).build();
-    }
-
-    /**
-     * 获取微信开放平台应用
-     *
-     * @param obtainWeiXinOpenPlatformApplicationModel
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public ApiRest obtainWeiXinOpenPlatformApplication(ObtainWeiXinOpenPlatformApplicationModel obtainWeiXinOpenPlatformApplicationModel) {
-        String appId = obtainWeiXinOpenPlatformApplicationModel.getAppId();
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
-        WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
-        return ApiRest.builder().data(weiXinOpenPlatformApplication).className(WeiXinOpenPlatformApplication.class.getName()).message("查询微信开放平台应用成功！").successful(true).build();
-    }
-
-    /**
      * 查询微信开放平台应用
      *
      * @param appId
      * @return
      */
-    public WeiXinOpenPlatformApplication findWeiXinOpenPlatformApplication(String appId) {
+    @Transactional(readOnly = true)
+    public WeiXinOpenPlatformApplication obtainWeiXinOpenPlatformApplication(String appId) {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(WeiXinOpenPlatformApplication.ColumnName.APP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, appId);
         WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = DatabaseHelper.find(WeiXinOpenPlatformApplication.class, searchModel);
@@ -68,48 +36,7 @@ public class WeiXinService {
     }
 
     /**
-     * 保存微信公众号
-     *
-     * @param saveWeiXinPublicAccountModel
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest saveWeiXinPublicAccount(SaveWeiXinPublicAccountModel saveWeiXinPublicAccountModel) {
-        BigInteger tenantId = saveWeiXinPublicAccountModel.getTenantId();
-        String name = saveWeiXinPublicAccountModel.getName();
-        String appId = saveWeiXinPublicAccountModel.getAppId();
-        String appSecret = saveWeiXinPublicAccountModel.getAppSecret();
-        String originalId = saveWeiXinPublicAccountModel.getOriginalId();
-        BigInteger userId = saveWeiXinPublicAccountModel.getUserId();
-
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(WeiXinPublicAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
-        if (weiXinPublicAccount == null) {
-            weiXinPublicAccount = new WeiXinPublicAccount();
-            weiXinPublicAccount.setTenantId(tenantId);
-            weiXinPublicAccount.setName(name);
-            weiXinPublicAccount.setAppId(appId);
-            weiXinPublicAccount.setAppSecret(appSecret);
-            weiXinPublicAccount.setOriginalId(originalId);
-            weiXinPublicAccount.setCreatedUserId(userId);
-            weiXinPublicAccount.setUpdatedUserId(userId);
-            weiXinPublicAccount.setUpdatedRemark("新增微信公众号！");
-            DatabaseHelper.insert(weiXinPublicAccount);
-        } else {
-            weiXinPublicAccount.setName(name);
-            weiXinPublicAccount.setAppId(appId);
-            weiXinPublicAccount.setAppSecret(appSecret);
-            weiXinPublicAccount.setOriginalId(appSecret);
-            weiXinPublicAccount.setUpdatedUserId(userId);
-            weiXinPublicAccount.setUpdatedRemark("修改微信公众号！");
-            DatabaseHelper.update(weiXinPublicAccount);
-        }
-        return ApiRest.builder().data(weiXinPublicAccount).message("保存微信公众号成功！").successful(true).build();
-    }
-
-    /**
-     * 获取微信公众号
+     * 获取已授权的微信公众号
      *
      * @param obtainWeiXinPublicAccountModel
      * @return
@@ -119,9 +46,26 @@ public class WeiXinService {
         BigInteger tenantId = obtainWeiXinPublicAccountModel.getTenantId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(WeiXinPublicAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        WeiXinPublicAccount weiXinPublicAccount = DatabaseHelper.find(WeiXinPublicAccount.class, searchModel);
-        return ApiRest.builder().data(weiXinPublicAccount).className(WeiXinPublicAccount.class.getName()).message("查询微信公众号成功！").successful(true).build();
+        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.AUTHORIZER_TYPE, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.AUTHORIZER_TYPE_PUBLIC_ACCOUNT);
+        WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
+        return ApiRest.builder().data(weiXinAuthorizerInfo).className(WeiXinPublicAccount.class.getName()).message("查询微信公众号成功！").successful(true).build();
+    }
+
+    /**
+     * 获取已授权的微信小程序
+     *
+     * @param obtainWeiXinMiniProgramsModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest obtainWeiXinMiniPrograms(ObtainWeiXinMiniProgramsModel obtainWeiXinMiniProgramsModel) {
+        BigInteger tenantId = obtainWeiXinMiniProgramsModel.getTenantId();
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.AUTHORIZER_TYPE, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.AUTHORIZER_TYPE_MINI_PROGRAM);
+        List<WeiXinAuthorizerInfo> weiXinAuthorizerInfos = DatabaseHelper.findAll(WeiXinAuthorizerInfo.class, searchModel);
+        return ApiRest.builder().data(weiXinAuthorizerInfos).message("获取微信小程序信息成功！").successful(true).build();
     }
 
     /**
@@ -212,40 +156,10 @@ public class WeiXinService {
     }
 
     @Transactional(readOnly = true)
-    public List<WeiXinPayAccount> findAllWeiXinPayAccounts() {
+    public List<WeiXinPayAccount> obtainAllWeiXinPayAccounts() {
         SearchModel searchModel = new SearchModel(true);
         List<WeiXinPayAccount> weiXinPayAccounts = DatabaseHelper.findAll(WeiXinPayAccount.class, searchModel);
         return weiXinPayAccounts;
-    }
-
-    /**
-     * 保存微信授权token
-     *
-     * @param saveWeiXinAuthorizerTokenModel
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest saveWeiXinAuthorizerToken(SaveWeiXinAuthorizerTokenModel saveWeiXinAuthorizerTokenModel) {
-        String componentAppId = saveWeiXinAuthorizerTokenModel.getComponentAppId();
-        String authorizerAppId = saveWeiXinAuthorizerTokenModel.getAuthorizerAppId();
-        String authorizerAccessToken = saveWeiXinAuthorizerTokenModel.getAuthorizerAccessToken();
-        Integer expiresIn = saveWeiXinAuthorizerTokenModel.getExpiresIn();
-        String authorizerRefreshToken = saveWeiXinAuthorizerTokenModel.getAuthorizerRefreshToken();
-        Date fetchTime = saveWeiXinAuthorizerTokenModel.getFetchTime();
-        BigInteger userId = saveWeiXinAuthorizerTokenModel.getUserId();
-
-        WeiXinAuthorizerToken weiXinAuthorizerToken = new WeiXinAuthorizerToken();
-        weiXinAuthorizerToken.setComponentAppId(componentAppId);
-        weiXinAuthorizerToken.setAuthorizerAppId(authorizerAppId);
-        weiXinAuthorizerToken.setAuthorizerAccessToken(authorizerAccessToken);
-        weiXinAuthorizerToken.setExpiresIn(expiresIn);
-        weiXinAuthorizerToken.setAuthorizerRefreshToken(authorizerRefreshToken);
-        weiXinAuthorizerToken.setFetchTime(fetchTime);
-        weiXinAuthorizerToken.setCreatedUserId(userId);
-        weiXinAuthorizerToken.setUpdatedUserId(userId);
-        DatabaseHelper.insert(weiXinAuthorizerToken);
-
-        return ApiRest.builder().message("保存微信授权token成功").successful(true).build();
     }
 
     /**
@@ -254,7 +168,7 @@ public class WeiXinService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<WeiXinAuthorizerToken> findAllWeiXinAuthorizerTokens() {
+    public List<WeiXinAuthorizerToken> obtainAllWeiXinAuthorizerTokens() {
         SearchModel searchModel = new SearchModel(true);
         return DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
     }
@@ -286,68 +200,6 @@ public class WeiXinService {
     @Transactional(rollbackFor = Exception.class)
     public void updateWeiXinAuthorizerToken(WeiXinAuthorizerToken weiXinAuthorizerToken) {
         DatabaseHelper.update(weiXinAuthorizerToken);
-    }
-
-    /**
-     * 保存微信授权信息
-     *
-     * @param saveWeiXinAuthorizerInfoModel
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ApiRest saveWeiXinAuthorizerInfo(SaveWeiXinAuthorizerInfoModel saveWeiXinAuthorizerInfoModel) {
-        BigInteger tenantId = saveWeiXinAuthorizerInfoModel.getTenantId();
-        Integer authorizerType = saveWeiXinAuthorizerInfoModel.getAuthorizerType();
-        String nickName = saveWeiXinAuthorizerInfoModel.getNickName();
-        String headImg = saveWeiXinAuthorizerInfoModel.getHeadImg();
-        String serviceTypeInfo = saveWeiXinAuthorizerInfoModel.getServiceTypeInfo();
-        String verifyTypeInfo = saveWeiXinAuthorizerInfoModel.getVerifyTypeInfo();
-        String originalId = saveWeiXinAuthorizerInfoModel.getOriginalId();
-        String principalName = saveWeiXinAuthorizerInfoModel.getPrincipalName();
-        String alias = saveWeiXinAuthorizerInfoModel.getAlias();
-        String businessInfo = saveWeiXinAuthorizerInfoModel.getBusinessInfo();
-        String qrcodeUrl = saveWeiXinAuthorizerInfoModel.getQrcodeUrl();
-        String signature = saveWeiXinAuthorizerInfoModel.getSignature();
-        String miniProgramInfo = saveWeiXinAuthorizerInfoModel.getMiniProgramInfo();
-        String authorizerAppId = saveWeiXinAuthorizerInfoModel.getAuthorizerAppId();
-        String funcInfo = saveWeiXinAuthorizerInfoModel.getFuncInfo();
-
-        WeiXinAuthorizerInfo weiXinAuthorizerInfo = WeiXinAuthorizerInfo.builder()
-                .tenantId(tenantId)
-                .authorizerType(authorizerType)
-                .nickName(nickName)
-                .headImg(headImg)
-                .serviceTypeInfo(serviceTypeInfo)
-                .verifyTypeInfo(verifyTypeInfo)
-                .originalId(originalId)
-                .principalName(principalName)
-                .alias(StringUtils.isNotBlank(alias) ? alias : Constants.VARCHAR_DEFAULT_VALUE)
-                .businessInfo(businessInfo)
-                .qrcodeUrl(qrcodeUrl)
-                .signature(StringUtils.isNotBlank(signature) ? signature : Constants.VARCHAR_DEFAULT_VALUE)
-                .miniProgramInfo(StringUtils.isNotBlank(miniProgramInfo) ? miniProgramInfo : Constants.VARCHAR_DEFAULT_VALUE)
-                .authorizerAppId(authorizerAppId)
-                .funcInfo(funcInfo)
-                .build();
-        DatabaseHelper.insert(weiXinAuthorizerInfo);
-
-        return ApiRest.builder().message("保存微信授权信息成功！").successful(true).build();
-    }
-
-    /**
-     * 获取微信授权信息
-     *
-     * @param obtainWeiXinAuthorizerInfoModel
-     * @return
-     */
-    public ApiRest obtainWeiXinAuthorizerInfo(ObtainWeiXinAuthorizerInfoModel obtainWeiXinAuthorizerInfoModel) {
-        BigInteger tenantId = obtainWeiXinAuthorizerInfoModel.getTenantId();
-
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
-
-        return ApiRest.builder().data(weiXinAuthorizerInfo).message("获取微信授权信息成功！").successful(true).build();
     }
 
     /**

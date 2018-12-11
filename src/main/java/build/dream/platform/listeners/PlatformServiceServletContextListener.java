@@ -49,7 +49,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         }
 
         // 缓存微信支付账号
-        List<WeiXinPayAccount> weiXinPayAccounts = weiXinService.findAllWeiXinPayAccounts();
+        List<WeiXinPayAccount> weiXinPayAccounts = weiXinService.obtainAllWeiXinPayAccounts();
         Map<String, String> weiXinPayAccountMap = new HashMap<String, String>();
         for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
             weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), GsonUtils.toJson(weiXinPayAccount));
@@ -73,7 +73,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         }
 
         // 缓存微信授权token
-        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.findAllWeiXinAuthorizerTokens();
+        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.obtainAllWeiXinAuthorizerTokens();
         Map<String, String> weiXinAuthorizerTokenMap = new HashMap<String, String>();
         for (WeiXinAuthorizerToken weiXinAuthorizerToken : weiXinAuthorizerTokens) {
             weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), GsonUtils.toJson(weiXinAuthorizerToken));

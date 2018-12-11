@@ -23,7 +23,7 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.findAllWeiXinAuthorizerTokens();
+        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.obtainAllWeiXinAuthorizerTokens();
         Map<String, String> weiXinAuthorizerTokenMap = new HashMap<String, String>();
         Map<String, ComponentAccessToken> componentAccessTokenMap = new HashMap<String, ComponentAccessToken>();
         for (WeiXinAuthorizerToken weiXinAuthorizerToken : weiXinAuthorizerTokens) {
@@ -31,7 +31,7 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
                 String componentAppId = weiXinAuthorizerToken.getComponentAppId();
                 ComponentAccessToken componentAccessToken = componentAccessTokenMap.get(componentAppId);
                 if (componentAccessToken == null) {
-                    WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = weiXinService.findWeiXinOpenPlatformApplication(componentAppId);
+                    WeiXinOpenPlatformApplication weiXinOpenPlatformApplication = weiXinService.obtainWeiXinOpenPlatformApplication(componentAppId);
                     ValidateUtils.notNull(weiXinOpenPlatformApplication, "微信开放平台应用不存在！");
 
                     componentAccessToken = WeiXinUtils.obtainComponentAccessToken(weiXinOpenPlatformApplication.getAppId(), weiXinOpenPlatformApplication.getAppSecret());
