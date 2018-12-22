@@ -67,15 +67,14 @@ public class ElemeService {
 
         UpdateModel updateModel = new UpdateModel(true);
         updateModel.setTableName("eleme_authorized_tenant");
-        updateModel.addContentValue("deleted", 1);
-        updateModel.addContentValue("last_update_user_id", userId);
-        updateModel.addContentValue("last_update_remark", "商户重新授权，删除本条记录！");
-        updateModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-        updateModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUAL, elemeAuthorizedTenant.getId());
+        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.DELETED, 1);
+        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_USER_ID, userId);
+        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
+        updateModel.addSearchCondition(ElemeAuthorizedTenant.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
 
         } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
-            updateModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+            updateModel.addSearchCondition(ElemeAuthorizedTenant.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         }
         DatabaseHelper.universalUpdate(updateModel);
 
