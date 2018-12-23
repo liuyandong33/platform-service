@@ -6,6 +6,7 @@ import build.dream.common.saas.domains.ElemeBranchMapping;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.models.eleme.CheckIsAuthorizeModel;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
 import net.sf.json.JSONObject;
@@ -117,5 +118,16 @@ public class ElemeService {
         DatabaseHelper.insert(elemeBranchMapping);
 
         return ApiRest.builder().message("保存饿了么门店映射成功！").successful(true).build();
+    }
+
+    /**
+     * 检查是否授权
+     *
+     * @param checkIsAuthorizeModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest checkIsAuthorize(CheckIsAuthorizeModel checkIsAuthorizeModel) {
+        return ApiRest.builder().build();
     }
 }

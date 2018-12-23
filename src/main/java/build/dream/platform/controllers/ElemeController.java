@@ -1,6 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
+import build.dream.platform.models.eleme.CheckIsAuthorizeModel;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
 import build.dream.platform.services.ElemeService;
@@ -37,6 +38,18 @@ public class ElemeController {
     @ResponseBody
     @ApiRestAction(modelClass = SaveElemeBranchMappingModel.class, serviceClass = ElemeService.class, serviceMethodName = "saveElemeBranchMapping", error = "保存门店映射失败")
     public String saveElemeBranchMapping() {
+        return null;
+    }
+
+    /**
+     * 检查是否授权
+     *
+     * @return
+     */
+    @RequestMapping(value = "/checkIsAuthorize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = CheckIsAuthorizeModel.class, serviceClass = ElemeService.class, serviceMethodName = "checkIsAuthorize", error = "检查是否授权失败")
+    public String checkIsAuthorize() {
         return null;
     }
 }
