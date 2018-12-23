@@ -1,9 +1,9 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
-import build.dream.platform.models.eleme.CheckIsAuthorizeModel;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
+import build.dream.platform.models.eleme.VerifyTokenModel;
 import build.dream.platform.services.ElemeService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -42,14 +42,14 @@ public class ElemeController {
     }
 
     /**
-     * 检查是否授权
+     * 验证token是否有效
      *
      * @return
      */
-    @RequestMapping(value = "/checkIsAuthorize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/verifyToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
-    @ApiRestAction(modelClass = CheckIsAuthorizeModel.class, serviceClass = ElemeService.class, serviceMethodName = "checkIsAuthorize", error = "检查是否授权失败")
-    public String checkIsAuthorize() {
+    @ApiRestAction(modelClass = VerifyTokenModel.class, serviceClass = ElemeService.class, serviceMethodName = "verifyToken", error = "验证token是否有效失败")
+    public String verifyToken() {
         return null;
     }
 }

@@ -6,9 +6,9 @@ import build.dream.common.saas.domains.ElemeToken;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.eleme.CheckIsAuthorizeModel;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
+import build.dream.platform.models.eleme.VerifyTokenModel;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
@@ -121,13 +121,44 @@ public class ElemeService {
     }
 
     /**
-     * 检查是否授权
+     * 验证token是否有效
      *
-     * @param checkIsAuthorizeModel
+     * @param verifyTokenModel
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest checkIsAuthorize(CheckIsAuthorizeModel checkIsAuthorizeModel) {
-        return ApiRest.builder().build();
+    public ApiRest verifyToken(VerifyTokenModel verifyTokenModel) {
+        BigInteger tenantId = verifyTokenModel.getTenantId();
+        BigInteger branchId = verifyTokenModel.getBranchId();
+        BigInteger userId = verifyTokenModel.getUserId();
+        int elemeAccountType = verifyTokenModel.getElemeAccountType();
+
+        boolean isEffective = ElemeUtils.verifyToken(tenantId.toString(), branchId.toString(), elemeAccountType);
+        if (isEffective) {
+
+        } else {
+            SearchModel searchModel = new SearchModel(true);
+            searchModel.addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+
+            if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
+
+            } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
+                searchModel.addSearchCondition(ElemeToken.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+            }
+
+            ElemeToken elemeToken = DatabaseHelper.find(ElemeToken.class, searchModel);
+            elemeToken.setDeleted(true);
+            elemeToken.setDeletedTime(new Date());
+            elemeToken.setUpdatedUserId(userId);
+            DatabaseHelper.update(elemeToken);
+
+            if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
+                CacheUtils.hdel(Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId);
+            } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
+                CacheUtils.hdel(build.dream.common.constants.Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId);
+            }
+        }
+
+        return ApiRest.builder().data(isEffective).message("验证token成功！").successful(true).build();
     }
 }
