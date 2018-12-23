@@ -217,7 +217,7 @@ public class TenantService {
         int type = updateBranchCountModel.getType();
 
         UpdateModel updateModel = new UpdateModel();
-        updateModel.setTableName("tenant");
+        updateModel.setTableName(Tenant.TABLE_NAME);
         updateModel.addContentValue(Tenant.ColumnName.DELETED, 1);
         updateModel.addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.BIG_INTEGER_ONE);
 

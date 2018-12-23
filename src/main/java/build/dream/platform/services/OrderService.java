@@ -228,7 +228,7 @@ public class OrderService {
         BigInteger userId = batchDeleteOrdersModel.getUserId();
 
         UpdateModel orderInfoUpdateModel = new UpdateModel(true);
-        orderInfoUpdateModel.setTableName("order_info");
+        orderInfoUpdateModel.setTableName(OrderInfo.TABLE_NAME);
         orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.DELETED, 1);
         orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_USER_ID, userId);
         orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_REMARK, "删除订单信息！");
@@ -236,7 +236,7 @@ public class OrderService {
         DatabaseHelper.universalUpdate(orderInfoUpdateModel);
 
         UpdateModel orderDetailUpdateModel = new UpdateModel(true);
-        orderDetailUpdateModel.setTableName("order_detail");
+        orderDetailUpdateModel.setTableName(OrderDetail.TABLE_NAME);
         orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.DELETED, 1);
         orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
         orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");
@@ -266,7 +266,7 @@ public class OrderService {
         DatabaseHelper.update(orderInfo);
 
         UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName("order_detail");
+        updateModel.setTableName(OrderDetail.TABLE_NAME);
         updateModel.addContentValue(OrderDetail.ColumnName.ID, 1);
         updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
         updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");

@@ -67,7 +67,7 @@ public class ElemeService {
         DatabaseHelper.insert(elemeAuthorizedTenant);
 
         UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName("eleme_authorized_tenant");
+        updateModel.setTableName(ElemeAuthorizedTenant.TABLE_NAME);
         updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.DELETED, 1);
         updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_USER_ID, userId);
         updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
@@ -100,7 +100,7 @@ public class ElemeService {
         String updatedRemark = "门店(" + branchId + ")绑定饿了么(" + shopId + ")，清除绑定关系！";
 
         UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName("eleme_branch_mapping");
+        updateModel.setTableName(ElemeBranchMapping.TABLE_NAME);
         updateModel.addContentValue(ElemeBranchMapping.ColumnName.DELETED, 1);
         updateModel.addContentValue(ElemeBranchMapping.ColumnName.UPDATED_USER_ID, userId);
         updateModel.addContentValue(ElemeBranchMapping.ColumnName.UPDATED_REMARK, updatedRemark);
