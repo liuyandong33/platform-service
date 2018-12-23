@@ -1,8 +1,8 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.ElemeAuthorizedTenant;
 import build.dream.common.saas.domains.ElemeBranchMapping;
+import build.dream.common.saas.domains.ElemeToken;
 import build.dream.common.saas.domains.Tenant;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
@@ -45,42 +45,42 @@ public class ElemeService {
         String appSecret = ConfigurationUtils.getConfiguration(Constants.ELEME_APP_SECRET);
         String redirectUrl = CommonUtils.getOutsideUrl(Constants.SERVICE_NAME_OUT, "eleme", "tenantAuthorizeCallback");
         JSONObject tokenJsonObject = JSONObject.fromObject(ElemeUtils.obtainTokenByCode(code, appKey, appSecret, redirectUrl));
-        Date fetchTokenTime = new Date();
-        ElemeAuthorizedTenant elemeAuthorizedTenant = new ElemeAuthorizedTenant();
-        elemeAuthorizedTenant.setTenantId(tenantId);
+        Date fetchTime = new Date();
+        ElemeToken elemeToken = new ElemeToken();
+        elemeToken.setTenantId(tenantId);
         String tokenField = null;
         if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
             tokenField = Constants.ELEME_TOKEN + "_" + tenantId;
         } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
             tokenField = Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId;
-            elemeAuthorizedTenant.setBranchId(branchId);
+            elemeToken.setBranchId(branchId);
         }
-        elemeAuthorizedTenant.setAccessToken(tokenJsonObject.getString("access_token"));
-        elemeAuthorizedTenant.setRefreshToken(tokenJsonObject.getString("refresh_token"));
-        elemeAuthorizedTenant.setExpiresIn(tokenJsonObject.getInt("expires_in"));
-        elemeAuthorizedTenant.setTokenType(tokenJsonObject.getString("token_type"));
-        elemeAuthorizedTenant.setFetchTokenTime(fetchTokenTime);
+        elemeToken.setAccessToken(tokenJsonObject.getString("access_token"));
+        elemeToken.setRefreshToken(tokenJsonObject.getString("refresh_token"));
+        elemeToken.setExpiresIn(tokenJsonObject.getInt("expires_in"));
+        elemeToken.setTokenType(tokenJsonObject.getString("token_type"));
+        elemeToken.setFetchTime(fetchTime);
 
-        elemeAuthorizedTenant.setCreatedUserId(userId);
-        elemeAuthorizedTenant.setUpdatedUserId(userId);
-        elemeAuthorizedTenant.setUpdatedRemark("商户授权获取token");
-        DatabaseHelper.insert(elemeAuthorizedTenant);
+        elemeToken.setCreatedUserId(userId);
+        elemeToken.setUpdatedUserId(userId);
+        elemeToken.setUpdatedRemark("商户授权获取token");
+        DatabaseHelper.insert(elemeToken);
 
         UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName(ElemeAuthorizedTenant.TABLE_NAME);
-        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.DELETED, 1);
-        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_USER_ID, userId);
-        updateModel.addContentValue(ElemeAuthorizedTenant.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
-        updateModel.addSearchCondition(ElemeAuthorizedTenant.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        updateModel.setTableName(ElemeToken.TABLE_NAME);
+        updateModel.addContentValue(ElemeToken.ColumnName.DELETED, 1);
+        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_USER_ID, userId);
+        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
+        updateModel.addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
 
         } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
-            updateModel.addSearchCondition(ElemeAuthorizedTenant.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+            updateModel.addSearchCondition(ElemeToken.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         }
         DatabaseHelper.universalUpdate(updateModel);
 
-        tokenJsonObject.put("fetch_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fetchTokenTime));
-        CacheUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, tokenJsonObject.toString());
+        tokenJsonObject.put("fetch_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fetchTime));
+        CacheUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
 
         return ApiRest.builder().message("处理商户授权成功！").successful(true).build();
     }

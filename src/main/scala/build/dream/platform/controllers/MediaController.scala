@@ -31,9 +31,9 @@ class MediaController {
         }
         val text = requestParameters.get("text")
         val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
-        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(QRCodeUtils.FORMAT_NAME))
+        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(ZXingUtils.FORMAT_NAME_PNG))
         val outputStream: OutputStream = httpServletResponse.getOutputStream
-        QRCodeUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
+        ZXingUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
         outputStream.close()
     }
 
@@ -56,10 +56,10 @@ class MediaController {
         val text: String = requestParameters.get("text")
         val fileName: String = requestParameters.get("fileName")
         val httpServletResponse: HttpServletResponse = ApplicationHandler.getHttpServletResponse
-        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(QRCodeUtils.FORMAT_NAME))
-        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + fileName + QRCodeUtils.FORMAT_NAME)
+        httpServletResponse.setContentType(MimeMappingUtils.obtainMimeTypeByExtension(ZXingUtils.FORMAT_NAME_PNG))
+        httpServletResponse.setHeader("Content-disposition", "attachment;filename=" + fileName + ZXingUtils.FORMAT_NAME_PNG)
         val outputStream: OutputStream = httpServletResponse.getOutputStream
-        QRCodeUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
+        ZXingUtils.generateQRCode(width.toInt, height.toInt, text, outputStream)
         outputStream.close()
     }
 

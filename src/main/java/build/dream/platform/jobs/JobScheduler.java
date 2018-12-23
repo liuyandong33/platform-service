@@ -15,9 +15,6 @@ import java.io.Serializable;
 public class JobScheduler implements Serializable {
     public void scheduler() {
         try {
-            // 启动同步门店信息定时任务
-            startSynchronizeBranchInfoJob();
-
             // 启用禁用门店产品定时任务
             startDisableBranchGoodsJob();
 
@@ -33,18 +30,6 @@ public class JobScheduler implements Serializable {
             JobUtils.pauseTrigger(triggerKey);
             JobUtils.unscheduleJob(triggerKey);
             JobUtils.deleteJob(jobKey);
-        }
-    }
-
-    private void startSynchronizeBranchInfoJob() throws SchedulerException {
-        JobKey jobKey = JobKey.jobKey("synchronizeBranchInfoJob", "platformJobGroup");
-        TriggerKey triggerKey = TriggerKey.triggerKey("synchronizeBranchInfoJobTrigger", "platformJobGroup");
-        String synchronizeBranchInfoJobCronExpression = ConfigurationUtils.getConfiguration(Constants.SYNCHRONIZE_BRANCH_INFO_JOB_CRON_EXPRESSION);
-        if (StringUtils.isNotBlank(synchronizeBranchInfoJobCronExpression)) {
-            stopJob(jobKey, triggerKey);
-            JobUtils.scheduleCronJob(SynchronizeBranchInfoJob.class, jobKey, triggerKey, synchronizeBranchInfoJobCronExpression, null);
-        } else {
-            stopJob(jobKey, triggerKey);
         }
     }
 
