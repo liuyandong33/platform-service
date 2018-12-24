@@ -10,7 +10,6 @@ import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
 import build.dream.platform.models.eleme.VerifyTokenModel;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,22 +38,27 @@ public class ElemeService {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
-        Validate.notNull(tenant, "商户不存在！");
+        ValidateUtils.notNull(tenant, "商户不存在！");
 
         String appKey = ConfigurationUtils.getConfiguration(Constants.ELEME_APP_KEY);
         String appSecret = ConfigurationUtils.getConfiguration(Constants.ELEME_APP_SECRET);
-        String redirectUrl = CommonUtils.getOutsideUrl(Constants.SERVICE_NAME_OUT, "eleme", "tenantAuthorizeCallback");
+        String redirectUrl = "http://check-local.smartpos.top/zd1/ct2/proxy/doGetPermit/zd1/catering/eleme/tenantAuthorizeCallback";
         JSONObject tokenJsonObject = JSONObject.fromObject(ElemeUtils.obtainTokenByCode(code, appKey, appSecret, redirectUrl));
+        if (tokenJsonObject.has("error")) {
+            ValidateUtils.isTrue(false, tokenJsonObject.getString("error_description"));
+        }
+
+        UpdateModel updateModel = new UpdateModel(true);
+        updateModel.setTableName(ElemeToken.TABLE_NAME);
+        updateModel.addContentValue(ElemeToken.ColumnName.DELETED_TIME, new Date());
+        updateModel.addContentValue(ElemeToken.ColumnName.DELETED, 1);
+        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_USER_ID, userId);
+        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
+        updateModel.addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+
         Date fetchTime = new Date();
         ElemeToken elemeToken = new ElemeToken();
         elemeToken.setTenantId(tenantId);
-        String tokenField = null;
-        if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
-            tokenField = Constants.ELEME_TOKEN + "_" + tenantId;
-        } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
-            tokenField = Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId;
-            elemeToken.setBranchId(branchId);
-        }
         elemeToken.setAccessToken(tokenJsonObject.getString("access_token"));
         elemeToken.setRefreshToken(tokenJsonObject.getString("refresh_token"));
         elemeToken.setExpiresIn(tokenJsonObject.getInt("expires_in"));
@@ -64,20 +68,16 @@ public class ElemeService {
         elemeToken.setCreatedUserId(userId);
         elemeToken.setUpdatedUserId(userId);
         elemeToken.setUpdatedRemark("商户授权获取token");
-        DatabaseHelper.insert(elemeToken);
-
-        UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName(ElemeToken.TABLE_NAME);
-        updateModel.addContentValue(ElemeToken.ColumnName.DELETED, 1);
-        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_USER_ID, userId);
-        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
-        updateModel.addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        String tokenField = null;
         if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
-
+            tokenField = Constants.ELEME_TOKEN + "_" + tenantId;
         } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
             updateModel.addSearchCondition(ElemeToken.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+            tokenField = Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId;
+            elemeToken.setBranchId(branchId);
         }
         DatabaseHelper.universalUpdate(updateModel);
+        DatabaseHelper.insert(elemeToken);
 
         tokenJsonObject.put("fetch_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fetchTime));
         CacheUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
