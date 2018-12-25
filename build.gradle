@@ -36,7 +36,8 @@ dependencyManagement {
 }
 
 dependencies {
-    compile fileTree(include: ["*.jar"], dir: "libs")
+//    compile fileTree(include: ["*.jar"], dir: "libs")
+    compile("build.dream:saas-common:0.1.0-SNAPSHOT")
     compile group: "org.scala-lang", name: "scala-library", version: '2.12.5'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-devtools")
