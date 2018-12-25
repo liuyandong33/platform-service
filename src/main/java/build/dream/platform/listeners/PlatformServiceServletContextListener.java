@@ -7,7 +7,10 @@ import build.dream.common.utils.GsonUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.mappers.CommonMapper;
-import build.dream.platform.services.*;
+import build.dream.platform.services.AlipayService;
+import build.dream.platform.services.NewLandService;
+import build.dream.platform.services.TenantService;
+import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,8 +24,6 @@ import java.util.Map;
 public class PlatformServiceServletContextListener extends BasicServletContextListener {
     @Autowired
     private AlipayService alipayService;
-    @Autowired
-    private TenantSecretKeyService tenantSecretKeyService;
     @Autowired
     private TenantService tenantService;
     @Autowired
