@@ -3,7 +3,7 @@ version "1.0.0"
 
 buildscript {
     ext {
-        springBootVersion = "2.1.0.RELEASE"
+        springBootVersion = "2.0.0.RELEASE"
         springCloudVersion = "Finchley.RELEASE"
         projectName = "service-platform"
     }
@@ -57,9 +57,9 @@ dependencies {
     compile("com.google.zxing:core:3.3.2")
     compile("org.quartz-scheduler:quartz:2.3.0")
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
-
-    compile group: "org.apache.poi", name: "poi-ooxml", version: "3.17"
-    compile group: "com.belerweb", name: "pinyin4j", version: "2.5.1"
+    compile("org.apache.poi:poi-ooxml:3.17")
+    compile("com.belerweb:pinyin4j:2.5.1")
+    compile("org.aspectj:aspectjweaver:1.9.2")
 }
 
 publishing {
