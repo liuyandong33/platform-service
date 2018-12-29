@@ -72,6 +72,6 @@ class MediaController {
     def doGet(): ResponseEntity[Array[Byte]] = {
         val requestParameters: Map[String, String] = ApplicationHandler.getRequestParameters
         val url: String = requestParameters.get("url")
-        OutUtils.doGet(url, null)
+        OutUtils.doGetOrdinaryWithRequestParameters(url, null, null)
     }
 }

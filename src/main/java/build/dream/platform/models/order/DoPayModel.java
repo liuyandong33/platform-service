@@ -16,6 +16,8 @@ public class DoPayModel extends BasicModel {
 
     private Integer paidScene;
 
+    private String authCode;
+
     public BigInteger getOrderInfoId() {
         return orderInfoId;
     }
@@ -40,9 +42,20 @@ public class DoPayModel extends BasicModel {
         this.paidScene = paidScene;
     }
 
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
     @Override
     public void validateAndThrow() {
         super.validateAndThrow();
         ApplicationHandler.inArray(Constants.PAID_SCENES, paidScene, "paidScene");
+        if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY || paidScene == Constants.PAID_SCENE_ALIPAY_FAC_TO_FACE) {
+            ApplicationHandler.notBlank(authCode, "authCode");
+        }
     }
 }
