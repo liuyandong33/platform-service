@@ -18,6 +18,10 @@ public class DoPayModel extends BasicModel {
 
     private String authCode;
 
+    private String openId;
+
+    private String subOpenId;
+
     public BigInteger getOrderInfoId() {
         return orderInfoId;
     }
@@ -48,6 +52,22 @@ public class DoPayModel extends BasicModel {
 
     public void setAuthCode(String authCode) {
         this.authCode = authCode;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public String getSubOpenId() {
+        return subOpenId;
+    }
+
+    public void setSubOpenId(String subOpenId) {
+        this.subOpenId = subOpenId;
     }
 
     @Override

@@ -293,6 +293,8 @@ public class OrderService {
         BigInteger userId = doPayModel.getUserId();
         int paidScene = doPayModel.getPaidScene();
         String authCode = doPayModel.getAuthCode();
+        String openId = doPayModel.getOpenId();
+        String subOpenId = doPayModel.getSubOpenId();
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
@@ -342,6 +344,8 @@ public class OrderService {
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .notifyUrl(notifyUrl)
                     .tradeType(tradeType)
+                    .openId(openId)
+                    .subOpenId(subOpenId)
                     .build();
 
             data = WeiXinPayUtils.unifiedOrder(unifiedOrderModel);

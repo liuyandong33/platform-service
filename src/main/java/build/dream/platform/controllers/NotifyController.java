@@ -1,7 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
-import build.dream.platform.models.notify.SaveNotifyRecordModel;
+import build.dream.common.models.notify.SaveNotifyRecordModel;
 import build.dream.platform.services.NotifyService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
