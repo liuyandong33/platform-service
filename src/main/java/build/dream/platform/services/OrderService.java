@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -307,7 +306,19 @@ public class OrderService {
         String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
 
         Object data = null;
-        if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB || paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
+        if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY) {
+            MicroPayModel microPayModel = MicroPayModel.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .signType(Constants.MD5)
+                    .body("订单支付")
+                    .outTradeNo(orderNumber)
+                    .totalFee(orderInfo.getPayableAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .spbillCreateIp(ApplicationHandler.getRemoteAddress())
+                    .authCode(authCode)
+                    .build();
+            data = WeiXinPayUtils.microPay(microPayModel);
+        } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT || paidScene == Constants.PAID_SCENE_WEI_XIN_NATIVE || paidScene == Constants.PAID_SCENE_WEI_XIN_APP || paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB || paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
             String tradeType = null;
             if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_PUBLIC_ACCOUNT) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_JSAPI;
@@ -327,25 +338,13 @@ public class OrderService {
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalFee(orderInfo.getTotalAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .totalFee(orderInfo.getPayableAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .notifyUrl(notifyUrl)
                     .tradeType(tradeType)
                     .build();
 
             data = WeiXinPayUtils.unifiedOrder(unifiedOrderModel);
-        } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY) {
-            MicroPayModel microPayModel = MicroPayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
-                    .signType(Constants.MD5)
-                    .body("订单支付")
-                    .outTradeNo(orderNumber)
-                    .totalFee(orderInfo.getTotalAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
-                    .spbillCreateIp(ApplicationHandler.getRemoteAddress())
-                    .authCode(authCode)
-                    .build();
-            data = WeiXinPayUtils.microPay(microPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
             AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
                     .tenantId(tenantId)
@@ -353,7 +352,7 @@ public class OrderService {
                     .notifyUrl(notifyUrl)
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalAmount(new DecimalFormat("0.00").format(orderInfo.getTotalAmount()))
+                    .totalAmount(orderInfo.getPayableAmount())
                     .productCode(orderNumber)
                     .build();
             data = AlipayUtils.alipayTradeWapPay(alipayTradeWapPayModel);
@@ -376,6 +375,7 @@ public class OrderService {
                     .branchId(branchId)
                     .notifyUrl(notifyUrl)
                     .outTradeNo(orderNumber)
+                    .totalAmount(orderInfo.getPayableAmount())
                     .authCode(authCode)
                     .subject("订单支付")
                     .build();
