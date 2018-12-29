@@ -2,6 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.models.alipay.AlipayTradePagePayModel;
+import build.dream.common.models.alipay.AlipayTradePayModel;
 import build.dream.common.models.alipay.AlipayTradeWapPayModel;
 import build.dream.common.models.weixinpay.MicroPayModel;
 import build.dream.common.models.weixinpay.UnifiedOrderModel;
@@ -346,17 +347,39 @@ public class OrderService {
                     .build();
             data = WeiXinPayUtils.microPay(microPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
-            AlipayTradeWapPayModel alipayTradeWapPayModel = new AlipayTradeWapPayModel();
-            alipayTradeWapPayModel.setSubject("订单支付");
-            alipayTradeWapPayModel.setOutTradeNo(orderNumber);
-            alipayTradeWapPayModel.setTotalAmount(new DecimalFormat("0.00").format(orderInfo.getTotalAmount()));
-            alipayTradeWapPayModel.setProductCode(orderNumber);
+            AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .notifyUrl(notifyUrl)
+                    .subject("订单支付")
+                    .outTradeNo(orderNumber)
+                    .totalAmount(new DecimalFormat("0.00").format(orderInfo.getTotalAmount()))
+                    .productCode(orderNumber)
+                    .build();
+            data = AlipayUtils.alipayTradeWapPay(alipayTradeWapPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE) {
-            AlipayTradePagePayModel alipayTradePagePayModel = new AlipayTradePagePayModel();
+            AlipayTradePagePayModel alipayTradePagePayModel = AlipayTradePagePayModel.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .notifyUrl(notifyUrl)
+                    .outTradeNo(orderNumber)
+                    .productCode(orderNumber)
+                    .totalAmount(orderInfo.getPayableAmount())
+                    .subject("订单支付")
+                    .build();
+            data = AlipayUtils.alipayTradePagePay(alipayTradePagePayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
 
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_FAC_TO_FACE) {
-
+            AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .notifyUrl(notifyUrl)
+                    .outTradeNo(orderNumber)
+                    .authCode(authCode)
+                    .subject("订单支付")
+                    .build();
+            data = AlipayUtils.alipayTradePay(alipayTradePayModel);
         }
         return ApiRest.builder().data(data).message("发起支付成功！").successful(true).build();
     }
