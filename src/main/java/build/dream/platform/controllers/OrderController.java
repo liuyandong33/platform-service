@@ -87,7 +87,7 @@ public class OrderController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/doPay", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/doPay", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = DoPayModel.class, serviceClass = OrderService.class, serviceMethodName = "doPay", error = "发起支付失败")
     public String doPay() {
