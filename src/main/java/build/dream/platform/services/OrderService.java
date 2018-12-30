@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.*;
 
@@ -306,6 +307,7 @@ public class OrderService {
         String branchId = "0";
 
         String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
+        BigDecimal payableAmount = orderInfo.getPayableAmount().setScale(2, RoundingMode.DOWN);
 
         Object data = null;
         if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY) {
@@ -315,7 +317,7 @@ public class OrderService {
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalFee(orderInfo.getPayableAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .authCode(authCode)
                     .build();
@@ -340,7 +342,7 @@ public class OrderService {
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalFee(orderInfo.getPayableAmount().multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .notifyUrl(notifyUrl)
                     .tradeType(tradeType)
@@ -356,7 +358,7 @@ public class OrderService {
                     .notifyUrl(notifyUrl)
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalAmount(orderInfo.getPayableAmount())
+                    .totalAmount(payableAmount)
                     .productCode(orderNumber)
                     .build();
             data = AlipayUtils.alipayTradeWapPay(alipayTradeWapPayModel);
@@ -367,7 +369,7 @@ public class OrderService {
                     .notifyUrl(notifyUrl)
                     .outTradeNo(orderNumber)
                     .productCode(orderNumber)
-                    .totalAmount(orderInfo.getPayableAmount())
+                    .totalAmount(payableAmount)
                     .subject("订单支付")
                     .build();
             data = AlipayUtils.alipayTradePagePay(alipayTradePagePayModel);
@@ -379,7 +381,7 @@ public class OrderService {
                     .branchId(branchId)
                     .notifyUrl(notifyUrl)
                     .outTradeNo(orderNumber)
-                    .totalAmount(orderInfo.getPayableAmount())
+                    .totalAmount(payableAmount)
                     .scene(Constants.SCENE_BAR_CODE)
                     .authCode(authCode)
                     .subject("订单支付")
