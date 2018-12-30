@@ -307,7 +307,7 @@ public class OrderService {
         String tenantId = "0";
         String branchId = "0";
 
-        String notifyUrl = CommonUtils.getUrl(Constants.SERVICE_NAME_PLATFORM, "order", "");
+        String serviceDomain = CommonUtils.getServiceDomain(Constants.SERVICE_NAME_PLATFORM);
         BigDecimal payableAmount = orderInfo.getPayableAmount().setScale(2, RoundingMode.DOWN);
 
         Object data = null;
@@ -345,7 +345,7 @@ public class OrderService {
                     .outTradeNo(orderNumber)
                     .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
-                    .notifyUrl(notifyUrl)
+                    .notifyUrl(serviceDomain + "/order/weiXinPayCallback")
                     .tradeType(tradeType)
                     .openId(openId)
                     .subOpenId(subOpenId)
@@ -356,7 +356,7 @@ public class OrderService {
             AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(notifyUrl)
+                    .notifyUrl(serviceDomain + "/order/alipayCallback")
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
@@ -367,7 +367,7 @@ public class OrderService {
             AlipayTradePagePayModel alipayTradePagePayModel = AlipayTradePagePayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(notifyUrl)
+                    .notifyUrl(serviceDomain + "/order/alipayCallback")
                     .outTradeNo(orderNumber)
                     .productCode(orderNumber)
                     .totalAmount(payableAmount)
@@ -378,7 +378,7 @@ public class OrderService {
             AlipayTradeAppPayModel alipayTradeAppPayModel = AlipayTradeAppPayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(notifyUrl)
+                    .notifyUrl(serviceDomain + "/order/alipayCallback")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .subject("订单支付")
@@ -388,7 +388,7 @@ public class OrderService {
             AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(notifyUrl)
+                    .notifyUrl(serviceDomain + "/order/alipayCallback")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .scene(Constants.SCENE_BAR_CODE)
