@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.models.alipay.AlipayTradeAppPayModel;
 import build.dream.common.models.alipay.AlipayTradePagePayModel;
 import build.dream.common.models.alipay.AlipayTradePayModel;
 import build.dream.common.models.alipay.AlipayTradeWapPayModel;
@@ -374,7 +375,15 @@ public class OrderService {
                     .build();
             data = AlipayUtils.alipayTradePagePay(alipayTradePagePayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
-
+            AlipayTradeAppPayModel alipayTradeAppPayModel = AlipayTradeAppPayModel.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .notifyUrl(notifyUrl)
+                    .outTradeNo(orderNumber)
+                    .totalAmount(payableAmount)
+                    .subject("订单支付")
+                    .build();
+            data = AlipayUtils.alipayTradeAppPay(alipayTradeAppPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_FAC_TO_FACE) {
             AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
                     .tenantId(tenantId)
