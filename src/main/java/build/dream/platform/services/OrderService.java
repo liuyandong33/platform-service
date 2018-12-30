@@ -380,6 +380,7 @@ public class OrderService {
                     .notifyUrl(notifyUrl)
                     .outTradeNo(orderNumber)
                     .totalAmount(orderInfo.getPayableAmount())
+                    .scene(Constants.SCENE_BAR_CODE)
                     .authCode(authCode)
                     .subject("订单支付")
                     .build();
