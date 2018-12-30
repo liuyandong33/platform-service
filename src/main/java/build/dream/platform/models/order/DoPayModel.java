@@ -11,9 +11,6 @@ public class DoPayModel extends BasicModel {
     @NotNull
     private BigInteger orderInfoId;
 
-    @NotNull
-    private BigInteger userId;
-
     private Integer paidScene;
 
     private String authCode;
@@ -28,14 +25,6 @@ public class DoPayModel extends BasicModel {
 
     public void setOrderInfoId(BigInteger orderInfoId) {
         this.orderInfoId = orderInfoId;
-    }
-
-    public BigInteger getUserId() {
-        return userId;
-    }
-
-    public void setUserId(BigInteger userId) {
-        this.userId = userId;
     }
 
     public Integer getPaidScene() {

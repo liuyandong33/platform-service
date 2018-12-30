@@ -292,7 +292,6 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ApiRest doPay(DoPayModel doPayModel) throws DocumentException {
         BigInteger orderInfoId = doPayModel.getOrderInfoId();
-        BigInteger userId = doPayModel.getUserId();
         int paidScene = doPayModel.getPaidScene();
         String authCode = doPayModel.getAuthCode();
         String openId = doPayModel.getOpenId();
