@@ -287,4 +287,16 @@ public class GoodsService {
         }
         return ApiRest.builder().data(goodsType).message("保存商品类型信息成功").successful(true).build();
     }
+
+    /**
+     * 查询所有商品类型
+     *
+     * @param listGoodsTypesModel
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ApiRest listGoodsTypes(ListGoodsTypesModel listGoodsTypesModel) {
+        List<GoodsType> goodsTypes = DatabaseHelper.findAll(GoodsType.class);
+        return ApiRest.builder().data(goodsTypes).message("查询所有商品类型成功！").successful(true).build();
+    }
 }

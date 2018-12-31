@@ -75,4 +75,16 @@ public class GoodsController {
     public String saveGoodsType() {
         return null;
     }
+
+    /**
+     * 查询所有产品类型
+     *
+     * @return
+     */
+    @RequestMapping(value = "/listGoodsTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = ListGoodsTypesModel.class, serviceClass = GoodsService.class, serviceMethodName = "listGoodsTypes", error = "查询所有产品类型失败")
+    public String listGoodsTypes() {
+        return null;
+    }
 }
