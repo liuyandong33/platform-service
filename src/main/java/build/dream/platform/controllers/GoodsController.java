@@ -1,10 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
-import build.dream.platform.models.goods.ListGoodsInfosModel;
-import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
-import build.dream.platform.models.goods.ObtainGoodsInfoModel;
-import build.dream.platform.models.goods.SaveGoodsModel;
+import build.dream.platform.models.goods.*;
 import build.dream.platform.services.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -64,6 +61,18 @@ public class GoodsController {
     @ResponseBody
     @ApiRestAction(modelClass = SaveGoodsModel.class, serviceClass = GoodsService.class, serviceMethodName = "saveGoods", error = "保存商品信息失败")
     public String saveGoods() {
+        return null;
+    }
+
+    /**
+     * 保存商品类型
+     *
+     * @return
+     */
+    @RequestMapping(value = "/saveGoodsType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SaveGoodsTypeModel.class, serviceClass = GoodsService.class, serviceMethodName = "saveGoodsType", error = "保存商品类型失败")
+    public String saveGoodsType() {
         return null;
     }
 }
