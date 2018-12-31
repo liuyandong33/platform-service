@@ -16,7 +16,6 @@ import build.dream.platform.utils.GoodsUtils;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,10 +83,10 @@ public class OrderService {
         List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
         for (SaveOrderModel.GoodsInfo goodsInfo : goodsInfos) {
             Goods goods = goodsMap.get(goodsInfo.getGoodsId());
-            Validate.notNull(goods, "产品不存在！");
+            ValidateUtils.notNull(goods, "产品不存在！");
 
             GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsInfo.getGoodsSpecificationId());
-            Validate.notNull(goodsSpecification, "产品规格不存在！");
+            ValidateUtils.notNull(goodsSpecification, "产品规格不存在！");
 
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderInfoId(orderInfo.getId());
@@ -143,7 +142,7 @@ public class OrderService {
         SearchModel orderInfoSearchModel = new SearchModel(true);
         orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
-        Validate.notNull(orderInfo, "订单不存在！");
+        ValidateUtils.notNull(orderInfo, "订单不存在！");
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
         orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
@@ -265,7 +264,7 @@ public class OrderService {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
-        Validate.notNull(orderInfo, "订单不存在！");
+        ValidateUtils.notNull(orderInfo, "订单不存在！");
 
         orderInfo.setDeleted(true);
         orderInfo.setUpdatedUserId(userId);
@@ -300,7 +299,7 @@ public class OrderService {
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
-        Validate.notNull(orderInfo, "订单不存在！");
+        ValidateUtils.notNull(orderInfo, "订单不存在！");
 
         String orderNumber = orderInfo.getOrderNumber();
         String tenantId = "0";
@@ -409,19 +408,18 @@ public class OrderService {
     @Transactional(rollbackFor = Exception.class)
     public String handleCallback(String orderNumber, int paidType) throws ParseException {
         SearchModel orderInfoSearchModel = new SearchModel(true);
-        orderInfoSearchModel.addSearchCondition("order_number", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderNumber);
+        orderInfoSearchModel.addSearchCondition(OrderInfo.ColumnName.ORDER_NUMBER, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderNumber);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
-        Validate.notNull(orderInfo, "订单不存在！");
+        ValidateUtils.notNull(orderInfo, "订单不存在！");
 
         int orderStatus = orderInfo.getOrderStatus();
         if (orderStatus == Constants.ORDER_STATUS_PAID) {
             return Constants.SUCCESS;
         }
 
-        Validate.isTrue(orderStatus == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
+        ValidateUtils.isTrue(orderStatus == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
-        userId = BigInteger.ZERO;
 
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_PAID);
         orderInfo.setPaidAmount(orderInfo.getPayableAmount());
@@ -431,7 +429,7 @@ public class OrderService {
         DatabaseHelper.update(orderInfo);
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
-        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfo.getId());
+        orderDetailSearchModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfo.getId());
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         BigInteger orderId = orderInfo.getId();
@@ -441,28 +439,29 @@ public class OrderService {
         int orderType = orderInfo.getOrderType();
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
             BigInteger tenantId = orderInfo.getTenantId();
-            SearchModel tenantSearchModel = new SearchModel(true);
-            tenantSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-            Tenant tenant = DatabaseHelper.find(Tenant.class, tenantSearchModel);
+            Tenant tenant = DatabaseHelper.find(Tenant.class, tenantId);
             String partitionCode = tenant.getPartitionCode();
             String serviceName = CommonUtils.getServiceName(tenant.getBusiness());
 
             for (OrderDetail orderDetail : orderDetails) {
                 BigInteger branchId = orderDetail.getBranchId();
                 BigInteger goodsId = orderDetail.getGoodsId();
-                SearchModel tenantGoodsSearchModel = new SearchModel(true);
-                tenantGoodsSearchModel.addSearchCondition("tenant_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
-                tenantGoodsSearchModel.addSearchCondition("branch_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
-                tenantGoodsSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+                BigInteger goodsSpecificationId = orderDetail.getGoodsSpecificationId();
+                int quantity = orderDetail.getQuantity();
 
-                SearchModel goodsSearchModel = new SearchModel(true);
-                goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsId());
-                Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
+                SearchModel tenantGoodsSearchModel = new SearchModel(true);
+                tenantGoodsSearchModel.addSearchCondition(TenantGoods.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+                tenantGoodsSearchModel.addSearchCondition(TenantGoods.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
+                tenantGoodsSearchModel.addSearchCondition(TenantGoods.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+
+                Goods goods = DatabaseHelper.find(Goods.class, goodsId);
+                ValidateUtils.notNull(goods, "商品不存在！");
 
                 SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-                goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsId());
-                goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderDetail.getGoodsSpecificationId());
+                goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+                goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsSpecificationId);
                 GoodsSpecification goodsSpecification = DatabaseHelper.find(GoodsSpecification.class, goodsSpecificationSearchModel);
+                ValidateUtils.notNull(goodsSpecification, "商品规格不存在！");
 
                 int meteringMode = goods.getMeteringMode();
                 if (meteringMode == 1) {
@@ -473,14 +472,15 @@ public class OrderService {
                         tenantGoods.setUpdatedRemark("商户续费成功，增加商户商品有效期！");
                         DatabaseHelper.update(tenantGoods);
                     } else {
-                        tenantGoods = new TenantGoods();
-                        tenantGoods.setTenantId(tenantId);
-                        tenantGoods.setBranchId(branchId);
-                        tenantGoods.setGoodsId(goodsId);
-                        tenantGoods.setExpireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification));
-                        tenantGoods.setCreatedUserId(userId);
-                        tenantGoods.setUpdatedUserId(userId);
-                        tenantGoods.setUpdatedRemark("商户购买商品，新增商户商品信息！");
+                        tenantGoods = TenantGoods.builder()
+                                .tenantId(tenantId)
+                                .branchId(branchId)
+                                .goodsId(goodsId)
+                                .expireTime(GoodsUtils.obtainExpireTime(null, goodsSpecification))
+                                .createdUserId(userId)
+                                .updatedUserId(userId)
+                                .updatedRemark("商户购买商品，新增商户商品信息！")
+                                .build();
                         DatabaseHelper.insert(tenantGoods);
                     }
 
@@ -498,54 +498,60 @@ public class OrderService {
                 } else if (meteringMode == 2) {
 
                 }
-                SaleFlow saleFlow = new SaleFlow();
-                saleFlow.setOrderId(orderId);
-                saleFlow.setType(Constants.SALE_FLOW_TYPE_TENANT_FLOW);
-                saleFlow.setTenantId(orderInfo.getTenantId());
-                saleFlow.setBranchId(orderDetail.getBranchId());
-                saleFlow.setOccurrenceTime(occurrenceTime);
-                saleFlow.setGoodsId(orderDetail.getGoodsId());
-                saleFlow.setGoodsName(orderDetail.getGoodsName());
-                saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
-                saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
-                saleFlow.setQuantity(orderDetail.getQuantity());
-                saleFlow.setPaidType(paidType);
-                saleFlow.setCreatedUserId(userId);
-                saleFlow.setUpdatedUserId(userId);
-                saleFlow.setUpdatedRemark("处理支付回调，生成销售流水！");
+                SaleFlow saleFlow = SaleFlow.builder()
+                        .orderId(orderId)
+                        .type(Constants.SALE_FLOW_TYPE_TENANT_FLOW)
+                        .tenantId(tenantId)
+                        .branchId(branchId)
+                        .occurrenceTime(occurrenceTime)
+                        .goodsId(goodsId)
+                        .goodsName(orderDetail.getGoodsName())
+                        .goodsSpecificationId(goodsSpecificationId)
+                        .goodsSpecificationName(orderDetail.getGoodsSpecificationName())
+                        .quantity(quantity)
+                        .paidType(paidType)
+                        .createdUserId(userId)
+                        .updatedUserId(userId)
+                        .updatedRemark("处理支付回调，生成销售流水！")
+                        .build();
                 saleFlows.add(saleFlow);
             }
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
+            BigInteger agentId = orderInfo.getAgentId();
             List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
             for (OrderDetail orderDetail : orderDetails) {
+                BigInteger goodsId = orderDetail.getGoodsId();
+                BigInteger goodsSpecificationId = orderDetail.getGoodsSpecificationId();
                 int quantity = orderDetail.getQuantity();
                 for (int index = 0; index < quantity; index++) {
-                    ActivationCodeInfo activationCodeInfo = new ActivationCodeInfo();
-                    activationCodeInfo.setAgentId(orderInfo.getAgentId());
-                    activationCodeInfo.setOrderId(orderInfo.getId());
-                    activationCodeInfo.setStatus(Constants.ACTIVATION_CODE_STATUS_NOT_USED);
-                    activationCodeInfo.setActivationCode(ActivationCodeUtils.generateActivationCode());
-                    activationCodeInfo.setCreatedUserId(userId);
-                    activationCodeInfo.setUpdatedUserId(userId);
-                    activationCodeInfo.setUpdatedRemark("处理支付回调，生成激活码！");
-                    activationCodeInfo.setGoodsId(orderDetail.getGoodsId());
-                    activationCodeInfo.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
+                    ActivationCodeInfo activationCodeInfo = ActivationCodeInfo.builder()
+                            .agentId(agentId)
+                            .orderId(orderId)
+                            .status(Constants.ACTIVATION_CODE_STATUS_NOT_USED)
+                            .activationCode(ActivationCodeUtils.generateActivationCode())
+                            .goodsId(goodsId)
+                            .goodsSpecificationId(goodsSpecificationId)
+                            .createdUserId(userId)
+                            .updatedUserId(userId)
+                            .updatedRemark("处理支付回调，生成激活码！")
+                            .build();
                     activationCodeInfos.add(activationCodeInfo);
                 }
-                SaleFlow saleFlow = new SaleFlow();
-                saleFlow.setOrderId(orderId);
-                saleFlow.setType(Constants.SALE_FLOW_TYPE_AGENT_FLOW);
-                saleFlow.setAgentId(orderInfo.getAgentId());
-                saleFlow.setOccurrenceTime(occurrenceTime);
-                saleFlow.setGoodsId(orderDetail.getGoodsId());
-                saleFlow.setGoodsName(orderDetail.getGoodsName());
-                saleFlow.setGoodsSpecificationId(orderDetail.getGoodsSpecificationId());
-                saleFlow.setGoodsSpecificationName(orderDetail.getGoodsSpecificationName());
-                saleFlow.setQuantity(orderDetail.getQuantity());
-                saleFlow.setPaidType(paidType);
-                saleFlow.setCreatedUserId(userId);
-                saleFlow.setUpdatedUserId(userId);
-                saleFlow.setUpdatedRemark("处理支付回调，生成销售流水！");
+                SaleFlow saleFlow = SaleFlow.builder()
+                        .orderId(orderId)
+                        .type(Constants.SALE_FLOW_TYPE_AGENT_FLOW)
+                        .agentId(agentId)
+                        .occurrenceTime(occurrenceTime)
+                        .goodsId(goodsId)
+                        .goodsName(orderDetail.getGoodsName())
+                        .goodsSpecificationId(goodsSpecificationId)
+                        .goodsSpecificationName(orderDetail.getGoodsSpecificationName())
+                        .quantity(quantity)
+                        .paidType(paidType)
+                        .createdUserId(userId)
+                        .updatedUserId(userId)
+                        .updatedRemark("处理支付回调，生成销售流水！")
+                        .build();
                 saleFlows.add(saleFlow);
             }
             DatabaseHelper.insertAll(activationCodeInfos);
