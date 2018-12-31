@@ -6,11 +6,7 @@ import build.dream.common.saas.domains.GoodsSpecification;
 import build.dream.common.saas.domains.GoodsType;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.goods.ListGoodsInfosModel;
-import build.dream.platform.models.goods.ObtainAllGoodsInfosModel;
-import build.dream.platform.models.goods.ObtainGoodsInfoModel;
-import build.dream.platform.models.goods.SaveGoodsModel;
-import build.dream.platform.utils.GoodsUtils;
+import build.dream.platform.models.goods.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
@@ -123,50 +119,61 @@ public class GoodsService {
         return ApiRest.builder().data(goodsInfo).message("获取商品信息成功！").successful(true).build();
     }
 
+    /**
+     * 保存商品信息
+     *
+     * @param saveGoodsModel
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveGoods(SaveGoodsModel saveGoodsModel) {
+        BigInteger id = saveGoodsModel.getId();
+        String name = saveGoodsModel.getName();
         BigInteger goodsTypeId = saveGoodsModel.getGoodsTypeId();
-        BigInteger goodsId = saveGoodsModel.getId();
+        int status = saveGoodsModel.getStatus();
+        String photoUrl = saveGoodsModel.getPhotoUrl();
+        int meteringMode = saveGoodsModel.getMeteringMode();
+        String business = saveGoodsModel.getBusiness();
+        List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
         BigInteger userId = saveGoodsModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
+        searchModel.addSearchCondition(GoodsType.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
         GoodsType goodsType = DatabaseHelper.find(GoodsType.class, searchModel);
         Validate.notNull(goodsType, "商品类型不存在！");
         if (goodsType.isSingle()) {
             SearchModel countSearchModel = new SearchModel(true);
-            countSearchModel.addSearchCondition("goods_type_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
-            if (goodsId != null) {
-                searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_NOT_EQUAL, goodsId);
+            countSearchModel.addSearchCondition(Goods.ColumnName.GOODS_TYPE_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
+            if (id != null) {
+                searchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_NOT_EQUAL, id);
             }
             long count = DatabaseHelper.count(Goods.class, searchModel);
             Validate.isTrue(count == 0, "商品类型【" + goodsType.getName() + "】下只能创建一个商品！");
         }
         Goods goods = null;
-        if (goodsId != null) {
-            SearchModel goodsSearchModel = new SearchModel(true);
-            goodsSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
-            goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
-            Validate.notNull(goods, "商品不存在！");
-            goods.setName(saveGoodsModel.getName());
-            goods.setGoodsTypeId(saveGoodsModel.getGoodsTypeId());
-            goods.setStatus(saveGoodsModel.getStatus());
-            goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
-            goods.setBusiness(saveGoodsModel.getBusiness());
+        if (id != null) {
+            goods = DatabaseHelper.find(Goods.class, id);
+            ValidateUtils.notNull(goods, "商品不存在！");
+
+            goods.setName(name);
+            goods.setGoodsTypeId(goodsTypeId);
+            goods.setStatus(status);
+            goods.setPhotoUrl(photoUrl);
+            goods.setMeteringMode(meteringMode);
+            goods.setBusiness(business);
             goods.setUpdatedUserId(userId);
             goods.setUpdatedRemark("修改商品信息！");
             DatabaseHelper.update(goods);
 
             List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
-            List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
             for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
                 if (goodsSpecificationModel.getId() != null) {
                     goodsSpecificationIds.add(goodsSpecificationModel.getId());
                 }
             }
             SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-            goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
-            goodsSpecificationSearchModel.addSearchCondition("goods_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+            goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
+            goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, id);
             List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
             Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
             for (GoodsSpecification goodsSpecification : goodsSpecifications) {
@@ -177,6 +184,7 @@ public class GoodsService {
                 if (goodsSpecificationModel.getId() != null) {
                     GoodsSpecification goodsSpecification = goodsSpecificationMap.get(goodsSpecificationModel.getId());
                     Validate.notNull(goodsSpecification, "商品规格不存在！");
+
                     goodsSpecification.setName(goodsSpecificationModel.getName());
                     goodsSpecification.setAllowTenantBuy(goodsSpecificationModel.isAllowTenantBuy());
                     goodsSpecification.setAllowAgentBuy(goodsSpecificationModel.isAllowAgentBuy());
@@ -187,28 +195,96 @@ public class GoodsService {
                     goodsSpecification.setUpdatedRemark("修改商品规格！");
                     DatabaseHelper.update(goodsSpecification);
                 } else {
-                    GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
+                    GoodsSpecification goodsSpecification = GoodsSpecification.builder()
+                            .name(goodsSpecificationModel.getName())
+                            .goodsId(id)
+                            .allowTenantBuy(goodsSpecificationModel.isAllowTenantBuy())
+                            .allowAgentBuy(goodsSpecificationModel.isAllowAgentBuy())
+                            .renewalTime(goodsSpecificationModel.getRenewalTime())
+                            .tenantPrice(goodsSpecificationModel.getTenantPrice())
+                            .agentPrice(goodsSpecificationModel.getAgentPrice())
+                            .createdUserId(userId)
+                            .updatedUserId(userId)
+                            .updatedRemark("新增商品规格信息！")
+                            .build();
                     DatabaseHelper.insert(goodsSpecification);
                 }
             }
         } else {
-            goods = new Goods();
-            goods.setName(saveGoodsModel.getName());
-            goods.setGoodsTypeId(saveGoodsModel.getGoodsTypeId());
-            goods.setStatus(saveGoodsModel.getStatus());
-            goods.setPhotoUrl(saveGoodsModel.getPhotoUrl());
-            goods.setBusiness(saveGoodsModel.getBusiness());
-            goods.setCreatedUserId(userId);
-            goods.setUpdatedUserId(userId);
-            goods.setUpdatedRemark("新增商品信息！");
+            goods = Goods.builder()
+                    .name(name)
+                    .goodsTypeId(goodsTypeId)
+                    .status(status)
+                    .photoUrl(photoUrl)
+                    .meteringMode(meteringMode)
+                    .business(business)
+                    .createdUserId(userId)
+                    .updatedUserId(userId)
+                    .updatedRemark("新增商品信息！")
+                    .build();
             DatabaseHelper.insert(goods);
 
-            List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
+            BigInteger goodsId = goods.getId();
             for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
-                GoodsSpecification goodsSpecification = GoodsUtils.buildGoodsSpecification(goodsSpecificationModel.getName(), goods.getId(), goodsSpecificationModel.isAllowTenantBuy(), goodsSpecificationModel.isAllowAgentBuy(), goodsSpecificationModel.getRenewalTime(), goodsSpecificationModel.getTenantPrice(), goodsSpecificationModel.getAgentPrice(), userId);
+                GoodsSpecification goodsSpecification = GoodsSpecification.builder()
+                        .name(goodsSpecificationModel.getName())
+                        .goodsId(goodsId)
+                        .allowTenantBuy(goodsSpecificationModel.isAllowTenantBuy())
+                        .allowAgentBuy(goodsSpecificationModel.isAllowAgentBuy())
+                        .renewalTime(goodsSpecificationModel.getRenewalTime())
+                        .tenantPrice(goodsSpecificationModel.getTenantPrice())
+                        .agentPrice(goodsSpecificationModel.getAgentPrice())
+                        .createdUserId(userId)
+                        .updatedUserId(userId)
+                        .updatedRemark("新增商品规格信息！")
+                        .build();
                 DatabaseHelper.insert(goodsSpecification);
             }
         }
         return ApiRest.builder().data(goods).message("保存商品信息成功！").successful(true).build();
+    }
+
+    /**
+     * 保存商品类型
+     *
+     * @param saveGoodsTypeModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveGoodsType(SaveGoodsTypeModel saveGoodsTypeModel) {
+        BigInteger id = saveGoodsTypeModel.getId();
+        String name = saveGoodsTypeModel.getName();
+        String description = saveGoodsTypeModel.getDescription();
+        boolean single = saveGoodsTypeModel.getSingle();
+        String renewSql = saveGoodsTypeModel.getRenewSql();
+        String disableSql = saveGoodsTypeModel.getDisableSql();
+        BigInteger userId = saveGoodsTypeModel.getUserId();
+
+        GoodsType goodsType = null;
+        if (id != null) {
+            goodsType = DatabaseHelper.find(GoodsType.class, id);
+            ValidateUtils.notNull(goodsType, "商品类型不存在！");
+
+            goodsType.setName(name);
+            goodsType.setDescription(StringUtils.isNotBlank(description) ? description : Constants.VARCHAR_DEFAULT_VALUE);
+            goodsType.setRenewSql(StringUtils.isNotBlank(renewSql) ? renewSql : Constants.VARCHAR_DEFAULT_VALUE);
+            goodsType.setDisableSql(StringUtils.isNotBlank(disableSql) ? disableSql : Constants.VARCHAR_DEFAULT_VALUE);
+            goodsType.setUpdatedUserId(userId);
+            goodsType.setUpdatedRemark("修改商品类型信息！");
+            DatabaseHelper.update(goodsType);
+        } else {
+            goodsType = GoodsType.builder()
+                    .name(name)
+                    .description(StringUtils.isNotBlank(description) ? description : Constants.VARCHAR_DEFAULT_VALUE)
+                    .single(single)
+                    .renewSql(StringUtils.isNotBlank(renewSql) ? renewSql : Constants.VARCHAR_DEFAULT_VALUE)
+                    .disableSql(StringUtils.isNotBlank(disableSql) ? disableSql : Constants.VARCHAR_DEFAULT_VALUE)
+                    .createdUserId(userId)
+                    .updatedUserId(userId)
+                    .updatedRemark("新增商品类型信息！")
+                    .build();
+            DatabaseHelper.insert(goodsType);
+        }
+        return ApiRest.builder().data(goodsType).message("保存商品类型信息成功").successful(true).build();
     }
 }
