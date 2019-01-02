@@ -5,11 +5,17 @@ import build.dream.common.models.newland.BarcodePosPayModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.NewLandUtils;
+import build.dream.platform.constants.Constants;
+import build.dream.platform.utils.WebSocketUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.socket.TextMessage;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/demo")
@@ -38,5 +44,21 @@ public class DemoController {
         } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    @RequestMapping(value = "/index")
+    public ModelAndView sendInfo() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("demo/index");
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/sendMessage")
+    @ResponseBody
+    public String sendMessage() throws IOException {
+        String sessionId = ApplicationHandler.getSessionId();
+        TextMessage textMessage = new TextMessage(UUID.randomUUID().toString());
+        WebSocketUtils.sendMessage(sessionId, textMessage);
+        return Constants.SUCCESS;
     }
 }
