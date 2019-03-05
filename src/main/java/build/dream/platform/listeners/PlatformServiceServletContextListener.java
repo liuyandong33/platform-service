@@ -42,11 +42,21 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         List<AlipayAccount> alipayAccounts = alipayService.findAllAlipayAccounts();
         Map<String, String> alipayAccountMap = new HashMap<String, String>();
         for (AlipayAccount alipayAccount : alipayAccounts) {
-            alipayAccountMap.put(alipayAccount.getTenantId() + "_" + alipayAccount.getBranchId(), GsonUtils.toJson(alipayAccount));
+            alipayAccountMap.put(alipayAccount.getAppId(), GsonUtils.toJson(alipayAccount));
         }
         CacheUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayAccountMap)) {
             CacheUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
+        }
+
+        List<AlipayAuthorizerInfo> alipayAuthorizerInfos = alipayService.findAllAlipayAuthorizerInfos();
+        Map<String, String> alipayAuthorizerInfoMap = new HashMap<String, String>();
+        for (AlipayAuthorizerInfo alipayAuthorizerInfo : alipayAuthorizerInfos) {
+            alipayAuthorizerInfoMap.put(alipayAuthorizerInfo.getTenantId() + "_" + alipayAuthorizerInfo.getBranchId(), GsonUtils.toJson(alipayAuthorizerInfo));
+        }
+        CacheUtils.delete(Constants.KEY_ALIPAY_AUTHORIZER_INFOS);
+        if (MapUtils.isNotEmpty(alipayAuthorizerInfoMap)) {
+            CacheUtils.hmset(Constants.KEY_ALIPAY_AUTHORIZER_INFOS, alipayAuthorizerInfoMap);
         }
 
         // 缓存微信支付账号

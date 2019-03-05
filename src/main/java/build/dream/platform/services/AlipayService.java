@@ -2,6 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AlipayAccount;
+import build.dream.common.saas.domains.AlipayAuthorizerInfo;
 import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.GsonUtils;
@@ -75,5 +76,12 @@ public class AlipayService {
         SearchModel searchModel = new SearchModel(true);
         List<AlipayAccount> alipayAccounts = DatabaseHelper.findAll(AlipayAccount.class, searchModel);
         return alipayAccounts;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlipayAuthorizerInfo> findAllAlipayAuthorizerInfos() {
+        SearchModel searchModel = new SearchModel(true);
+        List<AlipayAuthorizerInfo> alipayAuthorizerInfos = DatabaseHelper.findAll(AlipayAuthorizerInfo.class, searchModel);
+        return alipayAuthorizerInfos;
     }
 }
