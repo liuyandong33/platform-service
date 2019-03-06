@@ -2,7 +2,10 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.ComponentAccessToken;
-import build.dream.common.saas.domains.*;
+import build.dream.common.saas.domains.WeiXinAuthorizerInfo;
+import build.dream.common.saas.domains.WeiXinAuthorizerToken;
+import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
+import build.dream.common.saas.domains.WeiXinPayAccount;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.weixin.HandleAuthCallbackModel;
@@ -49,7 +52,7 @@ public class WeiXinService {
         searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.AUTHORIZER_TYPE, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.AUTHORIZER_TYPE_PUBLIC_ACCOUNT);
         WeiXinAuthorizerInfo weiXinAuthorizerInfo = DatabaseHelper.find(WeiXinAuthorizerInfo.class, searchModel);
-        return ApiRest.builder().data(weiXinAuthorizerInfo).className(WeiXinPublicAccount.class.getName()).message("查询微信公众号成功！").successful(true).build();
+        return ApiRest.builder().data(weiXinAuthorizerInfo).className(WeiXinAuthorizerInfo.class.getName()).message("查询微信公众号成功！").successful(true).build();
     }
 
     /**
