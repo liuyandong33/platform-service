@@ -6,10 +6,7 @@ import build.dream.common.saas.domains.AgentForm;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.agent.DeleteAgentModel;
-import build.dream.platform.models.agent.ListModel;
-import build.dream.platform.models.agent.ObtainAgentInfoModel;
-import build.dream.platform.models.agent.SaveAgentFormModel;
+import build.dream.platform.models.agent.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,6 +132,7 @@ public class AgentService {
                 .districtCode(districtCode)
                 .districtName(districtCode)
                 .address(address)
+                .verifyUserId(Constants.BIGINT_DEFAULT_VALUE)
                 .createdUserId(userId)
                 .updatedUserId(userId)
                 .updatedRemark("保存代理商申请单！")
@@ -142,5 +140,36 @@ public class AgentService {
         DatabaseHelper.insert(agentForm);
 
         return ApiRest.builder().data(agentForm).message("保存代理商申请单成功！").build();
+    }
+
+    /**
+     * 审核代理商申请单
+     *
+     * @param verifyAgentFormModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest verifyAgentForm(VerifyAgentFormModel verifyAgentFormModel) {
+        BigInteger agentFormId = verifyAgentFormModel.getAgentFormId();
+        BigInteger userId = verifyAgentFormModel.getUserId();
+        int status = verifyAgentFormModel.getStatus();
+
+        AgentForm agentForm = DatabaseHelper.find(AgentForm.class, agentFormId);
+        ValidateUtils.notNull(agentForm, "代理商申请单不存在！");
+        agentForm.setVerifyUserId(userId);
+        agentForm.setStatus(status);
+
+        if (status == 2) {
+
+        } else if (status == 3) {
+
+        }
+
+        agentForm.setUpdatedUserId(userId);
+        agentForm.setUpdatedRemark("审核代理商申请单！");
+
+        DatabaseHelper.update(agentForm);
+
+        return ApiRest.builder().message("审核后代理商申请单成功！").successful(true).build();
     }
 }
