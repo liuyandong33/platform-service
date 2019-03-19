@@ -14,7 +14,6 @@ import build.dream.platform.models.order.*;
 import build.dream.platform.utils.ActivationCodeUtils;
 import build.dream.platform.utils.GoodsUtils;
 import build.dream.platform.utils.SequenceUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -139,13 +139,11 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ApiRest obtainOrderInfo(ObtainOrderInfoModel obtainOrderInfoModel) {
         BigInteger orderInfoId = obtainOrderInfoModel.getOrderInfoId();
-        SearchModel orderInfoSearchModel = new SearchModel(true);
-        orderInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
-        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoSearchModel);
+        OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoId);
         ValidateUtils.notNull(orderInfo, "订单不存在！");
 
         SearchModel orderDetailSearchModel = new SearchModel(true);
-        orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
+        orderDetailSearchModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
         Map<String, Object> data = new HashMap<String, Object>();
@@ -168,13 +166,13 @@ public class OrderService {
         BigInteger agentId = obtainAllOrderInfosModel.getAgentId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
+        searchConditions.add(new SearchCondition(OrderInfo.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
         if (tenantId != null) {
-            searchConditions.add(new SearchCondition("tenant_id", Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, tenantId));
+            searchConditions.add(new SearchCondition(OrderInfo.ColumnName.TENANT_ID, Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, tenantId));
         }
 
         if (agentId != null) {
-            searchConditions.add(new SearchCondition("agent_id", Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, agentId));
+            searchConditions.add(new SearchCondition(OrderInfo.ColumnName.AGENT_ID, Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, agentId));
         }
         SearchModel searchModel = new SearchModel();
         searchModel.setSearchConditions(searchConditions);
@@ -188,31 +186,21 @@ public class OrderService {
             pagedSearchModel.setRows(rows);
             List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, pagedSearchModel);
 
-            if (CollectionUtils.isNotEmpty(orderInfos)) {
-                List<BigInteger> orderIds = new ArrayList<BigInteger>();
-                for (OrderInfo orderInfo : orderInfos) {
-                    orderIds.add(orderInfo.getId());
-                }
+            List<BigInteger> orderIds = new ArrayList<BigInteger>();
+            for (OrderInfo orderInfo : orderInfos) {
+                orderIds.add(orderInfo.getId());
+            }
 
-                SearchModel orderDetailSearchModel = new SearchModel(true);
-                orderDetailSearchModel.addSearchCondition("order_info_id", Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
-                List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
-                Map<BigInteger, List<OrderDetail>> orderDetailsMap = new HashMap<BigInteger, List<OrderDetail>>();
-                for (OrderDetail orderDetail : orderDetails) {
-                    List<OrderDetail> orderDetailList = orderDetailsMap.get(orderDetail.getOrderInfoId());
-                    if (orderDetailList == null) {
-                        orderDetailList = new ArrayList<OrderDetail>();
-                        orderDetailsMap.put(orderDetail.getOrderInfoId(), orderDetailList);
-                    }
-                    orderDetailList.add(orderDetail);
-                }
+            SearchModel orderDetailSearchModel = new SearchModel(true);
+            orderDetailSearchModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
+            List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
+            Map<BigInteger, List<OrderDetail>> orderDetailsMap = orderDetails.stream().collect(Collectors.groupingBy(OrderDetail::getOrderInfoId));
 
-                for (OrderInfo orderInfo : orderInfos) {
-                    Map<String, Object> order = new HashMap<String, Object>();
-                    order.put("orderInfo", orderInfo);
-                    order.put("orderDetails", orderDetails);
-                    orders.add(order);
-                }
+            for (OrderInfo orderInfo : orderInfos) {
+                Map<String, Object> order = new HashMap<String, Object>();
+                order.put("orderInfo", orderInfo);
+                order.put("orderDetails", orderDetailsMap.get(orderInfo.getId()));
+                orders.add(order);
             }
         }
 
