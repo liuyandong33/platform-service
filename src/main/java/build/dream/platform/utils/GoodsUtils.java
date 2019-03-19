@@ -2,6 +2,7 @@ package build.dream.platform.utils;
 
 import build.dream.common.saas.domains.Goods;
 import build.dream.common.saas.domains.GoodsSpecification;
+import build.dream.common.saas.domains.GoodsType;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.ParseException;
@@ -31,6 +32,17 @@ public class GoodsUtils {
         goodsSpecificationInfo.put(GoodsSpecification.FieldName.TENANT_PRICE, goodsSpecification.getTenantPrice());
         goodsSpecificationInfo.put(GoodsSpecification.FieldName.AGENT_PRICE, goodsSpecification.getAgentPrice());
         return goodsSpecificationInfo;
+    }
+
+    public static Map<String, Object> buildGoodsTypeInfo(GoodsType goodsType) {
+        Map<String, Object> goodsTypeInfo = new HashMap<String, Object>();
+        goodsTypeInfo.put(GoodsType.FieldName.ID, goodsType.getId());
+        goodsTypeInfo.put(GoodsType.FieldName.NAME, goodsType.getName());
+        goodsTypeInfo.put(GoodsType.FieldName.DESCRIPTION, goodsType.getDescription());
+        goodsTypeInfo.put(GoodsType.FieldName.SINGLE, goodsType.isSingle());
+        goodsTypeInfo.put(GoodsType.FieldName.RENEW_SQL, goodsType.getRenewSql());
+        goodsTypeInfo.put(GoodsType.FieldName.DISABLE_SQL, goodsType.getDisableSql());
+        return goodsTypeInfo;
     }
 
     public static List<Map<String, Object>> buildGoodsSpecificationInfos(List<GoodsSpecification> goodsSpecifications) {

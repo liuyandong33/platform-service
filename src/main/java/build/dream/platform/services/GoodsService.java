@@ -97,16 +97,17 @@ public class GoodsService {
     public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
         BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
 
-        SearchModel goodsSearchModel = new SearchModel(true);
-        goodsSearchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
-        Goods goods = DatabaseHelper.find(Goods.class, goodsSearchModel);
+        Goods goods = DatabaseHelper.find(Goods.class, goodsId);
         Validate.notNull(goods, "商品不存在！");
 
-        SearchModel goodsSpecificationSearchModel = new SearchModel(true);
-        goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
-        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
+        GoodsType goodsType = DatabaseHelper.find(GoodsType.class, goodsId);
+
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
+        List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, searchModel);
 
         Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
+        goodsInfo.put("goodsType", GoodsUtils.buildGoodsTypeInfo(goodsType));
         goodsInfo.put("specifications", GoodsUtils.buildGoodsSpecificationInfos(goodsSpecifications));
 
         return ApiRest.builder().data(goodsInfo).message("获取商品信息成功！").successful(true).build();
