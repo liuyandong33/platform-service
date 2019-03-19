@@ -4,6 +4,7 @@ import build.dream.common.annotations.ApiRestAction;
 import build.dream.platform.models.agent.DeleteAgentModel;
 import build.dream.platform.models.agent.ListModel;
 import build.dream.platform.models.agent.ObtainAgentInfoModel;
+import build.dream.platform.models.agent.SaveAgentFormModel;
 import build.dream.platform.services.AgentService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -47,6 +48,18 @@ public class AgentController {
     @ResponseBody
     @ApiRestAction(modelClass = DeleteAgentModel.class, serviceClass = AgentService.class, serviceMethodName = "deleteAgent", error = "删除代理商信息失败")
     public String deleteAgent() {
+        return null;
+    }
+
+    /**
+     * 保存代理商申请单
+     *
+     * @return
+     */
+    @RequestMapping(value = "/saveAgentForm", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SaveAgentFormModel.class, serviceClass = AgentService.class, serviceMethodName = "saveAgentForm", error = "保存代理商申请单失败")
+    public String saveAgentForm() {
         return null;
     }
 }

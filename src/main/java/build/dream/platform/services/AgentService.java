@@ -2,12 +2,14 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Agent;
+import build.dream.common.saas.domains.AgentForm;
 import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.DeleteAgentModel;
 import build.dream.platform.models.agent.ListModel;
 import build.dream.platform.models.agent.ObtainAgentInfoModel;
+import build.dream.platform.models.agent.SaveAgentFormModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,5 +108,39 @@ public class AgentService {
         DatabaseHelper.update(systemUser);
 
         return ApiRest.builder().message("删除代理商信息成功！").successful(true).build();
+    }
+
+    /**
+     * 保存代理商申请单
+     *
+     * @param saveAgentFormModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest saveAgentForm(SaveAgentFormModel saveAgentFormModel) {
+        String name = saveAgentFormModel.getName();
+        String provinceCode = saveAgentFormModel.getProvinceCode();
+        String cityCode = saveAgentFormModel.getCityCode();
+        String districtCode = saveAgentFormModel.getDistrictCode();
+        String address = saveAgentFormModel.getAddress();
+
+        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        AgentForm agentForm = AgentForm.builder()
+                .name(name)
+                .status(1)
+                .provinceCode(provinceCode)
+                .provinceName("")
+                .cityCode(cityCode)
+                .cityName("")
+                .districtCode(districtCode)
+                .districtName(districtCode)
+                .address(address)
+                .createdUserId(userId)
+                .updatedUserId(userId)
+                .updatedRemark("保存代理商申请单！")
+                .build();
+        DatabaseHelper.insert(agentForm);
+
+        return ApiRest.builder().data(agentForm).message("保存代理商申请单成功！").build();
     }
 }
