@@ -154,7 +154,7 @@ public class WeiXinService {
             DatabaseHelper.update(weiXinPayAccount);
         }
 
-        CacheUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
+        RedisUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
         return ApiRest.builder().message("保存微信支付账号成功！").successful(true).build();
     }
 

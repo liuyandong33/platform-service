@@ -2,8 +2,8 @@ package build.dream.platform.listeners;
 
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.CacheUtils;
 import build.dream.common.utils.GsonUtils;
+import build.dream.common.utils.RedisUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.mappers.CommonMapper;
@@ -44,9 +44,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         for (AlipayAccount alipayAccount : alipayAccounts) {
             alipayAccountMap.put(alipayAccount.getAppId(), GsonUtils.toJson(alipayAccount));
         }
-        CacheUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
+        RedisUtils.delete(Constants.KEY_ALIPAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayAccountMap)) {
-            CacheUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
+            RedisUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
         }
 
         List<AlipayAuthorizerInfo> alipayAuthorizerInfos = alipayService.findAllAlipayAuthorizerInfos();
@@ -54,9 +54,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         for (AlipayAuthorizerInfo alipayAuthorizerInfo : alipayAuthorizerInfos) {
             alipayAuthorizerInfoMap.put(alipayAuthorizerInfo.getTenantId() + "_" + alipayAuthorizerInfo.getBranchId(), GsonUtils.toJson(alipayAuthorizerInfo));
         }
-        CacheUtils.delete(Constants.KEY_ALIPAY_AUTHORIZER_INFOS);
+        RedisUtils.delete(Constants.KEY_ALIPAY_AUTHORIZER_INFOS);
         if (MapUtils.isNotEmpty(alipayAuthorizerInfoMap)) {
-            CacheUtils.hmset(Constants.KEY_ALIPAY_AUTHORIZER_INFOS, alipayAuthorizerInfoMap);
+            RedisUtils.hmset(Constants.KEY_ALIPAY_AUTHORIZER_INFOS, alipayAuthorizerInfoMap);
         }
 
         // 缓存微信支付账号
@@ -65,9 +65,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
             weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), GsonUtils.toJson(weiXinPayAccount));
         }
-        CacheUtils.delete(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
+        RedisUtils.delete(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
-            CacheUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
+            RedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
         }
 
         // 缓存商户信息
@@ -78,9 +78,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             tenantInfos.put(tenant.getId().toString(), tenantInfo);
             tenantInfos.put(tenant.getCode(), tenantInfo);
         }
-        CacheUtils.delete(Constants.KEY_TENANT_INFOS);
+        RedisUtils.delete(Constants.KEY_TENANT_INFOS);
         if (MapUtils.isNotEmpty(tenantInfos)) {
-            CacheUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+            RedisUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
         }
 
         // 缓存微信授权token
@@ -90,9 +90,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), GsonUtils.toJson(weiXinAuthorizerToken));
         }
 
-        CacheUtils.delete(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        RedisUtils.delete(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
         if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
-            CacheUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
+            RedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
         }
 
         // 缓存新大陆账号
@@ -101,9 +101,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         for (NewLandAccount newLandAccount : newLandAccounts) {
             newLandAccountMap.put(newLandAccount.getTenantId() + "_" + newLandAccount.getBranchId(), GsonUtils.toJson(newLandAccount));
         }
-        CacheUtils.delete(Constants.KEY_NEW_LAND_ACCOUNTS);
+        RedisUtils.delete(Constants.KEY_NEW_LAND_ACCOUNTS);
         if (MapUtils.isNotEmpty(newLandAccountMap)) {
-            CacheUtils.hmset(Constants.KEY_NEW_LAND_ACCOUNTS, newLandAccountMap);
+            RedisUtils.hmset(Constants.KEY_NEW_LAND_ACCOUNTS, newLandAccountMap);
         }
 
         // 启动所有定时任务
