@@ -1,6 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
+import build.dream.platform.models.agent.DeleteAgentModel;
 import build.dream.platform.models.agent.ListModel;
 import build.dream.platform.models.agent.ObtainAgentInfoModel;
 import build.dream.platform.services.AgentService;
@@ -34,6 +35,18 @@ public class AgentController {
     @ResponseBody
     @ApiRestAction(modelClass = ListModel.class, serviceClass = AgentService.class, serviceMethodName = "list", error = "查询代理商信息失败")
     public String list() {
+        return null;
+    }
+
+    /**
+     * 删除代理商信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/deleteAgent", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = DeleteAgentModel.class, serviceClass = AgentService.class, serviceMethodName = "deleteAgent", error = "删除代理商信息失败")
+    public String deleteAgent() {
         return null;
     }
 }

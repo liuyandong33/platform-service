@@ -2,11 +2,10 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.Agent;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.PagedSearchModel;
-import build.dream.common.utils.SearchCondition;
-import build.dream.common.utils.SearchModel;
+import build.dream.common.saas.domains.SystemUser;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.models.agent.DeleteAgentModel;
 import build.dream.platform.models.agent.ListModel;
 import build.dream.platform.models.agent.ObtainAgentInfoModel;
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +60,7 @@ public class AgentService {
         SearchModel searchModel = new SearchModel();
         searchModel.setSearchConditions(searchConditions);
         long count = DatabaseHelper.count(Agent.class, searchModel);
-        List<Agent> agents = new ArrayList<Agent>();
+        List<Agent> agents = null;
         if (count > 0) {
             PagedSearchModel pagedSearchModel = new PagedSearchModel();
             pagedSearchModel.setSearchConditions(searchConditions);
@@ -69,11 +68,43 @@ public class AgentService {
             pagedSearchModel.setRows(rows);
 
             agents = DatabaseHelper.findAllPaged(Agent.class, pagedSearchModel);
+        } else {
+            agents = new ArrayList<Agent>();
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("total", count);
         data.put("rows", agents);
         return ApiRest.builder().data(data).message("查询代理商信息成功！").successful(true).build();
+    }
+
+    /**
+     * 删除代理商
+     *
+     * @param deleteAgentModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest deleteAgent(DeleteAgentModel deleteAgentModel) {
+        BigInteger agentId = deleteAgentModel.getAgentId();
+        BigInteger userId = deleteAgentModel.getUserId();
+        Agent agent = DatabaseHelper.find(Agent.class, agentId);
+        ValidateUtils.notNull(agent, "代理商不存在！");
+
+        agent.setDeleted(true);
+        agent.setUpdatedUserId(userId);
+        agent.setUpdatedRemark("删除代理商信息！");
+        DatabaseHelper.update(agent);
+
+        SearchModel searchModel = new SearchModel(true);
+        searchModel.addSearchCondition(SystemUser.ColumnName.AGENT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentId);
+        SystemUser systemUser = DatabaseHelper.find(SystemUser.class, searchModel);
+
+        systemUser.setDeleted(true);
+        systemUser.setUpdatedUserId(userId);
+        systemUser.setUpdatedRemark("删除用户信息！");
+        DatabaseHelper.update(systemUser);
+
+        return ApiRest.builder().message("删除代理商信息成功！").successful(true).build();
     }
 }
