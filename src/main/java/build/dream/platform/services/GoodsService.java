@@ -7,6 +7,7 @@ import build.dream.common.saas.domains.GoodsType;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.goods.*;
+import build.dream.platform.utils.GoodsUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GoodsService {
@@ -34,21 +36,12 @@ public class GoodsService {
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
 
-        Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = new HashMap<BigInteger, List<GoodsSpecification>>();
-        for (GoodsSpecification goodsSpecification : goodsSpecifications) {
-            BigInteger goodsId = goodsSpecification.getGoodsId();
-            List<GoodsSpecification> goodsSpecificationList = goodsSpecificationsMap.get(goodsId);
-            if (goodsSpecificationList == null) {
-                goodsSpecificationList = new ArrayList<GoodsSpecification>();
-                goodsSpecificationsMap.put(goodsId, goodsSpecificationList);
-            }
-            goodsSpecificationList.add(goodsSpecification);
-        }
+        Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = goodsSpecifications.stream().collect(Collectors.groupingBy(GoodsSpecification::getGoodsId));
 
         List<Map<String, Object>> goodsInfos = new ArrayList<Map<String, Object>>();
         for (Goods goods : goodses) {
-            Map<String, Object> goodsInfo = ApplicationHandler.toMap(goods);
-            goodsInfo.put("goodsSpecifications", goodsSpecificationsMap.get(goods.getId()));
+            Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
+            goodsInfo.put("specifications", GoodsUtils.buildGoodsSpecificationInfos(goodsSpecificationsMap.get(goods.getId())));
             goodsInfos.add(goodsInfo);
         }
         return ApiRest.builder().data(goodsInfos).message("获取商品信息成功！").successful(true).build();
@@ -113,8 +106,8 @@ public class GoodsService {
         goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsId);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
 
-        Map<String, Object> goodsInfo = ApplicationHandler.toMap(goods);
-        goodsInfo.put("goodsSpecifications", goodsSpecifications);
+        Map<String, Object> goodsInfo = GoodsUtils.buildGoodsInfo(goods);
+        goodsInfo.put("specifications", GoodsUtils.buildGoodsSpecificationInfos(goodsSpecifications));
 
         return ApiRest.builder().data(goodsInfo).message("获取商品信息成功！").successful(true).build();
     }
