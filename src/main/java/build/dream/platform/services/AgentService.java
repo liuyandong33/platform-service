@@ -160,7 +160,37 @@ public class AgentService {
         agentForm.setStatus(status);
 
         if (status == 2) {
+            String code = "";
+            String name = agentForm.getName();
+            Agent agent = Agent.builder()
+                    .code(code)
+                    .name(name)
+                    .createdUserId(userId)
+                    .updatedUserId(userId)
+                    .updatedRemark("新增代理商信息！")
+                    .build();
+            DatabaseHelper.insert(agent);
 
+            SystemUser systemUser = SystemUser.builder()
+                    .name(name)
+                    .mobile("")
+                    .email("")
+                    .loginName(code)
+                    .userType(Constants.USER_TYPE_AGENT)
+                    .password("")
+                    .weiXinPublicPlatformOpenId(Constants.VARCHAR_DEFAULT_VALUE)
+                    .weiXinOpenPlatformOpenId(Constants.VARCHAR_DEFAULT_VALUE)
+                    .tenantId(Constants.BIGINT_DEFAULT_VALUE)
+                    .agentId(agent.getId())
+                    .accountNonExpired(true)
+                    .accountNonLocked(true)
+                    .credentialsNonExpired(true)
+                    .enabled(true)
+                    .createdUserId(userId)
+                    .updatedUserId(userId)
+                    .updatedRemark("新增用户信息！")
+                    .build();
+            DatabaseHelper.insert(systemUser);
         } else if (status == 3) {
 
         }
