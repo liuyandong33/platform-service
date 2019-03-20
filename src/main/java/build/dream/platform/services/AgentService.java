@@ -126,11 +126,11 @@ public class AgentService {
                 .name(name)
                 .status(1)
                 .provinceCode(provinceCode)
-                .provinceName("")
+                .provinceName(DistrictUtils.obtainName(provinceCode))
                 .cityCode(cityCode)
-                .cityName("")
+                .cityName(DistrictUtils.obtainName(cityCode))
                 .districtCode(districtCode)
-                .districtName(districtCode)
+                .districtName(DistrictUtils.obtainName(districtCode))
                 .address(address)
                 .verifyUserId(Constants.BIGINT_DEFAULT_VALUE)
                 .createdUserId(userId)
@@ -153,6 +153,7 @@ public class AgentService {
         BigInteger agentFormId = verifyAgentFormModel.getAgentFormId();
         BigInteger userId = verifyAgentFormModel.getUserId();
         int status = verifyAgentFormModel.getStatus();
+        String rejectReason = verifyAgentFormModel.getRejectReason();
 
         AgentForm agentForm = DatabaseHelper.find(AgentForm.class, agentFormId);
         ValidateUtils.notNull(agentForm, "代理商申请单不存在！");
@@ -192,7 +193,7 @@ public class AgentService {
                     .build();
             DatabaseHelper.insert(systemUser);
         } else if (status == 3) {
-
+            agentForm.setRejectReason(rejectReason);
         }
 
         agentForm.setUpdatedUserId(userId);
