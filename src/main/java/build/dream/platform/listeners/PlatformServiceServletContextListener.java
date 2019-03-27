@@ -75,8 +75,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         Map<String, String> tenantInfos = new HashMap<String, String>();
         for (Tenant tenant : tenants) {
             String tenantInfo = GsonUtils.toJson(tenant);
-            tenantInfos.put(tenant.getId().toString(), tenantInfo);
-            tenantInfos.put(tenant.getCode(), tenantInfo);
+            tenantInfos.put("_id_" + tenant.getId(), tenantInfo);
+            tenantInfos.put("_code_" + tenant.getCode(), tenantInfo);
         }
         RedisUtils.delete(Constants.KEY_TENANT_INFOS);
         if (MapUtils.isNotEmpty(tenantInfos)) {
