@@ -176,6 +176,10 @@ public class TenantService {
         tenant.setUpdatedUserId(userId);
         DatabaseHelper.update(tenant);
 
+        String tenantInfo = GsonUtils.toJson(tenant);
+        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + id, tenantInfo);
+        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenant.getCode(), tenantInfo);
+
         return ApiRest.builder().message("修改商户信息成功！").successful(true).build();
     }
 
