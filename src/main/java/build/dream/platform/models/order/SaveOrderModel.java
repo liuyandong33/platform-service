@@ -1,6 +1,6 @@
 package build.dream.platform.models.order;
 
-import build.dream.common.annotations.JsonSchema;
+import build.dream.common.constraints.VerifyJsonSchema;
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.platform.constants.Constants;
@@ -22,7 +22,7 @@ public class SaveOrderModel extends BasicModel {
     private BigInteger agentId;
 
     @NotEmpty
-    @JsonSchema(value = Constants.GOODS_INFOS_SCHEMA_FILE_PATH)
+    @VerifyJsonSchema(value = Constants.GOODS_INFOS_SCHEMA_FILE_PATH)
     private List<GoodsInfo> goodsInfos;
 
     public Integer getOrderType() {

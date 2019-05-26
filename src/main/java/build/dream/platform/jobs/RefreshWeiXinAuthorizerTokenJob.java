@@ -44,9 +44,9 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
             }
         }
 
-        RedisUtils.delete(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        CommonRedisUtils.del(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
         if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
-            RedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
+            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
         }
     }
 

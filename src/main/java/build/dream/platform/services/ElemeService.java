@@ -48,13 +48,14 @@ public class ElemeService {
             ValidateUtils.isTrue(false, tokenJsonObject.getString("error_description"));
         }
 
-        UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName(ElemeToken.TABLE_NAME);
-        updateModel.addContentValue(ElemeToken.ColumnName.DELETED_TIME, new Date());
-        updateModel.addContentValue(ElemeToken.ColumnName.DELETED, 1);
-        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_USER_ID, userId);
-        updateModel.addContentValue(ElemeToken.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！");
-        updateModel.addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+        UpdateModel updateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(ElemeToken.ColumnName.DELETED_TIME, new Date(), 1)
+                .addContentValue(ElemeToken.ColumnName.DELETED, 1, 1)
+                .addContentValue(ElemeToken.ColumnName.UPDATED_USER_ID, userId, 1)
+                .addContentValue(ElemeToken.ColumnName.UPDATED_REMARK, "商户重新授权，删除本条记录！", 1)
+                .addSearchCondition(ElemeToken.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId)
+                .build();
 
         Date fetchTime = new Date();
         ElemeToken elemeToken = new ElemeToken();
@@ -76,11 +77,11 @@ public class ElemeService {
             tokenField = Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId;
             elemeToken.setBranchId(branchId);
         }
-        DatabaseHelper.universalUpdate(updateModel);
+        DatabaseHelper.universalUpdate(updateModel, ElemeToken.TABLE_NAME);
         DatabaseHelper.insert(elemeToken);
 
         tokenJsonObject.put("fetch_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fetchTime));
-        RedisUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
+        CommonRedisUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
 
         return ApiRest.builder().message("处理商户授权成功！").successful(true).build();
     }
@@ -99,13 +100,14 @@ public class ElemeService {
         BigInteger shopId = saveElemeBranchMappingModel.getShopId();
         String updatedRemark = "门店(" + branchId + ")绑定饿了么(" + shopId + ")，清除绑定关系！";
 
-        UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName(ElemeBranchMapping.TABLE_NAME);
-        updateModel.addContentValue(ElemeBranchMapping.ColumnName.DELETED, 1);
-        updateModel.addContentValue(ElemeBranchMapping.ColumnName.UPDATED_USER_ID, userId);
-        updateModel.addContentValue(ElemeBranchMapping.ColumnName.UPDATED_REMARK, updatedRemark);
-        updateModel.addSearchCondition(ElemeBranchMapping.ColumnName.SHOP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, shopId);
-        DatabaseHelper.universalUpdate(updateModel);
+        UpdateModel updateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(ElemeBranchMapping.ColumnName.DELETED, 1, 1)
+                .addContentValue(ElemeBranchMapping.ColumnName.UPDATED_USER_ID, userId, 1)
+                .addContentValue(ElemeBranchMapping.ColumnName.UPDATED_REMARK, updatedRemark, 1)
+                .addSearchCondition(ElemeBranchMapping.ColumnName.SHOP_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, shopId)
+                .build();
+        DatabaseHelper.universalUpdate(updateModel, ElemeBranchMapping.TABLE_NAME);
 
         ElemeBranchMapping elemeBranchMapping = new ElemeBranchMapping();
         elemeBranchMapping.setTenantId(tenantId);
@@ -153,9 +155,9 @@ public class ElemeService {
             DatabaseHelper.update(elemeToken);
 
             if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
-                RedisUtils.hdel(Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId);
+                CommonRedisUtils.hdel(Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId);
             } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
-                RedisUtils.hdel(build.dream.common.constants.Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId);
+                CommonRedisUtils.hdel(build.dream.common.constants.Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId);
             }
         }
 

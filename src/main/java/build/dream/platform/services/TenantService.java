@@ -177,8 +177,8 @@ public class TenantService {
         DatabaseHelper.update(tenant);
 
         String tenantInfo = GsonUtils.toJson(tenant);
-        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + id, tenantInfo);
-        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenant.getCode(), tenantInfo);
+        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + id, tenantInfo);
+        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenant.getCode(), tenantInfo);
 
         return ApiRest.builder().message("修改商户信息成功！").successful(true).build();
     }
@@ -220,15 +220,12 @@ public class TenantService {
         int changeCount = updateBranchCountModel.getChangeCount();
         int type = updateBranchCountModel.getType();
 
-        UpdateModel updateModel = new UpdateModel();
-        updateModel.setTableName(Tenant.TABLE_NAME);
-        updateModel.addContentValue(Tenant.ColumnName.DELETED, 1);
-        updateModel.addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.BIG_INTEGER_ONE);
-
-        DatabaseHelper.universalUpdate(updateModel);
-
-        int a = 1 / 0;
-
+        UpdateModel updateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(Tenant.ColumnName.DELETED, 1, 1)
+                .addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.BIG_INTEGER_ONE)
+                .build();
+        DatabaseHelper.universalUpdate(updateModel, Tenant.TABLE_NAME);
         return ApiRest.builder().message("更新门店数量成功！").successful(true).build();
     }
 }

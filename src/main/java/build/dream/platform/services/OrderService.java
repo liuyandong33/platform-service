@@ -221,21 +221,23 @@ public class OrderService {
         List<BigInteger> orderInfoIds = batchDeleteOrdersModel.getOrderInfoIds();
         BigInteger userId = batchDeleteOrdersModel.getUserId();
 
-        UpdateModel orderInfoUpdateModel = new UpdateModel(true);
-        orderInfoUpdateModel.setTableName(OrderInfo.TABLE_NAME);
-        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.DELETED, 1);
-        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_USER_ID, userId);
-        orderInfoUpdateModel.addContentValue(OrderInfo.ColumnName.UPDATED_REMARK, "删除订单信息！");
-        orderInfoUpdateModel.addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
-        DatabaseHelper.universalUpdate(orderInfoUpdateModel);
+        UpdateModel orderInfoUpdateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(OrderInfo.ColumnName.DELETED, 1, 1)
+                .addContentValue(OrderInfo.ColumnName.UPDATED_USER_ID, userId, 1)
+                .addContentValue(OrderInfo.ColumnName.UPDATED_REMARK, "删除订单信息！", 1)
+                .addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds)
+                .build();
+        DatabaseHelper.universalUpdate(orderInfoUpdateModel, OrderInfo.TABLE_NAME);
 
-        UpdateModel orderDetailUpdateModel = new UpdateModel(true);
-        orderDetailUpdateModel.setTableName(OrderDetail.TABLE_NAME);
-        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.DELETED, 1);
-        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
-        orderDetailUpdateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");
-        orderDetailUpdateModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds);
-        DatabaseHelper.universalUpdate(orderDetailUpdateModel);
+        UpdateModel orderDetailUpdateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(OrderDetail.ColumnName.DELETED, 1, 1)
+                .addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId, 1)
+                .addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！", 1)
+                .addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_IN, orderInfoIds)
+                .build();
+        DatabaseHelper.universalUpdate(orderDetailUpdateModel, OrderDetail.TABLE_NAME);
         return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
     }
 
@@ -259,13 +261,14 @@ public class OrderService {
         orderInfo.setUpdatedRemark("删除订单信息！");
         DatabaseHelper.update(orderInfo);
 
-        UpdateModel updateModel = new UpdateModel(true);
-        updateModel.setTableName(OrderDetail.TABLE_NAME);
-        updateModel.addContentValue(OrderDetail.ColumnName.ID, 1);
-        updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId);
-        updateModel.addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！");
-        updateModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
-        DatabaseHelper.universalUpdate(updateModel);
+        UpdateModel updateModel = UpdateModel.builder()
+                .autoSetDeletedFalse()
+                .addContentValue(OrderDetail.ColumnName.ID, 1, 1)
+                .addContentValue(OrderDetail.ColumnName.UPDATED_USER_ID, userId, 1)
+                .addContentValue(OrderDetail.ColumnName.UPDATED_REMARK, "删除订单详情信息！", 1)
+                .addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId)
+                .build();
+        DatabaseHelper.universalUpdate(updateModel, OrderDetail.TABLE_NAME);
 
         return ApiRest.builder().message("删除订单信息成功！").successful(true).build();
     }

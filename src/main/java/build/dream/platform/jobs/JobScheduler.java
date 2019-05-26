@@ -39,7 +39,7 @@ public class JobScheduler implements Serializable {
         String disableBranchGoodsJobCronExpression = ConfigurationUtils.getConfiguration(Constants.DISABLE_BRANCH_GOODS_JOB_CRON_EXPRESSION);
         if (StringUtils.isNotBlank(disableBranchGoodsJobCronExpression)) {
             stopJob(jobKey, triggerKey);
-            JobUtils.scheduleCronJob(DisableBranchGoodsJob.class, jobKey, triggerKey, disableBranchGoodsJobCronExpression, null);
+            JobUtils.scheduleCronJob(null);
         } else {
             stopJob(jobKey, triggerKey);
         }
@@ -51,7 +51,7 @@ public class JobScheduler implements Serializable {
         String refreshWeiXinAuthorizerTokenJobCronExpression = ConfigurationUtils.getConfiguration(Constants.REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION);
         if (StringUtils.isNotBlank(refreshWeiXinAuthorizerTokenJobCronExpression)) {
             stopJob(jobKey, triggerKey);
-            JobUtils.scheduleCronJob(RefreshWeiXinAuthorizerTokenJob.class, jobKey, triggerKey, refreshWeiXinAuthorizerTokenJobCronExpression, null);
+            JobUtils.scheduleCronJob(null);
         } else {
             stopJob(jobKey, triggerKey);
         }

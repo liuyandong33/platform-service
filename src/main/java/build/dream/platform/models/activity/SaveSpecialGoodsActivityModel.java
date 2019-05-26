@@ -1,6 +1,6 @@
 package build.dream.platform.models.activity;
 
-import build.dream.common.annotations.JsonSchema;
+import build.dream.common.constraints.VerifyJsonSchema;
 import build.dream.common.models.BasicModel;
 import build.dream.platform.constants.Constants;
 import org.hibernate.validator.constraints.Length;
@@ -26,7 +26,7 @@ public class SaveSpecialGoodsActivityModel extends BasicModel {
     @NotNull
     private BigInteger userId;
 
-    @JsonSchema(value = Constants.SPECIAL_GOODS_ACTIVITY_INFOS_SCHEMA_FILE_PATH)
+    @VerifyJsonSchema(value = Constants.SPECIAL_GOODS_ACTIVITY_INFOS_SCHEMA_FILE_PATH)
     private List<SpecialGoodsActivityInfo> specialGoodsActivityInfos;
 
     public String getName() {

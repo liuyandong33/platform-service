@@ -65,6 +65,7 @@ dependencies {
     compile("org.apache.poi:poi-ooxml:3.17")
     compile("com.belerweb:pinyin4j:2.5.1")
     compile("org.aspectj:aspectjweaver:1.9.2")
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
 }
 
 publishing {

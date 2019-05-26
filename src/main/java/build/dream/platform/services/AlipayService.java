@@ -3,7 +3,10 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.saas.domains.AlipayAccount;
 import build.dream.common.saas.domains.AlipayAuthorizerInfo;
-import build.dream.common.utils.*;
+import build.dream.common.utils.CommonRedisUtils;
+import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.GsonUtils;
+import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.alipay.SaveAlipayAccountModel;
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +66,7 @@ public class AlipayService {
             DatabaseHelper.update(alipayAccount);
         }
 
-        RedisUtils.hset(Constants.KEY_ALIPAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(alipayAccount));
+        CommonRedisUtils.hset(Constants.KEY_ALIPAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(alipayAccount));
 
         return ApiRest.builder().message("保存支付宝账号成功！").successful(true).build();
     }

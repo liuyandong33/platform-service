@@ -141,8 +141,8 @@ public class RegisterService {
         DatabaseHelper.insert(tenantGoods);
 
         String tenantInfo = GsonUtils.toJson(tenant);
-        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + tenant.getId(), tenantInfo);
-        RedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenant.getCode(), tenantInfo);
+        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + tenant.getId(), tenantInfo);
+        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenant.getCode(), tenantInfo);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);

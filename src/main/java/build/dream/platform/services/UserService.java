@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.constants.ErrorConstants;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
@@ -44,7 +45,7 @@ public class UserService {
         BigInteger userId = obtainUserInfoModel.getUserId();
 
         SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userId);
-        ValidateUtils.notNull(systemUser, "用户不存在！", Constants.ERROR_CODE_HANDLING_ERROR);
+        ValidateUtils.notNull(systemUser, "用户不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
 
         int userType = systemUser.getUserType();
 
@@ -52,13 +53,13 @@ public class UserService {
         data.put("user", systemUser);
         if (userType == Constants.USER_TYPE_TENANT || userType == Constants.USER_TYPE_TENANT_EMPLOYEE) {
             Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
-            ValidateUtils.notNull(tenant, "商户不存在！", Constants.ERROR_CODE_HANDLING_ERROR);
+            ValidateUtils.notNull(tenant, "商户不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
             BigInteger tenantId = tenant.getId();
 
             SearchModel tenantSecretKeySearchModel = new SearchModel(true);
             tenantSecretKeySearchModel.addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
             TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
-            ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！", Constants.ERROR_CODE_HANDLING_ERROR);
+            ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
 
             List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
             List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
@@ -71,7 +72,7 @@ public class UserService {
             data.put("backgroundPrivileges", backgroundPrivileges);
         } else if (userType == Constants.USER_TYPE_AGENT) {
             Agent agent = DatabaseHelper.find(Agent.class, systemUser.getAgentId());
-            ValidateUtils.notNull(agent, "代理商不存在！", Constants.ERROR_CODE_HANDLING_ERROR);
+            ValidateUtils.notNull(agent, "代理商不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
             data.put("agent", agent);
         }
         return ApiRest.builder().data(data).message("获取用户信息成功！").successful(true).build();

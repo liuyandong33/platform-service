@@ -18,7 +18,7 @@ public class TenantController extends BasicController {
      *
      * @return
      */
-    @RequestMapping(value = "/obtainTenantInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/obtainTenantInfo", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = ObtainTenantInfoModel.class, serviceClass = TenantService.class, serviceMethodName = "obtainTenantInfo", error = "查询商户信息失败")
     public String obtainTenantInfo() {

@@ -1,6 +1,6 @@
 package build.dream.platform.models.agentcontract;
 
-import build.dream.common.annotations.JsonSchema;
+import build.dream.common.constraints.VerifyJsonSchema;
 import build.dream.common.models.BasicModel;
 import build.dream.platform.constants.Constants;
 
@@ -25,7 +25,7 @@ public class SaveAgentContractModel extends BasicModel {
     @NotNull
     private BigInteger userId;
 
-    @JsonSchema(value = Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH)
+    @VerifyJsonSchema(value = Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH)
     private List<ContractPriceInfo> contractPriceInfos;
 
     public BigInteger getAgentContractId() {
