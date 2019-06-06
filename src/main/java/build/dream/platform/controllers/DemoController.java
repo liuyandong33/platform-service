@@ -26,7 +26,7 @@ public class DemoController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             BarcodePayModel barcodePayModel = ApplicationHandler.instantiateObject(BarcodePayModel.class, requestParameters);
-            Map<String, String> result = NewLandUtils.barcodePay("1", "1", barcodePayModel);
+            Map<String, String> result = NewLandUtils.barcodePay(barcodePayModel);
             return GsonUtils.toJson(result);
         } catch (Exception e) {
             return e.getMessage();
@@ -39,7 +39,7 @@ public class DemoController {
         Map<String, String> requestParameters = ApplicationHandler.getRequestParameters();
         try {
             BarcodePosPayModel barcodePosPayModel = ApplicationHandler.instantiateObject(BarcodePosPayModel.class, requestParameters);
-            Map<String, String> result = NewLandUtils.barcodePosPay("1", "1", barcodePosPayModel);
+            Map<String, String> result = NewLandUtils.barcodePosPay(barcodePosPayModel);
             return GsonUtils.toJson(result);
         } catch (Exception e) {
             return e.getMessage();

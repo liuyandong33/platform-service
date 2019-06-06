@@ -166,7 +166,7 @@ public class OrderService {
         BigInteger agentId = obtainAllOrderInfosModel.getAgentId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition(OrderInfo.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUALS, 0));
+        searchConditions.add(new SearchCondition(OrderInfo.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUAL, 0));
         if (tenantId != null) {
             searchConditions.add(new SearchCondition(OrderInfo.ColumnName.TENANT_ID, Constants.ELEME_MESSAGE_SCHEMA_FILE_PATH, tenantId));
         }
@@ -296,14 +296,18 @@ public class OrderService {
         String tenantId = "0";
         String branchId = "0";
 
-        String serviceDomain = CommonUtils.getServiceDomain(Constants.SERVICE_NAME_PLATFORM);
         BigDecimal payableAmount = orderInfo.getPayableAmount().setScale(2, RoundingMode.DOWN);
 
         Object data = null;
         if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY) {
+            WeiXinPayAccount weiXinPayAccount = WeiXinPayUtils.obtainWeiXinPayAccount(tenantId, branchId);
             MicroPayModel microPayModel = MicroPayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
+                    .appId(weiXinPayAccount.getAppId())
+                    .mchId(weiXinPayAccount.getMchId())
+                    .key(weiXinPayAccount.getApiSecretKey())
+                    .subAppId(weiXinPayAccount.getSubPublicAccountAppId())
+                    .subMchId(weiXinPayAccount.getSubMchId())
+                    .acceptanceModel(weiXinPayAccount.isAcceptanceModel())
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
@@ -334,7 +338,7 @@ public class OrderService {
                     .outTradeNo(orderNumber)
                     .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
-                    .notifyUrl(serviceDomain + "/order/weiXinPayCallback")
+                    .topic("")
                     .tradeType(tradeType)
                     .openId(openId)
                     .subOpenId(subOpenId)
@@ -345,7 +349,7 @@ public class OrderService {
             AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(serviceDomain + "/order/alipayCallback")
+                    .topic("")
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
@@ -356,7 +360,7 @@ public class OrderService {
             AlipayTradePagePayModel alipayTradePagePayModel = AlipayTradePagePayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(serviceDomain + "/order/alipayCallback")
+                    .topic("")
                     .outTradeNo(orderNumber)
                     .productCode(orderNumber)
                     .totalAmount(payableAmount)
@@ -367,7 +371,7 @@ public class OrderService {
             AlipayTradeAppPayModel alipayTradeAppPayModel = AlipayTradeAppPayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(serviceDomain + "/order/alipayCallback")
+                    .topic("")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .subject("订单支付")
@@ -377,7 +381,7 @@ public class OrderService {
             AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
                     .tenantId(tenantId)
                     .branchId(branchId)
-                    .notifyUrl(serviceDomain + "/order/alipayCallback")
+                    .topic("")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .scene(Constants.SCENE_BAR_CODE)
