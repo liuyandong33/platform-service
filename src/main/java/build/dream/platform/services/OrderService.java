@@ -304,7 +304,7 @@ public class OrderService {
             MicroPayModel microPayModel = MicroPayModel.builder()
                     .appId(weiXinPayAccount.getAppId())
                     .mchId(weiXinPayAccount.getMchId())
-                    .key(weiXinPayAccount.getApiSecretKey())
+                    .apiSecretKey(weiXinPayAccount.getApiSecretKey())
                     .subAppId(weiXinPayAccount.getSubPublicAccountAppId())
                     .subMchId(weiXinPayAccount.getSubMchId())
                     .acceptanceModel(weiXinPayAccount.isAcceptanceModel())
@@ -327,12 +327,10 @@ public class OrderService {
             } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_MWEB) {
                 tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_NATIVE;
             } else if (paidScene == Constants.PAID_SCENE_WEI_XIN_JSAPI_MINI_PROGRAM) {
-                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_MINI_PROGRAM;
+                tradeType = Constants.WEI_XIN_PAY_TRADE_TYPE_JSAPI;
             }
 
             UnifiedOrderModel unifiedOrderModel = UnifiedOrderModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
@@ -347,8 +345,6 @@ public class OrderService {
             data = WeiXinPayUtils.unifiedOrder(unifiedOrderModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
             AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
                     .topic("")
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
@@ -358,8 +354,6 @@ public class OrderService {
             data = AlipayUtils.alipayTradeWapPay(alipayTradeWapPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE) {
             AlipayTradePagePayModel alipayTradePagePayModel = AlipayTradePagePayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
                     .topic("")
                     .outTradeNo(orderNumber)
                     .productCode(orderNumber)
@@ -369,8 +363,6 @@ public class OrderService {
             data = AlipayUtils.alipayTradePagePay(alipayTradePagePayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
             AlipayTradeAppPayModel alipayTradeAppPayModel = AlipayTradeAppPayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
                     .topic("")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
@@ -379,8 +371,6 @@ public class OrderService {
             data = AlipayUtils.alipayTradeAppPay(alipayTradeAppPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_FAC_TO_FACE) {
             AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
-                    .tenantId(tenantId)
-                    .branchId(branchId)
                     .topic("")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)

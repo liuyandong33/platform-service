@@ -27,8 +27,8 @@ public class AlipayService {
         String partnerId = saveAlipayAccountModel.getPartnerId();
         String storeId = saveAlipayAccountModel.getStoreId();
         String alipayPublicKey = saveAlipayAccountModel.getAlipayPublicKey();
-        String applicationPublicKey = saveAlipayAccountModel.getApplicationPublicKey();
-        String applicationPrivateKey = saveAlipayAccountModel.getApplicationPrivateKey();
+        String appPublicKey = saveAlipayAccountModel.getAppPublicKey();
+        String appPrivateKey = saveAlipayAccountModel.getAppPrivateKey();
         String signType = saveAlipayAccountModel.getSignType();
         BigInteger userId = saveAlipayAccountModel.getUserId();
 
@@ -37,20 +37,21 @@ public class AlipayService {
         searchModel.addSearchCondition(AlipayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
         AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, searchModel);
         if (alipayAccount == null) {
-            alipayAccount = new AlipayAccount();
-            alipayAccount.setTenantId(tenantId);
-            alipayAccount.setBranchId(branchId);
-            alipayAccount.setAccount(account);
-            alipayAccount.setAppId(appId);
-            alipayAccount.setPartnerId(partnerId);
-            alipayAccount.setStoreId(storeId);
-            alipayAccount.setAlipayPublicKey(alipayPublicKey);
-            alipayAccount.setApplicationPublicKey(applicationPublicKey);
-            alipayAccount.setApplicationPrivateKey(applicationPrivateKey);
-            alipayAccount.setSignType(signType);
-            alipayAccount.setCreatedUserId(userId);
-            alipayAccount.setUpdatedUserId(userId);
-            alipayAccount.setUpdatedRemark("新增支付宝账号！");
+            alipayAccount = AlipayAccount.builder()
+                    .tenantId(tenantId)
+                    .branchId(branchId)
+                    .account(account)
+                    .appId(appId)
+                    .partnerId(partnerId)
+                    .storeId(storeId)
+                    .alipayPublicKey(alipayPublicKey)
+                    .appPublicKey(appPublicKey)
+                    .appPrivateKey(appPrivateKey)
+                    .signType(signType)
+                    .createdUserId(userId)
+                    .updatedUserId(userId)
+                    .updatedRemark("新增支付宝账号！")
+                    .build();
             DatabaseHelper.insert(alipayAccount);
         } else {
             alipayAccount.setAccount(account);
@@ -58,8 +59,8 @@ public class AlipayService {
             alipayAccount.setPartnerId(partnerId);
             alipayAccount.setStoreId(StringUtils.isNotBlank(storeId) ? storeId : Constants.VARCHAR_DEFAULT_VALUE);
             alipayAccount.setAlipayPublicKey(alipayPublicKey);
-            alipayAccount.setApplicationPublicKey(applicationPublicKey);
-            alipayAccount.setApplicationPrivateKey(applicationPrivateKey);
+            alipayAccount.setAppPublicKey(appPublicKey);
+            alipayAccount.setAppPrivateKey(appPrivateKey);
             alipayAccount.setSignType(signType);
             alipayAccount.setUpdatedUserId(userId);
             alipayAccount.setUpdatedRemark("修改支付宝账号！");

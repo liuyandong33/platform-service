@@ -31,10 +31,10 @@ public class SaveAlipayAccountModel extends BasicModel {
     private String alipayPublicKey;
 
     @NotNull
-    private String applicationPublicKey;
+    private String appPublicKey;
 
     @NotNull
-    private String applicationPrivateKey;
+    private String appPrivateKey;
 
     @NotNull
     private String signType;
@@ -98,20 +98,20 @@ public class SaveAlipayAccountModel extends BasicModel {
         this.alipayPublicKey = alipayPublicKey;
     }
 
-    public String getApplicationPublicKey() {
-        return applicationPublicKey;
+    public String getAppPublicKey() {
+        return appPublicKey;
     }
 
-    public void setApplicationPublicKey(String applicationPublicKey) {
-        this.applicationPublicKey = applicationPublicKey;
+    public void setAppPublicKey(String appPublicKey) {
+        this.appPublicKey = appPublicKey;
     }
 
-    public String getApplicationPrivateKey() {
-        return applicationPrivateKey;
+    public String getAppPrivateKey() {
+        return appPrivateKey;
     }
 
-    public void setApplicationPrivateKey(String applicationPrivateKey) {
-        this.applicationPrivateKey = applicationPrivateKey;
+    public void setAppPrivateKey(String appPrivateKey) {
+        this.appPrivateKey = appPrivateKey;
     }
 
     public String getSignType() {
