@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.AlipayMapper">
+    <select id="obtainAllAlipayAccounts" resultType="build.dream.common.beans.AlipayAccount">
+        SELECT
+        alipay_developer_account.app_id,
+        alipay_developer_account.alipay_public_key,
+        alipay_developer_account.app_public_key,
+        alipay_developer_account.app_private_key,
+        alipay_developer_account.sign_type,
+        alipay_authorizer_info.tenant_id,
+        alipay_authorizer_info.branch_id,
+        alipay_authorizer_info.app_auth_token
+        FROM alipay_authorizer_info
+        INNER JOIN alipay_developer_account ON alipay_authorizer_info.app_id = alipay_developer_account.app_id AND alipay_developer_account.deleted = 0
+        WHERE alipay_authorizer_info.deleted = 0;
+    </select>
+</mapper>

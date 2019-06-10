@@ -1,10 +1,12 @@
 package build.dream.platform.listeners;
 
+import build.dream.common.beans.AlipayAccount;
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.mappers.CommonMapper;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CommonRedisUtils;
 import build.dream.common.utils.GsonUtils;
+import build.dream.common.utils.JacksonUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
 import build.dream.platform.services.AlipayService;
@@ -38,25 +40,26 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         super.contextInitialized(servletContextEvent);
         super.previousInjectionBean(servletContextEvent.getServletContext(), CommonMapper.class);
 
+        // 缓存支付宝开发者账号
+        List<AlipayDeveloperAccount> alipayDeveloperAccounts = alipayService.obtainAllAlipayDeveloperAccounts();
+        Map<String, String> alipayDeveloperAccountMap = new HashMap<String, String>();
+        for (AlipayDeveloperAccount alipayDeveloperAccount : alipayDeveloperAccounts) {
+            alipayDeveloperAccountMap.put(alipayDeveloperAccount.getAppId(), JacksonUtils.writeValueAsString(alipayDeveloperAccount));
+        }
+        CommonRedisUtils.del(Constants.KEY_ALIPAY_DEVELOPER_ACCOUNTS);
+        if (MapUtils.isNotEmpty(alipayDeveloperAccountMap)) {
+            CommonRedisUtils.hmset(Constants.KEY_ALIPAY_DEVELOPER_ACCOUNTS, alipayDeveloperAccountMap);
+        }
+
         // 缓存支付宝账号
-        List<AlipayAccount> alipayAccounts = alipayService.findAllAlipayAccounts();
+        List<AlipayAccount> alipayAccounts = alipayService.obtainAllAlipayAccounts();
         Map<String, String> alipayAccountMap = new HashMap<String, String>();
         for (AlipayAccount alipayAccount : alipayAccounts) {
-            alipayAccountMap.put(alipayAccount.getAppId(), GsonUtils.toJson(alipayAccount));
+            alipayAccountMap.put(alipayAccount.getAppId(), JacksonUtils.writeValueAsString(alipayAccount));
         }
         CommonRedisUtils.del(Constants.KEY_ALIPAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayAccountMap)) {
             CommonRedisUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
-        }
-
-        List<AlipayAuthorizerInfo> alipayAuthorizerInfos = alipayService.findAllAlipayAuthorizerInfos();
-        Map<String, String> alipayAuthorizerInfoMap = new HashMap<String, String>();
-        for (AlipayAuthorizerInfo alipayAuthorizerInfo : alipayAuthorizerInfos) {
-            alipayAuthorizerInfoMap.put(alipayAuthorizerInfo.getTenantId() + "_" + alipayAuthorizerInfo.getBranchId(), GsonUtils.toJson(alipayAuthorizerInfo));
-        }
-        CommonRedisUtils.del(Constants.KEY_ALIPAY_AUTHORIZER_INFOS);
-        if (MapUtils.isNotEmpty(alipayAuthorizerInfoMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_ALIPAY_AUTHORIZER_INFOS, alipayAuthorizerInfoMap);
         }
 
         // 缓存微信支付账号
