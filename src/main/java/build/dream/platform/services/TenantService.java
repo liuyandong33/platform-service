@@ -1,9 +1,11 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.beans.AlipayAccount;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.mappers.AlipayMapper;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.tenant.*;
@@ -21,6 +23,8 @@ public class TenantService {
     private TenantGoodsMapper tenantGoodsMapper;
     @Autowired
     private TenantMapper tenantMapper;
+    @Autowired
+    private AlipayMapper alipayMapper;
 
     /**
      * 获取商户信息系
@@ -98,9 +102,9 @@ public class TenantService {
         BigInteger branchId = obtainPayAccountsModel.getBranchId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
-        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
-        searchConditions.add(new SearchCondition(AlipayAccount.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+        searchConditions.add(new SearchCondition(WeiXinPayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
+        searchConditions.add(new SearchCondition(WeiXinPayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId));
+        searchConditions.add(new SearchCondition(WeiXinPayAccount.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
         SearchModel alipayAccountSearchModel = new SearchModel(searchConditions);
         SearchModel weiXinPayAccountSearchModel = new SearchModel(searchConditions);
@@ -109,7 +113,7 @@ public class TenantService {
         SearchModel umPayAccountSearchModel = new SearchModel(searchConditions);
         SearchModel newLandAccountSearchModel = new SearchModel(searchConditions);
 
-        AlipayAccount alipayAccount = DatabaseHelper.find(AlipayAccount.class, alipayAccountSearchModel);
+        AlipayAccount alipayAccount = alipayMapper.obtainAlipayAccount(tenantId, branchId);
         WeiXinPayAccount weiXinPayAccount = DatabaseHelper.find(WeiXinPayAccount.class, weiXinPayAccountSearchModel);
         BankAccount bankAccount = DatabaseHelper.find(BankAccount.class, bankAccountSearchModel);
         MiyaAccount miyaAccount = DatabaseHelper.find(MiyaAccount.class, miyaAccountSearchModel);
