@@ -165,6 +165,7 @@ public class TenantService {
         BigInteger id = updateTenantInfoModel.getId();
         String name = updateTenantInfoModel.getName();
         Integer vipSharedType = updateTenantInfoModel.getVipSharedType();
+        BigInteger dadaSourceId = updateTenantInfoModel.getDadaSourceId();
         BigInteger userId = updateTenantInfoModel.getUserId();
 
         Tenant tenant = DatabaseHelper.find(Tenant.class, id);
@@ -173,8 +174,12 @@ public class TenantService {
             tenant.setName(name);
         }
 
-        if (vipSharedType != null) {
+        if (Objects.nonNull(vipSharedType)) {
             tenant.setVipSharedType(vipSharedType);
+        }
+
+        if (Objects.nonNull(dadaSourceId)) {
+            tenant.setDadaSourceId(dadaSourceId);
         }
 
         tenant.setUpdatedUserId(userId);
