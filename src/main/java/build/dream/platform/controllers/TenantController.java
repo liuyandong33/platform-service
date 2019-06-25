@@ -1,18 +1,30 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
-import build.dream.common.controllers.BasicController;
+import build.dream.common.saas.domains.Tenant;
+import build.dream.common.utils.CommonRedisUtils;
+import build.dream.common.utils.JacksonUtils;
+import build.dream.platform.constants.Constants;
 import build.dream.platform.models.tenant.*;
 import build.dream.platform.services.TenantService;
+import org.apache.commons.collections.MapUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping(value = "/tenant")
-public class TenantController extends BasicController {
+public class TenantController {
+    @Autowired
+    private TenantService tenantService;
+
     /**
      * 获取商户信息
      *
@@ -104,5 +116,22 @@ public class TenantController extends BasicController {
     @ApiRestAction(modelClass = UpdateBranchCountModel.class, serviceClass = TenantService.class, serviceMethodName = "changeBranchCount", error = "修改门店数量失败")
     public String updateBranchCount() {
         return null;
+    }
+
+    @RequestMapping(value = "/rejoinTenantInfos", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public String rejoinTenantInfos() {
+        List<Tenant> tenants = tenantService.obtainAllTenantInfos();
+        Map<String, String> tenantInfos = new HashMap<String, String>();
+        for (Tenant tenant : tenants) {
+            String tenantInfo = JacksonUtils.writeValueAsString(tenant);
+            tenantInfos.put("_id_" + tenant.getId(), tenantInfo);
+            tenantInfos.put("_code_" + tenant.getCode(), tenantInfo);
+        }
+        CommonRedisUtils.del(Constants.KEY_TENANT_INFOS);
+        if (MapUtils.isNotEmpty(tenantInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+        }
+        return Constants.SUCCESS;
     }
 }
