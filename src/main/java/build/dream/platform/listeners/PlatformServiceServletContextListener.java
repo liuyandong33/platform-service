@@ -1,6 +1,7 @@
 package build.dream.platform.listeners;
 
 import build.dream.common.beans.AlipayAccount;
+import build.dream.common.beans.JDDJVenderInfo;
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.mappers.CommonMapper;
 import build.dream.common.saas.domains.*;
@@ -13,6 +14,7 @@ import build.dream.platform.services.NewLandService;
 import build.dream.platform.services.TenantService;
 import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
@@ -75,14 +77,38 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         // 缓存商户信息
         List<Tenant> tenants = tenantService.obtainAllTenantInfos();
         Map<String, String> tenantInfos = new HashMap<String, String>();
+        Map<String, String> jddjVenderInfos = new HashMap<String, String>();
         for (Tenant tenant : tenants) {
             String tenantInfo = JacksonUtils.writeValueAsString(tenant);
             tenantInfos.put("_id_" + tenant.getId(), tenantInfo);
             tenantInfos.put("_code_" + tenant.getCode(), tenantInfo);
+
+            String jddjVenderId = tenant.getJddjVenderId();
+            String jddjAppKey = tenant.getJddjAppKey();
+            String jddjAppSecret = tenant.getJddjAppSecret();
+
+            if (StringUtils.isBlank(jddjVenderId) || StringUtils.isBlank(jddjAppKey) || StringUtils.isBlank(jddjAppSecret)) {
+                continue;
+            }
+
+            JDDJVenderInfo jddjVenderInfo = JDDJVenderInfo.builder()
+                    .tenantId(tenant.getId())
+                    .tenantCode(tenant.getCode())
+                    .partitionCode(tenant.getPartitionCode())
+                    .venderId(jddjVenderId)
+                    .appKey(jddjAppKey)
+                    .appSecret(jddjAppSecret)
+                    .build();
+            jddjVenderInfos.put(jddjAppKey, JacksonUtils.writeValueAsString(jddjVenderInfo));
         }
         CommonRedisUtils.del(Constants.KEY_TENANT_INFOS);
         if (MapUtils.isNotEmpty(tenantInfos)) {
             CommonRedisUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+        }
+
+        CommonRedisUtils.del(Constants.KEY_JDDJ_VENDER_INFOS);
+        if (MapUtils.isNotEmpty(jddjVenderInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_JDDJ_VENDER_INFOS, jddjVenderInfos);
         }
 
         // 缓存微信授权token
