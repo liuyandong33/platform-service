@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,9 +80,11 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         Map<String, String> tenantInfos = new HashMap<String, String>();
         Map<String, String> jddjVenderInfos = new HashMap<String, String>();
         for (Tenant tenant : tenants) {
+            BigInteger tenantId = tenant.getId();
+            String tenantCode = tenant.getCode();
             String tenantInfo = JacksonUtils.writeValueAsString(tenant);
-            tenantInfos.put("_id_" + tenant.getId(), tenantInfo);
-            tenantInfos.put("_code_" + tenant.getCode(), tenantInfo);
+            tenantInfos.put("_id_" + tenantId, tenantInfo);
+            tenantInfos.put("_code_" + tenantCode, tenantInfo);
 
             String jddjVenderId = tenant.getJddjVenderId();
             String jddjAppKey = tenant.getJddjAppKey();
@@ -92,8 +95,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
             }
 
             JDDJVenderInfo jddjVenderInfo = JDDJVenderInfo.builder()
-                    .tenantId(tenant.getId())
-                    .tenantCode(tenant.getCode())
+                    .tenantId(tenantId)
+                    .tenantCode(tenantCode)
                     .partitionCode(tenant.getPartitionCode())
                     .venderId(jddjVenderId)
                     .appKey(jddjAppKey)
