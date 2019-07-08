@@ -1,11 +1,11 @@
 package build.dream.platform.listeners;
 
 import build.dream.common.beans.AlipayAccount;
+import build.dream.common.beans.JDDJVenderInfo;
 import build.dream.common.listeners.BasicServletContextListener;
 import build.dream.common.mappers.CommonMapper;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.CommonRedisUtils;
-import build.dream.common.utils.GsonUtils;
 import build.dream.common.utils.JacksonUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.jobs.JobScheduler;
@@ -14,10 +14,12 @@ import build.dream.platform.services.NewLandService;
 import build.dream.platform.services.TenantService;
 import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.annotation.WebListener;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +68,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         List<WeiXinPayAccount> weiXinPayAccounts = weiXinService.obtainAllWeiXinPayAccounts();
         Map<String, String> weiXinPayAccountMap = new HashMap<String, String>();
         for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
-            weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), GsonUtils.toJson(weiXinPayAccount));
+            weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), JacksonUtils.writeValueAsString(weiXinPayAccount));
         }
         CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
@@ -76,21 +78,47 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         // 缓存商户信息
         List<Tenant> tenants = tenantService.obtainAllTenantInfos();
         Map<String, String> tenantInfos = new HashMap<String, String>();
+        Map<String, String> jddjVenderInfos = new HashMap<String, String>();
         for (Tenant tenant : tenants) {
-            String tenantInfo = GsonUtils.toJson(tenant);
-            tenantInfos.put("_id_" + tenant.getId(), tenantInfo);
-            tenantInfos.put("_code_" + tenant.getCode(), tenantInfo);
+            BigInteger tenantId = tenant.getId();
+            String tenantCode = tenant.getCode();
+            String tenantInfo = JacksonUtils.writeValueAsString(tenant);
+            tenantInfos.put("_id_" + tenantId, tenantInfo);
+            tenantInfos.put("_code_" + tenantCode, tenantInfo);
+
+            String jddjVenderId = tenant.getJddjVenderId();
+            String jddjAppKey = tenant.getJddjAppKey();
+            String jddjAppSecret = tenant.getJddjAppSecret();
+
+            if (StringUtils.isBlank(jddjVenderId) || StringUtils.isBlank(jddjAppKey) || StringUtils.isBlank(jddjAppSecret)) {
+                continue;
+            }
+
+            JDDJVenderInfo jddjVenderInfo = JDDJVenderInfo.builder()
+                    .tenantId(tenantId)
+                    .tenantCode(tenantCode)
+                    .partitionCode(tenant.getPartitionCode())
+                    .venderId(jddjVenderId)
+                    .appKey(jddjAppKey)
+                    .appSecret(jddjAppSecret)
+                    .build();
+            jddjVenderInfos.put(jddjAppKey, JacksonUtils.writeValueAsString(jddjVenderInfo));
         }
         CommonRedisUtils.del(Constants.KEY_TENANT_INFOS);
         if (MapUtils.isNotEmpty(tenantInfos)) {
             CommonRedisUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
         }
 
+        CommonRedisUtils.del(Constants.KEY_JDDJ_VENDER_INFOS);
+        if (MapUtils.isNotEmpty(jddjVenderInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_JDDJ_VENDER_INFOS, jddjVenderInfos);
+        }
+
         // 缓存微信授权token
         List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = weiXinService.obtainAllWeiXinAuthorizerTokens();
         Map<String, String> weiXinAuthorizerTokenMap = new HashMap<String, String>();
         for (WeiXinAuthorizerToken weiXinAuthorizerToken : weiXinAuthorizerTokens) {
-            weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), GsonUtils.toJson(weiXinAuthorizerToken));
+            weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), JacksonUtils.writeValueAsString(weiXinAuthorizerToken));
         }
 
         CommonRedisUtils.del(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
@@ -102,7 +130,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         List<NewLandAccount> newLandAccounts = newLandService.obtainAllNewLandAccounts();
         Map<String, String> newLandAccountMap = new HashMap<String, String>();
         for (NewLandAccount newLandAccount : newLandAccounts) {
-            newLandAccountMap.put(newLandAccount.getTenantId() + "_" + newLandAccount.getBranchId(), GsonUtils.toJson(newLandAccount));
+            newLandAccountMap.put(newLandAccount.getTenantId() + "_" + newLandAccount.getBranchId(), JacksonUtils.writeValueAsString(newLandAccount));
         }
         CommonRedisUtils.del(Constants.KEY_NEW_LAND_ACCOUNTS);
         if (MapUtils.isNotEmpty(newLandAccountMap)) {

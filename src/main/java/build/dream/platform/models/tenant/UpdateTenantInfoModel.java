@@ -10,6 +10,7 @@ public class UpdateTenantInfoModel extends BasicModel {
     private BigInteger id;
     private String name;
     private Integer vipSharedType;
+    private BigInteger dadaSourceId;
     @NotNull
     private BigInteger userId;
 
@@ -35,6 +36,14 @@ public class UpdateTenantInfoModel extends BasicModel {
 
     public void setVipSharedType(Integer vipSharedType) {
         this.vipSharedType = vipSharedType;
+    }
+
+    public BigInteger getDadaSourceId() {
+        return dadaSourceId;
+    }
+
+    public void setDadaSourceId(BigInteger dadaSourceId) {
+        this.dadaSourceId = dadaSourceId;
     }
 
     public BigInteger getUserId() {
