@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.JDDJMapper">
+    <select id="countJDDJCodes" resultType="long">
+        SELECT
+        COUNT(1)
+        FROM jddj_code
+        INNER JOIN tenant ON tenant.jddj_vender_id = jddj_code.vender_id AND tenant.deleted = 0
+        WHERE jddj_code.deleted = 0
+        <if test="@org.apache.commons.lang.StringUtils@isNotBlank(searchString)">
+            AND (tenant.code LIKE #{searchString} OR tenant.name LIKE #{searchString} OR jddj_code.vender_id LIKE #{searchString})
+        </if>
+    </select>
+
+    <select id="listJDDJCodes" resultType="build.dream.common.utils.UnderscoreToCamelCaseMap">
+        SELECT
+        jddj_code.code,
+        jddj_code.vender_id,
+        tenant.id AS tenant_id,
+        tenant.code AS tenant_code,
+        tenant.name AS tenant_name
+        FROM jddj_code
+        INNER JOIN tenant ON tenant.jddj_vender_id = jddj_code.vender_id AND tenant.deleted = 0
+        WHERE jddj_code.deleted = 0
+        <if test="@org.apache.commons.lang.StringUtils@isNotBlank(searchString)">
+            AND (tenant.code LIKE #{searchString} OR tenant.name LIKE #{searchString} OR jddj_code.vender_id LIKE #{searchString})
+        </if>
+        LIMIT #{offset}, #{maxResult}
+    </select>
+</mapper>
