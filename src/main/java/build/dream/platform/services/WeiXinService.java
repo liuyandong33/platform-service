@@ -12,6 +12,7 @@ import build.dream.platform.models.weixin.HandleAuthCallbackModel;
 import build.dream.platform.models.weixin.ObtainWeiXinMiniProgramsModel;
 import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
 import build.dream.platform.models.weixin.SaveWeiXinPayAccountModel;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,11 +159,21 @@ public class WeiXinService {
         return ApiRest.builder().message("保存微信支付账号成功！").successful(true).build();
     }
 
+    /**
+     * 缓存微信支付账号
+     */
     @Transactional(readOnly = true)
-    public List<WeiXinPayAccount> obtainAllWeiXinPayAccounts() {
+    public void cacheWeiXinPayAccounts() {
         SearchModel searchModel = new SearchModel(true);
         List<WeiXinPayAccount> weiXinPayAccounts = DatabaseHelper.findAll(WeiXinPayAccount.class, searchModel);
-        return weiXinPayAccounts;
+        Map<String, String> weiXinPayAccountMap = new HashMap<String, String>();
+        for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
+            weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), JacksonUtils.writeValueAsString(weiXinPayAccount));
+        }
+        CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
+        if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
+            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
+        }
     }
 
     /**
@@ -174,6 +185,24 @@ public class WeiXinService {
     public List<WeiXinAuthorizerToken> obtainAllWeiXinAuthorizerTokens() {
         SearchModel searchModel = new SearchModel(true);
         return DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
+    }
+
+    /**
+     * 缓存微信授权token
+     */
+    @Transactional(readOnly = true)
+    public void cacheWeiXinAuthorizerTokens() {
+        SearchModel searchModel = new SearchModel(true);
+        List<WeiXinAuthorizerToken> weiXinAuthorizerTokens = DatabaseHelper.findAll(WeiXinAuthorizerToken.class, searchModel);
+        Map<String, String> weiXinAuthorizerTokenMap = new HashMap<String, String>();
+        for (WeiXinAuthorizerToken weiXinAuthorizerToken : weiXinAuthorizerTokens) {
+            weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), JacksonUtils.writeValueAsString(weiXinAuthorizerToken));
+        }
+
+        CommonRedisUtils.del(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
+            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
+        }
     }
 
     /**

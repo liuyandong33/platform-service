@@ -11,7 +11,7 @@ import build.dream.common.annotations.ApiRestAction
 import build.dream.common.api.ApiRest
 import build.dream.common.controllers.BasicController
 import build.dream.common.utils._
-import build.dream.platform.models.user.{BatchDeleteUserModel, BatchGetUsersModel, ObtainAllPrivilegesModel, ObtainUserInfoModel}
+import build.dream.platform.models.user._
 import build.dream.platform.services.UserService
 import build.dream.platform.utils.PoiUtils
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -68,9 +68,9 @@ class UserController extends BasicController {
       *
       * @return
       */
-    @RequestMapping(value = Array("/batchDeleteUser"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
+    @RequestMapping(value = Array("/batchDeleteUsers"), method = Array(RequestMethod.POST), produces = Array(MediaType.APPLICATION_JSON_UTF8_VALUE))
     @ResponseBody
-    @ApiRestAction(modelClass = classOf[BatchDeleteUserModel], serviceClass = classOf[UserService], serviceMethodName = "batchDeleteUser", error = "批量删除用户失败")
+    @ApiRestAction(modelClass = classOf[BatchDeleteUsersModel], serviceClass = classOf[UserService], serviceMethodName = "batchDeleteUsers", error = "批量删除用户失败")
     def batchDeleteUser: String = {
         null
     }

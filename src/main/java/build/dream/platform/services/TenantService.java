@@ -2,6 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.AlipayAccount;
+import build.dream.common.beans.JDDJVenderInfo;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
@@ -9,6 +10,7 @@ import build.dream.platform.mappers.AlipayMapper;
 import build.dream.platform.mappers.TenantGoodsMapper;
 import build.dream.platform.mappers.TenantMapper;
 import build.dream.platform.models.tenant.*;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -132,14 +134,48 @@ public class TenantService {
     }
 
     /**
-     * 获取所有商户信息
-     *
-     * @return
+     * 缓存商户信息
      */
     @Transactional(readOnly = true)
-    public List<Tenant> obtainAllTenantInfos() {
+    public void cacheTenantInfos() {
         SearchModel searchModel = new SearchModel(true);
-        return DatabaseHelper.findAll(Tenant.class, searchModel);
+        List<Tenant> tenants = DatabaseHelper.findAll(Tenant.class, searchModel);
+        Map<String, String> tenantInfos = new HashMap<String, String>();
+        Map<String, String> jddjVenderInfos = new HashMap<String, String>();
+        for (Tenant tenant : tenants) {
+            BigInteger tenantId = tenant.getId();
+            String tenantCode = tenant.getCode();
+            String tenantInfo = JacksonUtils.writeValueAsString(tenant);
+            tenantInfos.put("_id_" + tenantId, tenantInfo);
+            tenantInfos.put("_code_" + tenantCode, tenantInfo);
+
+            String jddjVenderId = tenant.getJddjVenderId();
+            String jddjAppKey = tenant.getJddjAppKey();
+            String jddjAppSecret = tenant.getJddjAppSecret();
+
+            if (StringUtils.isBlank(jddjVenderId) || StringUtils.isBlank(jddjAppKey) || StringUtils.isBlank(jddjAppSecret)) {
+                continue;
+            }
+
+            JDDJVenderInfo jddjVenderInfo = JDDJVenderInfo.builder()
+                    .tenantId(tenantId)
+                    .tenantCode(tenantCode)
+                    .partitionCode(tenant.getPartitionCode())
+                    .venderId(jddjVenderId)
+                    .appKey(jddjAppKey)
+                    .appSecret(jddjAppSecret)
+                    .build();
+            jddjVenderInfos.put(jddjAppKey, JacksonUtils.writeValueAsString(jddjVenderInfo));
+        }
+        CommonRedisUtils.del(Constants.KEY_TENANT_INFOS);
+        if (MapUtils.isNotEmpty(tenantInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_TENANT_INFOS, tenantInfos);
+        }
+
+        CommonRedisUtils.del(Constants.KEY_JDDJ_VENDER_INFOS);
+        if (MapUtils.isNotEmpty(jddjVenderInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_JDDJ_VENDER_INFOS, jddjVenderInfos);
+        }
     }
 
     /**

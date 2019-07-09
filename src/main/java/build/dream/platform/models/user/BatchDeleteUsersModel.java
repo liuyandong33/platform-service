@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.util.List;
 
-public class BatchDeleteUserModel extends BasicModel {
+public class BatchDeleteUsersModel extends BasicModel {
     @NotNull
     private BigInteger userId;
 

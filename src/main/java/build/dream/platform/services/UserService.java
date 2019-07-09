@@ -3,18 +3,16 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.constants.ErrorConstants;
 import build.dream.common.saas.domains.*;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.TupleUtils;
-import build.dream.common.utils.ValidateUtils;
+import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppPrivilegeMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.PosPrivilegeMapper;
-import build.dream.platform.models.user.BatchDeleteUserModel;
+import build.dream.platform.models.user.BatchDeleteUsersModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.models.user.ObtainUserInfoModel;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,17 +114,36 @@ public class UserService {
     /**
      * 批量删除用户
      *
-     * @param batchDeleteUserModel
+     * @param batchDeleteUsersModel
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public ApiRest batchDeleteUser(BatchDeleteUserModel batchDeleteUserModel) {
-        BigInteger userId = batchDeleteUserModel.getUserId();
-        List<BigInteger> userIds = batchDeleteUserModel.getUserIds();
+    public ApiRest batchDeleteUsers(BatchDeleteUsersModel batchDeleteUsersModel) {
+        BigInteger userId = batchDeleteUsersModel.getUserId();
+        List<BigInteger> userIds = batchDeleteUsersModel.getUserIds();
 
         Tuple3[] searchConditions = {TupleUtils.buildTuple3(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds)};
         DatabaseHelper.markedDelete(SystemUser.class, userId, "删除用户信息！", searchConditions);
 
         return ApiRest.builder().message("批量删除用户成功！").successful(true).build();
+    }
+
+    /**
+     * 缓存用户信息
+     */
+    @Transactional(readOnly = true)
+    public void cacheUserInfos() {
+        SearchModel searchModel = new SearchModel(true);
+        List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
+
+        Map<String, String> userInfos = new HashMap<String, String>();
+        for (SystemUser systemUser : systemUsers) {
+            userInfos.put(systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
+        }
+
+        CommonRedisUtils.del(Constants.KEY_USER_INFOS);
+        if (MapUtils.isNotEmpty(userInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_USER_INFOS, userInfos);
+        }
     }
 }
