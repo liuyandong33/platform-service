@@ -1,13 +1,14 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.JDDJToken;
 import build.dream.common.saas.domains.Tenant;
-import build.dream.common.utils.DatabaseHelper;
-import build.dream.common.utils.SearchModel;
-import build.dream.common.utils.ValidateUtils;
+import build.dream.common.utils.*;
+import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.JDDJMapper;
 import build.dream.platform.models.jddj.ListJDDJCodesModel;
 import build.dream.platform.models.jddj.SaveJDDJInfoModel;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,5 +87,27 @@ public class JDDJService {
         tenant.setUpdatedRemark("保存京东到家信息！");
         DatabaseHelper.update(tenant);
         return ApiRest.builder().message("保存京东到家信息成功！").successful(true).build();
+    }
+
+    /**
+     * 缓存京东到家token
+     */
+    @Transactional(readOnly = true)
+    public void cacheJDDJTokens() {
+        SearchModel searchModel = SearchModel.builder()
+                .autoSetDeletedFalse()
+                .greaterThan(JDDJToken.ColumnName.TIME, System.currentTimeMillis())
+                .build();
+        List<JDDJToken> jddjTokens = DatabaseHelper.findAll(JDDJToken.class, searchModel);
+
+        Map<String, String> tokenMap = new HashMap<String, String>();
+        for (JDDJToken jddjToken : jddjTokens) {
+            tokenMap.put(jddjToken.getVenderId(), JacksonUtils.writeValueAsString(jddjToken));
+        }
+
+        CommonRedisUtils.del(Constants.KEY_JDDJ_TOKENS);
+        if (MapUtils.isNotEmpty(tokenMap)) {
+            CommonRedisUtils.hmset(Constants.KEY_JDDJ_TOKENS, tokenMap);
+        }
     }
 }

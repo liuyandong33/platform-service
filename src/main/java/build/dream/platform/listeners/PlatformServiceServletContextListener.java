@@ -23,6 +23,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private NewLandService newLandService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private JDDJService jddjService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -49,6 +51,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
         // 缓存用户信息
         userService.cacheUserInfos();
+
+        // 缓存京东到家token
+        jddjService.cacheJDDJTokens();
 
         // 启动所有定时任务
         jobScheduler.scheduler();
