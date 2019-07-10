@@ -38,11 +38,11 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
         // 缓存微信支付账号
         weiXinService.cacheWeiXinPayAccounts();
 
-        // 缓存商户信息
-        tenantService.cacheTenantInfos();
-
         // 缓存微信授权token
         weiXinService.cacheWeiXinAuthorizerTokens();
+
+        // 缓存商户信息
+        tenantService.cacheTenantInfos();
 
         // 缓存新大陆账号
         newLandService.cacheNewLandAccounts();

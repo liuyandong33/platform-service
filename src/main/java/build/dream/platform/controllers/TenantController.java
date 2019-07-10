@@ -110,9 +110,9 @@ public class TenantController {
         return null;
     }
 
-    @RequestMapping(value = "/rejoinTenantInfos", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/cacheTenantInfos")
     @ResponseBody
-    public String rejoinTenantInfos() {
+    public String cacheTenantInfos() {
         tenantService.cacheTenantInfos();
         return Constants.SUCCESS;
     }
