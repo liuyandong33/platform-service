@@ -127,6 +127,12 @@ public class RegisterTenantModel extends BasicModel {
      */
     private Integer tenantType;
 
+    /**
+     * 会员共享类型，1-全部共享，2-全部独立，3-分组共享
+     */
+    @NotNull
+    private Integer vipSharedType;
+
     public String getName() {
         return name;
     }
@@ -261,6 +267,14 @@ public class RegisterTenantModel extends BasicModel {
 
     public void setTenantType(Integer tenantType) {
         this.tenantType = tenantType;
+    }
+
+    public Integer getVipSharedType() {
+        return vipSharedType;
+    }
+
+    public void setVipSharedType(Integer vipSharedType) {
+        this.vipSharedType = vipSharedType;
     }
 
     @Override
