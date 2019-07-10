@@ -8,7 +8,6 @@ import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -114,7 +113,7 @@ public class RegisterService {
                 .mobile(mobile)
                 .email(email)
                 .loginName(tenantCode)
-                .password(DigestUtils.md5Hex(password))
+                .password(BCryptUtils.encode(password))
                 .userType(Constants.USER_TYPE_TENANT)
                 .tenantId(tenantId)
                 .accountNonExpired(true)
@@ -216,36 +215,42 @@ public class RegisterService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerAgent(RegisterAgentModel registerAgentModel) {
+        String name = registerAgentModel.getName();
+        String linkman = registerAgentModel.getLinkman();
         String mobile = registerAgentModel.getMobile();
         String email = registerAgentModel.getEmail();
+        String password = registerAgentModel.getPassword();
         ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
         ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
 
-        Agent agent = new Agent();
-        agent.setCode(SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE)));
-        agent.setName(registerAgentModel.getName());
-        agent.setCreatedUserId(userId);
-        agent.setUpdatedUserId(userId);
-        agent.setUpdatedRemark("新增代理商信息！");
+        String agentCode = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
+        Agent agent = Agent.builder()
+                .code(agentCode)
+                .name(name)
+                .createdUserId(userId)
+                .updatedUserId(userId)
+                .updatedRemark("新增代理商信息！")
+                .build();
         DatabaseHelper.insert(agent);
 
-        SystemUser systemUser = new SystemUser();
-        systemUser.setName(registerAgentModel.getLinkman());
-        systemUser.setMobile(mobile);
-        systemUser.setEmail(email);
-        systemUser.setLoginName(agent.getCode());
-        systemUser.setPassword(DigestUtils.md5Hex(registerAgentModel.getPassword()));
-        systemUser.setUserType(Constants.USER_TYPE_AGENT);
-        systemUser.setAgentId(agent.getId());
-        systemUser.setAccountNonExpired(true);
-        systemUser.setAccountNonLocked(true);
-        systemUser.setCredentialsNonExpired(true);
-        systemUser.setEnabled(true);
-        systemUser.setCreatedUserId(userId);
-        systemUser.setUpdatedUserId(userId);
-        systemUser.setUpdatedRemark("新增代理商登录账号！");
+        SystemUser systemUser = SystemUser.builder()
+                .name(linkman)
+                .mobile(mobile)
+                .email(email)
+                .loginName(agent.getCode())
+                .password(BCryptUtils.encode(password))
+                .userType(Constants.USER_TYPE_AGENT)
+                .agentId(agent.getId())
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .enabled(true)
+                .createdUserId(userId)
+                .updatedUserId(userId)
+                .updatedRemark("新增代理商登录账号！")
+                .build();
         DatabaseHelper.insert(systemUser);
 
         Map<String, Object> data = new HashMap<String, Object>();
