@@ -95,11 +95,11 @@ public class RegisterService {
                 .name(name)
                 .business(business)
                 .provinceCode(provinceCode)
-                .provinceName(provinceName)
+                .provinceName(province.getName())
                 .cityCode(cityCode)
-                .cityName(cityName)
+                .cityName(city.getName())
                 .districtCode(districtCode)
-                .districtName(districtName)
+                .districtName(district.getName())
                 .address(address)
                 .email(email)
                 .partitionCode(partitionCode)
@@ -157,11 +157,8 @@ public class RegisterService {
         initializeBranchRequestParameters.put("tenantId", tenantId.toString());
         initializeBranchRequestParameters.put("tenantCode", tenantCode);
         initializeBranchRequestParameters.put("provinceCode", provinceCode);
-        initializeBranchRequestParameters.put("provinceName", provinceName);
         initializeBranchRequestParameters.put("cityCode", cityCode);
-        initializeBranchRequestParameters.put("cityName", cityName);
         initializeBranchRequestParameters.put("districtCode", districtCode);
-        initializeBranchRequestParameters.put("districtName", districtName);
         initializeBranchRequestParameters.put("address", address);
         initializeBranchRequestParameters.put("longitude", longitude);
         initializeBranchRequestParameters.put("latitude", latitude);
