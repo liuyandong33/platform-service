@@ -127,9 +127,14 @@ public class AgentService {
         String districtCode = saveAgentFormModel.getDistrictCode();
         String address = saveAgentFormModel.getAddress();
 
-        District province = DistrictUtils.obtainDistrictById(Long.parseLong(provinceCode));
-        District city = DistrictUtils.obtainDistrictById(Long.parseLong(cityCode));
-        District district = DistrictUtils.obtainDistrictById(Long.parseLong(districtCode));
+        District province = DistrictUtils.obtainDistrictById(provinceCode);
+        ValidateUtils.notNull(province, "省编码错误！");
+
+        District city = DistrictUtils.obtainDistrictById(cityCode);
+        ValidateUtils.notNull(province, "市编码错误！");
+
+        District district = DistrictUtils.obtainDistrictById(districtCode);
+        ValidateUtils.notNull(province, "区域编码错误！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         AgentForm agentForm = AgentForm.builder()

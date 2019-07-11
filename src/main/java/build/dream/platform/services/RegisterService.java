@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.beans.District;
 import build.dream.common.saas.domains.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
@@ -75,9 +76,18 @@ public class RegisterService {
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
 
-        String provinceName = DistrictUtils.obtainDistrictById(Long.parseLong(provinceCode)).getName();
-        String cityName = DistrictUtils.obtainDistrictById(Long.parseLong(cityCode)).getName();
-        String districtName = DistrictUtils.obtainDistrictById(Long.parseLong(districtCode)).getName();
+        District province = DistrictUtils.obtainDistrictById(provinceCode);
+        ValidateUtils.notNull(province, "省编码错误！");
+
+        District city = DistrictUtils.obtainDistrictById(cityCode);
+        ValidateUtils.notNull(province, "市编码错误！");
+
+        District district = DistrictUtils.obtainDistrictById(districtCode);
+        ValidateUtils.notNull(province, "区域编码错误！");
+
+        String provinceName = province.getName();
+        String cityName = city.getName();
+        String districtName = district.getName();
 
         String tenantCode = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_TENANT_CODE));
         Tenant tenant = Tenant.builder()
