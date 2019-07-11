@@ -1,6 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.beans.District;
 import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.AgentForm;
 import build.dream.common.saas.domains.SystemUser;
@@ -126,6 +127,10 @@ public class AgentService {
         String districtCode = saveAgentFormModel.getDistrictCode();
         String address = saveAgentFormModel.getAddress();
 
+        District province = DistrictUtils.obtainDistrictById(Long.parseLong(provinceCode));
+        District city = DistrictUtils.obtainDistrictById(Long.parseLong(cityCode));
+        District district = DistrictUtils.obtainDistrictById(Long.parseLong(districtCode));
+
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         AgentForm agentForm = AgentForm.builder()
                 .name(name)
@@ -133,11 +138,11 @@ public class AgentService {
                 .email(email)
                 .status(Constants.AGENT_FORM_STATUS_NOT_AUDIT)
                 .provinceCode(provinceCode)
-                .provinceName("")
+                .provinceName(province.getName())
                 .cityCode(cityCode)
-                .cityName("")
+                .cityName(city.getName())
                 .districtCode(districtCode)
-                .districtName("")
+                .districtName(district.getName())
                 .address(address)
                 .verifyUserId(Constants.BIGINT_DEFAULT_VALUE)
                 .createdUserId(userId)

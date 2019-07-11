@@ -39,11 +39,8 @@ public class RegisterService {
         String linkman = registerTenantModel.getLinkman();
         String business = registerTenantModel.getBusiness();
         String provinceCode = registerTenantModel.getProvinceCode();
-        String provinceName = registerTenantModel.getProvinceName();
         String cityCode = registerTenantModel.getCityCode();
-        String cityName = registerTenantModel.getCityName();
         String districtCode = registerTenantModel.getDistrictCode();
-        String districtName = registerTenantModel.getDistrictName();
         String address = registerTenantModel.getAddress();
         String longitude = registerTenantModel.getLongitude();
         String latitude = registerTenantModel.getLatitude();
@@ -77,6 +74,10 @@ public class RegisterService {
         ValidateUtils.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
+
+        String provinceName = DistrictUtils.obtainDistrictById(Long.parseLong(provinceCode)).getName();
+        String cityName = DistrictUtils.obtainDistrictById(Long.parseLong(cityCode)).getName();
+        String districtName = DistrictUtils.obtainDistrictById(Long.parseLong(districtCode)).getName();
 
         String tenantCode = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_TENANT_CODE));
         Tenant tenant = Tenant.builder()

@@ -53,13 +53,6 @@ public class RegisterTenantModel extends BasicModel {
     private String provinceCode;
 
     /**
-     * 总部门店省名称
-     */
-    @NotNull
-    @Length(max = 10)
-    private String provinceName;
-
-    /**
      * 总部门店市编码
      */
     @NotNull
@@ -67,25 +60,11 @@ public class RegisterTenantModel extends BasicModel {
     private String cityCode;
 
     /**
-     * 总部门店市名称
-     */
-    @NotNull
-    @Length(max = 10)
-    private String cityName;
-
-    /**
      * 总部门店区编码
      */
     @NotNull
     @Length(max = 10)
     private String districtCode;
-
-    /**
-     * 总部门店区名称
-     */
-    @NotNull
-    @Length(max = 10)
-    private String districtName;
 
     /**
      * 总部门店详细地址
@@ -181,14 +160,6 @@ public class RegisterTenantModel extends BasicModel {
         this.provinceCode = provinceCode;
     }
 
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
     public String getCityCode() {
         return cityCode;
     }
@@ -197,28 +168,12 @@ public class RegisterTenantModel extends BasicModel {
         this.cityCode = cityCode;
     }
 
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
     public String getDistrictCode() {
         return districtCode;
     }
 
     public void setDistrictCode(String districtCode) {
         this.districtCode = districtCode;
-    }
-
-    public String getDistrictName() {
-        return districtName;
-    }
-
-    public void setDistrictName(String districtName) {
-        this.districtName = districtName;
     }
 
     public String getAddress() {
