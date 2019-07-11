@@ -65,7 +65,7 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     }
 
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
     }
 }
