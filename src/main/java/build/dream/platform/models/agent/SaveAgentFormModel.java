@@ -12,6 +12,14 @@ public class SaveAgentFormModel extends BasicModel {
 
     @NotNull
     @Length(max = 20)
+    private String mobile;
+
+    @NotNull
+    @Length(max = 20)
+    private String email;
+
+    @NotNull
+    @Length(max = 20)
     private String provinceCode;
 
     @NotNull
@@ -32,6 +40,22 @@ public class SaveAgentFormModel extends BasicModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getProvinceCode() {

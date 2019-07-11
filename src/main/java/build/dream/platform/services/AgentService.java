@@ -7,7 +7,9 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.*;
+import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,6 +119,8 @@ public class AgentService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveAgentForm(SaveAgentFormModel saveAgentFormModel) {
         String name = saveAgentFormModel.getName();
+        String mobile = saveAgentFormModel.getMobile();
+        String email = saveAgentFormModel.getEmail();
         String provinceCode = saveAgentFormModel.getProvinceCode();
         String cityCode = saveAgentFormModel.getCityCode();
         String districtCode = saveAgentFormModel.getDistrictCode();
@@ -125,7 +129,9 @@ public class AgentService {
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         AgentForm agentForm = AgentForm.builder()
                 .name(name)
-                .status(1)
+                .mobile(mobile)
+                .email(email)
+                .status(Constants.AGENT_FORM_STATUS_NOT_AUDIT)
                 .provinceCode(provinceCode)
                 .provinceName("")
                 .cityCode(cityCode)
@@ -161,9 +167,12 @@ public class AgentService {
         agentForm.setVerifyUserId(userId);
         agentForm.setStatus(status);
 
-        if (status == 2) {
-            String code = "";
+        if (status == Constants.AGENT_FORM_STATUS_NOT_AUDITED) {
             String name = agentForm.getName();
+            String mobile = agentForm.getMobile();
+            String email = agentForm.getEmail();
+            String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
+
             Agent agent = Agent.builder()
                     .code(code)
                     .name(name)
@@ -173,13 +182,14 @@ public class AgentService {
                     .build();
             DatabaseHelper.insert(agent);
 
+            String password = RandomStringUtils.randomAlphanumeric(10);
             SystemUser systemUser = SystemUser.builder()
                     .name(name)
-                    .mobile("")
-                    .email("")
+                    .mobile(mobile)
+                    .email(email)
                     .loginName(code)
                     .userType(Constants.USER_TYPE_AGENT)
-                    .password("")
+                    .password(BCryptUtils.encode(password))
                     .weiXinPublicPlatformOpenId(Constants.VARCHAR_DEFAULT_VALUE)
                     .weiXinOpenPlatformOpenId(Constants.VARCHAR_DEFAULT_VALUE)
                     .tenantId(Constants.BIGINT_DEFAULT_VALUE)
@@ -193,7 +203,7 @@ public class AgentService {
                     .updatedRemark("新增用户信息！")
                     .build();
             DatabaseHelper.insert(systemUser);
-        } else if (status == 3) {
+        } else if (status == Constants.AGENT_FORM_STATUS_NOT_REJECTED) {
             agentForm.setRejectReason(rejectReason);
         }
 
