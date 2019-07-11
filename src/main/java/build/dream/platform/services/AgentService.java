@@ -2,6 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.District;
+import build.dream.common.models.sms.SendSmsModel;
 import build.dream.common.saas.domains.Agent;
 import build.dream.common.saas.domains.AgentForm;
 import build.dream.common.saas.domains.SystemUser;
@@ -212,7 +213,7 @@ public class AgentService {
                     .build();
             DatabaseHelper.insert(agent);
 
-            String password = RandomStringUtils.randomAlphanumeric(10);
+            String password = RandomStringUtils.randomNumeric(10);
             SystemUser systemUser = SystemUser.builder()
                     .name(linkman)
                     .mobile(mobile)
@@ -233,6 +234,15 @@ public class AgentService {
                     .updatedRemark("新增用户信息！")
                     .build();
             DatabaseHelper.insert(systemUser);
+
+            SendSmsModel sendSmsModel = SendSmsModel.builder()
+                    .phoneNumbers(mobile)
+                    .signName("")
+                    .templateCode("")
+                    .templateParam("")
+                    .outId("")
+                    .build();
+            SmsUtils.sendSms(sendSmsModel);
 
             String agentInfo = JacksonUtils.writeValueAsString(agent);
             CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);
