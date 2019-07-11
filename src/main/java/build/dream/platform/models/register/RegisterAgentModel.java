@@ -38,6 +38,22 @@ public class RegisterAgentModel extends BasicModel {
     @Length(max = 20)
     private String password;
 
+    @NotNull
+    @Length(max = 20)
+    private String provinceCode;
+
+    @NotNull
+    @Length(max = 20)
+    private String cityCode;
+
+    @NotNull
+    @Length(max = 20)
+    private String districtCode;
+
+    @NotNull
+    @Length(max = 255)
+    private String address;
+
     public String getName() {
         return name;
     }
@@ -76,5 +92,37 @@ public class RegisterAgentModel extends BasicModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getProvinceCode() {
+        return provinceCode;
+    }
+
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getDistrictCode() {
+        return districtCode;
+    }
+
+    public void setDistrictCode(String districtCode) {
+        this.districtCode = districtCode;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

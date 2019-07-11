@@ -224,8 +224,21 @@ public class RegisterService {
         String mobile = registerAgentModel.getMobile();
         String email = registerAgentModel.getEmail();
         String password = registerAgentModel.getPassword();
+        String provinceCode = registerAgentModel.getProvinceCode();
+        String cityCode = registerAgentModel.getCityCode();
+        String districtCode = registerAgentModel.getDistrictCode();
+        String address = registerAgentModel.getAddress();
         ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
         ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");
+
+        District province = DistrictUtils.obtainDistrictById(provinceCode);
+        ValidateUtils.notNull(province, "省编码错误！");
+
+        District city = DistrictUtils.obtainDistrictById(cityCode);
+        ValidateUtils.notNull(province, "市编码错误！");
+
+        District district = DistrictUtils.obtainDistrictById(districtCode);
+        ValidateUtils.notNull(province, "区域编码错误！");
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
 
@@ -233,6 +246,16 @@ public class RegisterService {
         Agent agent = Agent.builder()
                 .code(agentCode)
                 .name(name)
+                .linkman(linkman)
+                .mobile(mobile)
+                .email(email)
+                .provinceCode(provinceCode)
+                .provinceName(province.getName())
+                .cityCode(cityCode)
+                .cityName(city.getName())
+                .districtCode(districtCode)
+                .districtName(district.getName())
+                .address(address)
                 .createdUserId(userId)
                 .updatedUserId(userId)
                 .updatedRemark("新增代理商信息！")
@@ -256,6 +279,11 @@ public class RegisterService {
                 .updatedRemark("新增代理商登录账号！")
                 .build();
         DatabaseHelper.insert(systemUser);
+
+        String agentInfo = JacksonUtils.writeValueAsString(agent);
+        CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);
+        CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_code_" + agent.getCode(), agentInfo);
+        CommonRedisUtils.hset(Constants.KEY_USER_INFOS, systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);

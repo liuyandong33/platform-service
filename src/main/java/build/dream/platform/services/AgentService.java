@@ -120,6 +120,7 @@ public class AgentService {
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveAgentForm(SaveAgentFormModel saveAgentFormModel) {
         String name = saveAgentFormModel.getName();
+        String linkman = saveAgentFormModel.getLinkman();
         String mobile = saveAgentFormModel.getMobile();
         String email = saveAgentFormModel.getEmail();
         String provinceCode = saveAgentFormModel.getProvinceCode();
@@ -139,6 +140,7 @@ public class AgentService {
         BigInteger userId = CommonUtils.getServiceSystemUserId();
         AgentForm agentForm = AgentForm.builder()
                 .name(name)
+                .linkman(linkman)
                 .mobile(mobile)
                 .email(email)
                 .status(Constants.AGENT_FORM_STATUS_NOT_AUDIT)
@@ -179,13 +181,31 @@ public class AgentService {
 
         if (status == Constants.AGENT_FORM_STATUS_NOT_AUDITED) {
             String name = agentForm.getName();
+            String linkman = agentForm.getLinkman();
             String mobile = agentForm.getMobile();
             String email = agentForm.getEmail();
+            String provinceCode = agentForm.getProvinceCode();
+            String provinceName = agentForm.getProvinceName();
+            String cityCode = agentForm.getCityCode();
+            String cityName = agentForm.getCityName();
+            String districtCode = agentForm.getDistrictCode();
+            String districtName = agentForm.getDistrictName();
+            String address = agentForm.getAddress();
             String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
 
             Agent agent = Agent.builder()
                     .code(code)
                     .name(name)
+                    .linkman(linkman)
+                    .mobile(mobile)
+                    .email(email)
+                    .provinceCode(provinceCode)
+                    .provinceName(provinceName)
+                    .cityCode(cityCode)
+                    .cityName(cityName)
+                    .districtCode(districtCode)
+                    .districtName(districtName)
+                    .address(address)
                     .createdUserId(userId)
                     .updatedUserId(userId)
                     .updatedRemark("新增代理商信息！")
@@ -194,7 +214,7 @@ public class AgentService {
 
             String password = RandomStringUtils.randomAlphanumeric(10);
             SystemUser systemUser = SystemUser.builder()
-                    .name(name)
+                    .name(linkman)
                     .mobile(mobile)
                     .email(email)
                     .loginName(code)
@@ -213,6 +233,11 @@ public class AgentService {
                     .updatedRemark("新增用户信息！")
                     .build();
             DatabaseHelper.insert(systemUser);
+
+            String agentInfo = JacksonUtils.writeValueAsString(agent);
+            CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);
+            CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_code_" + agent.getCode(), agentInfo);
+            CommonRedisUtils.hset(Constants.KEY_USER_INFOS, systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
         } else if (status == Constants.AGENT_FORM_STATUS_NOT_REJECTED) {
             agentForm.setRejectReason(rejectReason);
         }

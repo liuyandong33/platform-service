@@ -12,6 +12,10 @@ public class SaveAgentFormModel extends BasicModel {
 
     @NotNull
     @Length(max = 20)
+    private String linkman;
+
+    @NotNull
+    @Length(max = 20)
     private String mobile;
 
     @NotNull
@@ -40,6 +44,14 @@ public class SaveAgentFormModel extends BasicModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLinkman() {
+        return linkman;
+    }
+
+    public void setLinkman(String linkman) {
+        this.linkman = linkman;
     }
 
     public String getMobile() {
