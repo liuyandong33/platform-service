@@ -85,10 +85,6 @@ public class RegisterService {
         District district = DistrictUtils.obtainDistrictById(districtCode);
         ValidateUtils.notNull(province, "区域编码错误！");
 
-        String provinceName = province.getName();
-        String cityName = city.getName();
-        String districtName = district.getName();
-
         String tenantCode = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_TENANT_CODE));
         Tenant tenant = Tenant.builder()
                 .code(tenantCode)
