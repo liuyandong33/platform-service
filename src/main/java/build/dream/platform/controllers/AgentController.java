@@ -1,8 +1,10 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
+import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.*;
 import build.dream.platform.services.AgentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/agent")
 public class AgentController {
+    @Autowired
+    private AgentService agentService;
+
     /**
      * 获取代理商信息
      *
@@ -70,5 +75,17 @@ public class AgentController {
     @ApiRestAction(modelClass = VerifyAgentFormModel.class, serviceClass = AgentService.class, serviceMethodName = "verifyAgentForm", error = "审核代理商申请单失败")
     public String verifyAgentForm() {
         return null;
+    }
+
+    /**
+     * 缓存代理商信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/cacheAgentInfos")
+    @ResponseBody
+    public String cacheAgentInfos() {
+        agentService.cacheAgentInfos();
+        return Constants.SUCCESS;
     }
 }

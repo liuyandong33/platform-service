@@ -7,6 +7,7 @@ import build.dream.common.saas.domains.SystemUser;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.*;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -202,5 +203,28 @@ public class AgentService {
         DatabaseHelper.update(agentForm);
 
         return ApiRest.builder().message("审核后代理商申请单成功！").successful(true).build();
+    }
+
+    /**
+     * 缓存代理商信息
+     */
+    @Transactional(readOnly = true)
+    public void cacheAgentInfos() {
+        SearchModel searchModel = SearchModel.builder()
+                .autoSetDeletedFalse()
+                .build();
+
+        List<Agent> agents = DatabaseHelper.findAll(Agent.class, searchModel);
+        Map<String, String> agentInfos = new HashMap<String, String>();
+        for (Agent agent : agents) {
+            String agentInfo = JacksonUtils.writeValueAsString(agent);
+            agentInfos.put("_id_" + agent.getId(), agentInfo);
+            agentInfos.put("_code_" + agent.getCode(), agentInfo);
+        }
+
+        CommonRedisUtils.del(Constants.KEY_AGENT_INFOS);
+        if (MapUtils.isNotEmpty(agentInfos)) {
+            CommonRedisUtils.hmset(Constants.KEY_AGENT_INFOS, agentInfos);
+        }
     }
 }
