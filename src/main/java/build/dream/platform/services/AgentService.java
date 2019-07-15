@@ -57,7 +57,7 @@ public class AgentService {
         int rows = listModel.getRows();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
-        searchConditions.add(new SearchCondition("deleted", Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
+        searchConditions.add(new SearchCondition(Agent.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_EQUAL, 0));
 
         SearchModel searchModel = new SearchModel();
         searchModel.setSearchConditions(searchConditions);
