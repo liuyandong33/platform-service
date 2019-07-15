@@ -242,9 +242,9 @@ public class RegisterService {
 
         BigInteger userId = CommonUtils.getServiceSystemUserId();
 
-        String agentCode = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
+        String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
         Agent agent = Agent.builder()
-                .code(agentCode)
+                .code(code)
                 .name(name)
                 .linkman(linkman)
                 .mobile(mobile)
@@ -266,7 +266,7 @@ public class RegisterService {
                 .name(linkman)
                 .mobile(mobile)
                 .email(email)
-                .loginName(agent.getCode())
+                .loginName(code)
                 .password(BCryptUtils.encode(password))
                 .userType(Constants.USER_TYPE_AGENT)
                 .agentId(agent.getId())
@@ -279,6 +279,7 @@ public class RegisterService {
                 .updatedRemark("新增代理商登录账号！")
                 .build();
         DatabaseHelper.insert(systemUser);
+        SmsUtils.sendAgentAccount(mobile, code, password);
 
         String agentInfo = JacksonUtils.writeValueAsString(agent);
         CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);

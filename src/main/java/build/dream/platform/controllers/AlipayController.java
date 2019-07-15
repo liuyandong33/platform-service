@@ -1,5 +1,11 @@
 package build.dream.platform.controllers;
 
+import build.dream.common.api.ApiRest;
+import build.dream.common.saas.domains.AlipayDeveloperAccount;
+import build.dream.common.utils.AlipayUtils;
+import build.dream.common.utils.JacksonUtils;
+import build.dream.common.utils.LogUtils;
+import build.dream.common.utils.ValidateUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.AlipayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +31,22 @@ public class AlipayController {
     public String cacheAlipayAccounts() {
         alipayService.cacheAlipayAccounts();
         return Constants.SUCCESS;
+    }
+
+    @RequestMapping(value = "/generateAppToAppAuthorizeUrl")
+    @ResponseBody
+    public String generateAppToAppAuthorizeUrl() {
+        ApiRest apiRest = null;
+        try {
+            AlipayDeveloperAccount alipayDeveloperAccount = AlipayUtils.obtainAlipayDeveloperAccount("2016121304213325");
+            ValidateUtils.notNull(alipayDeveloperAccount, "支付宝开发者账号不存在！");
+
+            String appToAppAuthorizeUrl = AlipayUtils.generateAppToAppAuthorizeUrl(alipayDeveloperAccount.getAppId(), "https://www.baidu.com");
+            apiRest = ApiRest.builder().data(appToAppAuthorizeUrl).message("生成授权链接成功！").successful(true).build();
+        } catch (Exception e) {
+            LogUtils.error("生成授权链接失败", this.getClass().getName(), "generateAppToAppAuthorizeUrl", e);
+            apiRest = new ApiRest(e);
+        }
+        return JacksonUtils.writeValueAsString(apiRest);
     }
 }
