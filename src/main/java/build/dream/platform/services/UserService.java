@@ -12,7 +12,6 @@ import build.dream.platform.models.user.BatchDeleteUsersModel;
 import build.dream.platform.models.user.BatchGetUsersModel;
 import build.dream.platform.models.user.ObtainAllPrivilegesModel;
 import build.dream.platform.models.user.ObtainUserInfoModel;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,15 +134,6 @@ public class UserService {
     public void cacheUserInfos() {
         SearchModel searchModel = new SearchModel(true);
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
-
-        Map<String, String> userInfos = new HashMap<String, String>();
-        for (SystemUser systemUser : systemUsers) {
-            userInfos.put(systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
-        }
-
-        CommonRedisUtils.del(Constants.KEY_USER_INFOS);
-        if (MapUtils.isNotEmpty(userInfos)) {
-            CommonRedisUtils.hmset(Constants.KEY_USER_INFOS, userInfos);
-        }
+        UserUtils.rejoinCacheUserInfos(systemUsers);
     }
 }

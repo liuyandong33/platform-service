@@ -9,7 +9,6 @@ import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.*;
 import build.dream.platform.utils.SequenceUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -235,10 +234,8 @@ public class AgentService {
             DatabaseHelper.insert(systemUser);
             SmsUtils.sendAgentAccount(mobile, code, password);
 
-            String agentInfo = JacksonUtils.writeValueAsString(agent);
-            CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);
-            CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_code_" + agent.getCode(), agentInfo);
-            CommonRedisUtils.hset(Constants.KEY_USER_INFOS, systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
+            AgentUtils.cacheAgentInfo(agent);
+            UserUtils.cacheUserInfo(systemUser);
         } else if (status == Constants.AGENT_FORM_STATUS_NOT_REJECTED) {
             agentForm.setRejectReason(rejectReason);
         }
@@ -256,21 +253,8 @@ public class AgentService {
      */
     @Transactional(readOnly = true)
     public void cacheAgentInfos() {
-        SearchModel searchModel = SearchModel.builder()
-                .autoSetDeletedFalse()
-                .build();
-
+        SearchModel searchModel = new SearchModel(true);
         List<Agent> agents = DatabaseHelper.findAll(Agent.class, searchModel);
-        Map<String, String> agentInfos = new HashMap<String, String>();
-        for (Agent agent : agents) {
-            String agentInfo = JacksonUtils.writeValueAsString(agent);
-            agentInfos.put("_id_" + agent.getId(), agentInfo);
-            agentInfos.put("_code_" + agent.getCode(), agentInfo);
-        }
-
-        CommonRedisUtils.del(Constants.KEY_AGENT_INFOS);
-        if (MapUtils.isNotEmpty(agentInfos)) {
-            CommonRedisUtils.hmset(Constants.KEY_AGENT_INFOS, agentInfos);
-        }
+        AgentUtils.rejoinCacheAgentInfos(agents);
     }
 }

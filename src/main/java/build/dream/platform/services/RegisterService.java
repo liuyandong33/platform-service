@@ -185,10 +185,8 @@ public class RegisterService {
                 .build();
         DatabaseHelper.insert(tenantGoods);
 
-        String tenantInfo = JacksonUtils.writeValueAsString(tenant);
-        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_id_" + tenantId, tenantInfo);
-        CommonRedisUtils.hset(Constants.KEY_TENANT_INFOS, "_code_" + tenantCode, tenantInfo);
-        CommonRedisUtils.hset(Constants.KEY_USER_INFOS, systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
+        TenantUtils.cacheTenantInfo(tenant);
+        UserUtils.cacheUserInfo(systemUser);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
@@ -281,10 +279,8 @@ public class RegisterService {
         DatabaseHelper.insert(systemUser);
         SmsUtils.sendAgentAccount(mobile, code, password);
 
-        String agentInfo = JacksonUtils.writeValueAsString(agent);
-        CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_id_" + agent.getId(), agentInfo);
-        CommonRedisUtils.hset(Constants.KEY_AGENT_INFOS, "_code_" + agent.getCode(), agentInfo);
-        CommonRedisUtils.hset(Constants.KEY_USER_INFOS, systemUser.getId().toString(), JacksonUtils.writeValueAsString(systemUser));
+        AgentUtils.cacheAgentInfo(agent);
+        UserUtils.cacheUserInfo(systemUser);
 
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("user", systemUser);
