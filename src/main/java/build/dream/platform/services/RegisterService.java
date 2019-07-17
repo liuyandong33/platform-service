@@ -162,10 +162,10 @@ public class RegisterService {
         initializeBranchRequestParameters.put("linkman", linkman);
         initializeBranchRequestParameters.put("contactPhone", contactPhone);
         initializeBranchRequestParameters.put("smartRestaurantStatus", Constants.SMART_RESTAURANT_STATUS_DISABLED.toString());
-        ApiRest initializeBranchApiRest = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
-        ValidateUtils.isTrue(initializeBranchApiRest.isSuccessful(), initializeBranchApiRest.getError());
+        ApiRest initializeBranchResult = ProxyUtils.doPostWithRequestParameters(partitionCode, serviceName, "branch", "initializeBranch", initializeBranchRequestParameters);
+        ValidateUtils.isTrue(initializeBranchResult.isSuccessful(), initializeBranchResult.getError());
 
-        Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchApiRest.getData());
+        Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchResult.getData());
         BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
 
         String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(Constants.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
@@ -197,14 +197,14 @@ public class RegisterService {
 
     private boolean mobileIsUnique(String mobile) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("mobile", Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile);
+        searchModel.addSearchCondition(SystemUser.ColumnName.MOBILE, Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile);
         SystemUser systemUser = DatabaseHelper.find(SystemUser.class, searchModel);
         return systemUser == null;
     }
 
     private boolean emailIsUnique(String email) {
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition("email", Constants.SQL_OPERATION_SYMBOL_EQUAL, email);
+        searchModel.addSearchCondition(SystemUser.ColumnName.EMAIL, Constants.SQL_OPERATION_SYMBOL_EQUAL, email);
         SystemUser systemUser = DatabaseHelper.find(SystemUser.class, searchModel);
         return systemUser == null;
     }
