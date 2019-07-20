@@ -4,6 +4,7 @@ import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
+import build.dream.platform.models.register.SendVerificationCodeModel;
 import build.dream.platform.services.RegisterService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,18 @@ public class RegisterController extends BasicController {
     @ResponseBody
     @ApiRestAction(modelClass = RegisterAgentModel.class, serviceClass = RegisterService.class, serviceMethodName = "registerAgent", error = "注册代理商失败")
     public String registerAgent() {
+        return null;
+    }
+
+    /**
+     * 发送验证码
+     *
+     * @return
+     */
+    @RequestMapping(value = "/sendVerificationCode", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = SendVerificationCodeModel.class, serviceClass = RegisterService.class, serviceMethodName = "sendVerificationCode", error = "发送验证码失败")
+    public String sendVerificationCode() {
         return null;
     }
 }

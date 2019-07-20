@@ -7,6 +7,7 @@ import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
+import build.dream.platform.models.register.SendVerificationCodeModel;
 import build.dream.platform.utils.SequenceUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.MapUtils;
@@ -286,5 +287,19 @@ public class RegisterService {
         data.put("user", systemUser);
         data.put("agent", agent);
         return ApiRest.builder().data(data).message("注册代理商成功！").successful(true).build();
+    }
+
+    /**
+     * 发送验证码
+     *
+     * @param sendVerificationCodeModel
+     * @return
+     */
+    public ApiRest sendVerificationCode(SendVerificationCodeModel sendVerificationCodeModel) {
+        String mobile = sendVerificationCodeModel.getMobile();
+
+        SmsUtils.sendVerificationCode(mobile);
+
+        return ApiRest.builder().message("发送验证码成功！").successful(true).build();
     }
 }
