@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +28,6 @@ public class RegisterService {
      *
      * @param registerTenantModel
      * @return
-     * @throws NoSuchAlgorithmException
-     * @throws ParseException
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest registerTenant(RegisterTenantModel registerTenantModel) {
