@@ -35,10 +35,10 @@ public class AgentService {
 
         SearchModel searchModel = new SearchModel(true);
         if (agentId != null) {
-            searchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_EQUAL, agentId);
+            searchModel.addSearchCondition(Agent.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentId);
         }
         if (StringUtils.isNotBlank(agentCode)) {
-            searchModel.addSearchCondition("code", Constants.SQL_OPERATION_SYMBOL_EQUAL, agentCode);
+            searchModel.addSearchCondition(Agent.ColumnName.CODE, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentCode);
         }
 
         Agent agent = DatabaseHelper.find(Agent.class, searchModel);
