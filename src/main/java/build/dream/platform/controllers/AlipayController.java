@@ -19,6 +19,11 @@ public class AlipayController {
     @Autowired
     private AlipayService alipayService;
 
+    /**
+     * 缓存支付宝开发者账号
+     *
+     * @return
+     */
     @RequestMapping(value = "/cacheAlipayDeveloperAccounts")
     @ResponseBody
     public String cacheAlipayDeveloperAccounts() {
@@ -26,6 +31,11 @@ public class AlipayController {
         return Constants.SUCCESS;
     }
 
+    /**
+     * 缓存支付宝账号
+     *
+     * @return
+     */
     @RequestMapping(value = "/cacheAlipayAccounts")
     @ResponseBody
     public String cacheAlipayAccounts() {
@@ -33,6 +43,11 @@ public class AlipayController {
         return Constants.SUCCESS;
     }
 
+    /**
+     * 生成第三方授权链接
+     *
+     * @return
+     */
     @RequestMapping(value = "/generateAppToAppAuthorizeUrl")
     @ResponseBody
     public String generateAppToAppAuthorizeUrl() {
@@ -54,6 +69,11 @@ public class AlipayController {
         return JacksonUtils.writeValueAsString(apiRest);
     }
 
+    /**
+     * 处理第三方授权回调
+     *
+     * @return
+     */
     @RequestMapping(value = "/callback")
     @ResponseBody
     public String callback() {

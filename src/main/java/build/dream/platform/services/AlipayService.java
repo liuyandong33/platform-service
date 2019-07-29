@@ -59,6 +59,12 @@ public class AlipayService {
         }
     }
 
+    /**
+     * 处理第三方授权回调
+     *
+     * @param params
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest handleCallback(Map<String, String> params) {
         String tenantId = params.get("tenantId");
