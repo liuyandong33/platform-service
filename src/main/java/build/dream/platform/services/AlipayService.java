@@ -115,7 +115,6 @@ public class AlipayService {
             DatabaseHelper.insert(alipayAuthorizerInfo);
         } else {
             alipayAuthorizerInfo.setAppAuthToken(appAuthToken);
-            alipayAuthorizerInfo.setAppAuthToken(appAuthToken);
             alipayAuthorizerInfo.setUserId(userId);
             alipayAuthorizerInfo.setAuthAppId(authAppId);
             alipayAuthorizerInfo.setExpiresIn(expiresIn);
