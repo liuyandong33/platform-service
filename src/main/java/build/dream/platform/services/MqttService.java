@@ -8,6 +8,7 @@ import build.dream.common.utils.ValidateUtils;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.mqtt.ObtainMqttConfigModel;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MqttService {
@@ -17,6 +18,7 @@ public class MqttService {
      * @param obtainMqttConfigModel
      * @return
      */
+    @Transactional(readOnly = true)
     public ApiRest obtainMqttConfig(ObtainMqttConfigModel obtainMqttConfigModel) {
         String partitionCode = obtainMqttConfigModel.getPartitionCode();
         String serviceName = obtainMqttConfigModel.getServiceName();
