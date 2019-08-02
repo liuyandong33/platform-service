@@ -30,6 +30,6 @@ public class MqttService {
         MqttConfig mqttConfig = DatabaseHelper.find(MqttConfig.class, searchModel);
         ValidateUtils.notNull(mqttConfig, "MQTT配置不存在！");
 
-        return ApiRest.builder().data(mqttConfig).message("获取MQTT配置成功！").successful(true).build();
+        return ApiRest.builder().data(mqttConfig).className(MqttConfig.class.getName()).message("获取MQTT配置成功！").successful(true).build();
     }
 }

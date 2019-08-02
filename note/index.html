@@ -1,0 +1,58 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimum-scale=1.0">
+    <title>测试MQTT</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"></script>
+    <script type="text/javascript">
+        host = "post-cn-45918p55a02.mqtt.aliyuncs.com";
+        port = 443;
+        clientId = "GID-eleme_message@@@e5caccc9-c402-45f8-b3cd-76bd03a931a4";
+        var mqtt;
+        var reconnectTimeout = 2000;
+        var username = "Token|LTAI13Q9MtL90vHh|post-cn-45918p55a02";
+        var password = "R|LzMT+XLFl5uQ6bDU0o4vUvkT+8j84QexP3P9rAnycM1YfYNDKkKbsD8SHE+oBvCx+rR6voF7GWNRhmRMkhzqZ2m7YGL4e4YQson4NFbB5qmtRS2NXj2SqGvYEbjuWezvmlC52pgrknmZ4S0Fha69DMJEq94Vh9FCihni7+6Sptb6R8Brtyp9Qwc9gmrHZDB7mUK3oYWYmCbYkVjs8nB//s45KZRghgWzj6IRkmRVm2Ym29yoK3D6OKyz857LgYWHQ3yfEdWrjtRMyQf1mGdhrg==";
+        var topic = "_wpos_message";
+
+        function MQTTconnect() {
+            mqtt = new Paho.MQTT.Client(host, port, clientId);
+            mqtt.onConnectionLost = onConnectionLost;
+            mqtt.onMessageArrived = onMessageArrived;
+
+            var options = {
+                timeout: 3,
+                onSuccess: onConnect,
+                mqttVersion: 4,
+                onFailure: function (message) {
+                    setTimeout(MQTTconnect, reconnectTimeout);
+                }
+            };
+
+            options.userName = username;
+            options.password = password;
+            options.useSSL = true;
+            mqtt.connect(options);
+        }
+
+        function onConnect() {
+            mqtt.subscribe(topic, {qos: 0});
+        }
+
+        function onConnectionLost(response) {
+            alert(JSON.stringify(response))
+            setTimeout(MQTTconnect, reconnectTimeout);
+        }
+
+        function onMessageArrived(message) {
+            var topic = message.destinationName;
+            var payload = message.payloadString;
+            alert(payload);
+        }
+
+        MQTTconnect();
+    </script>
+</head>
+<body>
+</body>
+</html>
