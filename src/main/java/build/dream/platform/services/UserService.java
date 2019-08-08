@@ -3,6 +3,7 @@ package build.dream.platform.services;
 import build.dream.common.api.ApiRest;
 import build.dream.common.constants.ErrorConstants;
 import build.dream.common.saas.domains.*;
+import build.dream.common.tuples.Tuple3;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppPrivilegeMapper;
@@ -15,7 +16,6 @@ import build.dream.platform.models.user.ObtainUserInfoModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scala.Tuple3;
 
 import java.math.BigInteger;
 import java.util.HashMap;
