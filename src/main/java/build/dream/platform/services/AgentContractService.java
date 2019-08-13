@@ -1,7 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.*;
+import build.dream.common.domains.saas.*;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.SerialNumberGenerator;

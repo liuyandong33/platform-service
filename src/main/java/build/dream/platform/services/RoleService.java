@@ -1,9 +1,9 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AppRole;
-import build.dream.common.saas.domains.BackgroundRole;
-import build.dream.common.saas.domains.PosRole;
+import build.dream.common.domains.saas.AppRole;
+import build.dream.common.domains.saas.BackgroundRole;
+import build.dream.common.domains.saas.PosRole;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;

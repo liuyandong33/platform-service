@@ -1,8 +1,8 @@
 package build.dream.platform.jobs;
 
 import build.dream.common.beans.ComponentAccessToken;
-import build.dream.common.saas.domains.WeiXinAuthorizerToken;
-import build.dream.common.saas.domains.WeiXinOpenPlatformApplication;
+import build.dream.common.domains.saas.WeiXinAuthorizerToken;
+import build.dream.common.domains.saas.WeiXinOpenPlatformApplication;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.WeiXinService;

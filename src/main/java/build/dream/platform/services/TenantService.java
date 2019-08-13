@@ -2,7 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.AlipayAccount;
-import build.dream.common.saas.domains.*;
+import build.dream.common.domains.saas.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AlipayMapper;

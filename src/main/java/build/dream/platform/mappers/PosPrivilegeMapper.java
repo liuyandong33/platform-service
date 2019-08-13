@@ -1,6 +1,6 @@
 package build.dream.platform.mappers;
 
-import build.dream.common.saas.domains.PosPrivilege;
+import build.dream.common.domains.saas.PosPrivilege;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.math.BigInteger;

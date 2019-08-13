@@ -7,7 +7,7 @@ import build.dream.common.models.alipay.AlipayTradePayModel;
 import build.dream.common.models.alipay.AlipayTradeWapPayModel;
 import build.dream.common.models.weixinpay.MicroPayModel;
 import build.dream.common.models.weixinpay.UnifiedOrderModel;
-import build.dream.common.saas.domains.*;
+import build.dream.common.domains.saas.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;

@@ -1,9 +1,9 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.Goods;
-import build.dream.common.saas.domains.GoodsSpecification;
-import build.dream.common.saas.domains.GoodsType;
+import build.dream.common.domains.saas.Goods;
+import build.dream.common.domains.saas.GoodsSpecification;
+import build.dream.common.domains.saas.GoodsType;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.goods.*;

@@ -13,7 +13,7 @@
         </foreach>
     </insert>
 
-    <select id="listRolePrivileges" resultType="build.dream.common.saas.domains.AppPrivilege">
+    <select id="listRolePrivileges" resultType="build.dream.common.domains.saas.AppPrivilege">
         SELECT * FROM app_privilege WHERE id IN (SELECT privilege_id FROM app_role_privilege_r WHERE app_role_id = #{roleId}) AND deleted = 0
     </select>
 </mapper>

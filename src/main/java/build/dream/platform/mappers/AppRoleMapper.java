@@ -1,6 +1,6 @@
 package build.dream.platform.mappers;
 
-import build.dream.common.saas.domains.AppPrivilege;
+import build.dream.common.domains.saas.AppPrivilege;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

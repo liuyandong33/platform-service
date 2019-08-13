@@ -2,7 +2,7 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.models.notify.SaveAsyncNotifyModel;
-import build.dream.common.saas.domains.AsyncNotify;
+import build.dream.common.domains.saas.AsyncNotify;
 import build.dream.common.utils.NotifyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

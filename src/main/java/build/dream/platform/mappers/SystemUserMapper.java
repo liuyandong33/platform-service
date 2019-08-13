@@ -1,6 +1,6 @@
 package build.dream.platform.mappers;
 
-import build.dream.common.saas.domains.SystemUser;
+import build.dream.common.domains.saas.SystemUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

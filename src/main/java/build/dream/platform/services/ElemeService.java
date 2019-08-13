@@ -1,9 +1,9 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.ElemeBranchMapping;
-import build.dream.common.saas.domains.ElemeToken;
-import build.dream.common.saas.domains.Tenant;
+import build.dream.common.domains.saas.ElemeBranchMapping;
+import build.dream.common.domains.saas.ElemeToken;
+import build.dream.common.domains.saas.Tenant;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;

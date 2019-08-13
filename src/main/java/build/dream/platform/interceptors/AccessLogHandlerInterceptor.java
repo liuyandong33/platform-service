@@ -1,8 +1,8 @@
 package build.dream.platform.interceptors;
 
 import build.dream.common.annotations.NotSaveAccessLog;
-import build.dream.common.saas.domains.RequestLog;
-import build.dream.common.saas.domains.ResponseLog;
+import build.dream.common.domains.saas.RequestLog;
+import build.dream.common.domains.saas.ResponseLog;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.DatabaseHelper;

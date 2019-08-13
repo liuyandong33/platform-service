@@ -2,9 +2,9 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.District;
-import build.dream.common.saas.domains.Agent;
-import build.dream.common.saas.domains.AgentForm;
-import build.dream.common.saas.domains.SystemUser;
+import build.dream.common.domains.saas.Agent;
+import build.dream.common.domains.saas.AgentForm;
+import build.dream.common.domains.saas.SystemUser;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.agent.*;

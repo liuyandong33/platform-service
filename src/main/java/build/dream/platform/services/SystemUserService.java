@@ -1,6 +1,6 @@
 package build.dream.platform.services;
 
-import build.dream.common.saas.domains.SystemUser;
+import build.dream.common.domains.saas.SystemUser;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
 import org.springframework.stereotype.Service;

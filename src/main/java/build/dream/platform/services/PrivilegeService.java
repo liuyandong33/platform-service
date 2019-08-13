@@ -1,9 +1,9 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AppPrivilege;
-import build.dream.common.saas.domains.BackgroundPrivilege;
-import build.dream.common.saas.domains.PosPrivilege;
+import build.dream.common.domains.saas.AppPrivilege;
+import build.dream.common.domains.saas.BackgroundPrivilege;
+import build.dream.common.domains.saas.PosPrivilege;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.beans.ZTreeNode;

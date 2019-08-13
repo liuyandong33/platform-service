@@ -1,6 +1,6 @@
 package build.dream.platform.services;
 
-import build.dream.common.saas.domains.TenantSecretKey;
+import build.dream.common.domains.saas.TenantSecretKey;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.DatabaseHelper;
 import org.springframework.stereotype.Service;

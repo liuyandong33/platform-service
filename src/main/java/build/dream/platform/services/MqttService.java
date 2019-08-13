@@ -1,7 +1,7 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.catering.domains.MqttConfig;
+import build.dream.common.domains.saas.MqttConfig;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
 import build.dream.common.utils.ValidateUtils;

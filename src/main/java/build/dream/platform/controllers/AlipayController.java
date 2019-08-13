@@ -1,7 +1,7 @@
 package build.dream.platform.controllers;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.AlipayDeveloperAccount;
+import build.dream.common.domains.saas.AlipayDeveloperAccount;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.AlipayService;

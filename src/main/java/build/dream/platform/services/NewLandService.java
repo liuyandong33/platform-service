@@ -1,6 +1,6 @@
 package build.dream.platform.services;
 
-import build.dream.common.saas.domains.NewLandAccount;
+import build.dream.common.domains.saas.NewLandAccount;
 import build.dream.common.utils.CommonRedisUtils;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.JacksonUtils;

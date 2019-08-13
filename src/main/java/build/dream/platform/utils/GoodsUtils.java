@@ -1,8 +1,8 @@
 package build.dream.platform.utils;
 
-import build.dream.common.saas.domains.Goods;
-import build.dream.common.saas.domains.GoodsSpecification;
-import build.dream.common.saas.domains.GoodsType;
+import build.dream.common.domains.saas.Goods;
+import build.dream.common.domains.saas.GoodsSpecification;
+import build.dream.common.domains.saas.GoodsType;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.ParseException;

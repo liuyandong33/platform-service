@@ -1,10 +1,10 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.saas.domains.Activity;
-import build.dream.common.saas.domains.Goods;
-import build.dream.common.saas.domains.GoodsSpecification;
-import build.dream.common.saas.domains.SpecialGoodsActivity;
+import build.dream.common.domains.saas.Activity;
+import build.dream.common.domains.saas.Goods;
+import build.dream.common.domains.saas.GoodsSpecification;
+import build.dream.common.domains.saas.SpecialGoodsActivity;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
