@@ -188,6 +188,6 @@ public class UserService {
                 .build();
         DatabaseHelper.insert(systemUser);
         UserUtils.cacheUserInfo(systemUser);
-        return ApiRest.builder().data(systemUser).message("新增用户信息成功！").successful(true).build();
+        return ApiRest.builder().data(systemUser).className(SystemUser.class.getName()).message("新增用户信息成功！").successful(true).build();
     }
 }
