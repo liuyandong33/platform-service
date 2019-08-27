@@ -9,10 +9,8 @@ import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AppPrivilegeMapper;
 import build.dream.platform.mappers.BackgroundPrivilegeMapper;
 import build.dream.platform.mappers.PosPrivilegeMapper;
-import build.dream.platform.models.user.BatchDeleteUsersModel;
-import build.dream.platform.models.user.BatchGetUsersModel;
-import build.dream.platform.models.user.ObtainAllPrivilegesModel;
-import build.dream.platform.models.user.ObtainUserInfoModel;
+import build.dream.platform.models.user.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +19,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -135,5 +134,59 @@ public class UserService {
         SearchModel searchModel = new SearchModel(true);
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         UserUtils.rejoinCacheUserInfos(systemUsers);
+    }
+
+    /**
+     * 新增用户
+     *
+     * @param addUserModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest addUser(AddUserModel addUserModel) {
+        String name = addUserModel.getName();
+        String mobile = addUserModel.getMobile();
+        String email = addUserModel.getEmail();
+        String loginName = addUserModel.getLoginName();
+        Integer userType = addUserModel.getUserType();
+        String password = addUserModel.getPassword();
+        String weiXinPublicPlatformOpenId = addUserModel.getWeiXinPublicPlatformOpenId();
+        String weiXinOpenPlatformOpenId = addUserModel.getWeiXinOpenPlatformOpenId();
+        BigInteger tenantId = addUserModel.getTenantId();
+        BigInteger agentId = addUserModel.getAgentId();
+        Boolean enabled = addUserModel.getEnabled();
+        BigInteger userId = addUserModel.getUserId();
+
+        SearchModel mobileCountSearchModel = SearchModel.builder()
+                .addSearchCondition(SystemUser.ColumnName.MOBILE, Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile)
+                .build();
+        ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, mobileCountSearchModel) == 0, "手机号码已注册！");
+
+        SearchModel emailCountSearchModel = SearchModel.builder()
+                .addSearchCondition(SystemUser.ColumnName.EMAIL, Constants.SQL_OPERATION_SYMBOL_EQUAL, email)
+                .build();
+        ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
+
+        SystemUser systemUser = SystemUser.builder()
+                .name(name)
+                .mobile(mobile)
+                .email(email)
+                .loginName(loginName)
+                .userType(userType)
+                .password(BCryptUtils.encode(password))
+                .weiXinPublicPlatformOpenId(StringUtils.isBlank(weiXinPublicPlatformOpenId) ? Constants.VARCHAR_DEFAULT_VALUE : weiXinPublicPlatformOpenId)
+                .weiXinOpenPlatformOpenId(StringUtils.isBlank(weiXinOpenPlatformOpenId) ? Constants.VARCHAR_DEFAULT_VALUE : weiXinOpenPlatformOpenId)
+                .tenantId(Objects.nonNull(tenantId) ? tenantId : Constants.BIGINT_DEFAULT_VALUE)
+                .agentId(Objects.nonNull(agentId) ? agentId : Constants.BIGINT_DEFAULT_VALUE)
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .enabled(enabled)
+                .createdUserId(userId)
+                .updatedUserId(userId)
+                .updatedRemark("新增用户信息！")
+                .build();
+        DatabaseHelper.insert(systemUser);
+        return ApiRest.builder().data(systemUser).message("新增用户信息成功！").successful(true).build();
     }
 }

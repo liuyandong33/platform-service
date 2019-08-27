@@ -2,10 +2,7 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.user.BatchDeleteUsersModel;
-import build.dream.platform.models.user.BatchGetUsersModel;
-import build.dream.platform.models.user.ObtainAllPrivilegesModel;
-import build.dream.platform.models.user.ObtainUserInfoModel;
+import build.dream.platform.models.user.*;
 import build.dream.platform.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -78,5 +75,17 @@ public class UserController {
     public String cacheUserInfos() {
         userService.cacheUserInfos();
         return Constants.SUCCESS;
+    }
+
+    /**
+     * 新增用户
+     *
+     * @return
+     */
+    @RequestMapping(value = "/addUser")
+    @ResponseBody
+    @ApiRestAction(modelClass = AddUserModel.class, serviceClass = UserService.class, serviceMethodName = "addUser", error = "新增用户失败")
+    public String addUser() {
+        return null;
     }
 }
