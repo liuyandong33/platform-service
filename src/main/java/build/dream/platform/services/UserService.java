@@ -187,6 +187,7 @@ public class UserService {
                 .updatedRemark("新增用户信息！")
                 .build();
         DatabaseHelper.insert(systemUser);
+        UserUtils.cacheUserInfo(systemUser);
         return ApiRest.builder().data(systemUser).message("新增用户信息成功！").successful(true).build();
     }
 }
