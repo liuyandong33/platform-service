@@ -52,8 +52,10 @@ public class UserService {
             ValidateUtils.notNull(tenant, "商户不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
             BigInteger tenantId = tenant.getId();
 
-            SearchModel tenantSecretKeySearchModel = new SearchModel(true);
-            tenantSecretKeySearchModel.addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
+            SearchModel tenantSecretKeySearchModel = SearchModel.builder()
+                    .autoSetDeletedFalse()
+                    .addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId)
+                    .build();
             TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
             ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
 
@@ -84,8 +86,10 @@ public class UserService {
     public ApiRest batchGetUsers(BatchGetUsersModel batchGetUsersModel) {
         List<BigInteger> userIds = batchGetUsersModel.getUserIds();
 
-        SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds);
+        SearchModel searchModel = SearchModel.builder()
+                .autoSetDeletedFalse()
+                .addSearchCondition(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds)
+                .build();
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         return ApiRest.builder().data(systemUsers).message("批量获取用户信息成功！").successful(true).build();
     }
@@ -131,7 +135,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public void cacheUserInfos() {
-        SearchModel searchModel = new SearchModel(true);
+        SearchModel searchModel = SearchModel.builder().autoSetDeletedFalse().build();
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         UserUtils.rejoinCacheUserInfos(systemUsers);
     }
