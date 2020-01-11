@@ -40,7 +40,7 @@ configurations.all {
 }
 
 dependencies {
-    compile("org.scala-lang:scala-library:2.12.5")
+//    compile("org.scala-lang:scala-library:2.12.5")
     compile("build.dream:lib-common:0.1.0-SNAPSHOT")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-devtools")
