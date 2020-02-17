@@ -2,6 +2,7 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.controllers.BasicController;
+import build.dream.platform.models.register.RegisterAdminModel;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.models.register.SendVerificationCodeModel;
@@ -36,6 +37,18 @@ public class RegisterController extends BasicController {
     @ResponseBody
     @ApiRestAction(modelClass = RegisterAgentModel.class, serviceClass = RegisterService.class, serviceMethodName = "registerAgent", error = "注册代理商失败")
     public String registerAgent() {
+        return null;
+    }
+
+    /**
+     * 注册运营人员账号
+     *
+     * @return
+     */
+    @RequestMapping(value = "/registerAdmin", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    @ApiRestAction(modelClass = RegisterAdminModel.class, serviceClass = RegisterService.class, serviceMethodName = "registerAdmin", error = "注册运营账号失败")
+    public String registerAdmin() {
         return null;
     }
 

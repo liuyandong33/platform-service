@@ -5,6 +5,7 @@ import build.dream.common.beans.District;
 import build.dream.common.domains.saas.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.models.register.RegisterAdminModel;
 import build.dream.platform.models.register.RegisterAgentModel;
 import build.dream.platform.models.register.RegisterTenantModel;
 import build.dream.platform.models.register.SendVerificationCodeModel;
@@ -283,6 +284,43 @@ public class RegisterService {
         data.put("user", systemUser);
         data.put("agent", agent);
         return ApiRest.builder().data(data).message("注册代理商成功！").successful(true).build();
+    }
+
+    /**
+     * 注册运营账号
+     *
+     * @param registerAdminModel
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ApiRest registerAdmin(RegisterAdminModel registerAdminModel) {
+        String name = registerAdminModel.getName();
+        String mobile = registerAdminModel.getMobile();
+        String email = registerAdminModel.getEmail();
+        String password = registerAdminModel.getPassword();
+        BigInteger userId = registerAdminModel.getUserId();
+
+        ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
+        ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");
+
+        String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("admin_code"));
+        SystemUser systemUser = SystemUser.builder()
+                .name(name)
+                .mobile(mobile)
+                .email(email)
+                .loginName(code)
+                .password(BCryptUtils.encode(password))
+                .userType(4)
+                .accountNonExpired(true)
+                .accountNonLocked(true)
+                .credentialsNonExpired(true)
+                .enabled(true)
+                .createdUserId(userId)
+                .updatedUserId(userId)
+                .updatedRemark("新增代理商登录账号！")
+                .build();
+        DatabaseHelper.insert(systemUser);
+        return ApiRest.builder().data(systemUser).message("注册运营账号成功！").successful(true).build();
     }
 
     /**
