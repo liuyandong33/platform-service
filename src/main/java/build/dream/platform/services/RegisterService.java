@@ -303,14 +303,14 @@ public class RegisterService {
         ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
         ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");
 
-        String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue("admin_code"));
+        String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_ADMIN_CODE));
         SystemUser systemUser = SystemUser.builder()
                 .name(name)
                 .mobile(mobile)
                 .email(email)
                 .loginName(code)
                 .password(BCryptUtils.encode(password))
-                .userType(4)
+                .userType(Constants.USER_TYPE_ADMIN)
                 .accountNonExpired(true)
                 .accountNonLocked(true)
                 .credentialsNonExpired(true)
