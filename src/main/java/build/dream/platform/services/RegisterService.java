@@ -320,6 +320,7 @@ public class RegisterService {
                 .updatedRemark("新增代理商登录账号！")
                 .build();
         DatabaseHelper.insert(systemUser);
+        UserUtils.cacheUserInfo(systemUser);
         return ApiRest.builder().data(systemUser).message("注册运营账号成功！").successful(true).build();
     }
 
