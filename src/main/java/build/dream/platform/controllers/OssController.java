@@ -2,8 +2,8 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.common.api.ApiRest;
+import build.dream.common.utils.AliyunOSSUtils;
 import build.dream.common.utils.GsonUtils;
-import build.dream.common.utils.OSSUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +41,7 @@ public class OssController {
         callback.put("callbackBody", "filename=${object}&size=${size}&mimeType=${mimeType}&height=${imageInfo.height}&width=${imageInfo.width}");
         callback.put("callbackBodyType", "application/x-www-form-urlencoded");
 
-        Map<String, String> data = OSSUtils.obtainPolicy(accessId, accessKey, host, dir, expiration, conditions, callback);
+        Map<String, String> data = AliyunOSSUtils.obtainPolicy(accessId, accessKey, host, dir, expiration, conditions, callback);
 
         ApiRest apiRest = new ApiRest();
         apiRest.setData(data);

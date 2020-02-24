@@ -84,7 +84,7 @@ public class WeiXinService {
         BigInteger branchId = saveWeiXinPayAccountModel.getBranchId();
         String appId = saveWeiXinPayAccountModel.getAppId();
         String mchId = saveWeiXinPayAccountModel.getMchId();
-        String apiSecretKey = saveWeiXinPayAccountModel.getApiSecretKey();
+        String apiKey = saveWeiXinPayAccountModel.getApiKey();
         String subPublicAccountAppId = saveWeiXinPayAccountModel.getSubPublicAccountAppId();
         String subOpenPlatformAppId = saveWeiXinPayAccountModel.getSubOpenPlatformAppId();
         String subMiniProgramAppId = saveWeiXinPayAccountModel.getSubMiniProgramAppId();
@@ -94,6 +94,7 @@ public class WeiXinService {
         String operationCertificatePassword = saveWeiXinPayAccountModel.getOperationCertificatePassword();
         SearchModel searchModel = new SearchModel(true);
         boolean acceptanceModel = saveWeiXinPayAccountModel.getAcceptanceModel();
+        String apiV3Key = saveWeiXinPayAccountModel.getApiV3Key();
         BigInteger userId = saveWeiXinPayAccountModel.getUserId();
 
         searchModel.addSearchCondition(WeiXinPayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
@@ -105,8 +106,9 @@ public class WeiXinService {
             weiXinPayAccount.setBranchId(branchId);
             weiXinPayAccount.setAppId(appId);
             weiXinPayAccount.setMchId(mchId);
-            weiXinPayAccount.setApiSecretKey(apiSecretKey);
+            weiXinPayAccount.setApiKey(apiKey);
             weiXinPayAccount.setAcceptanceModel(acceptanceModel);
+            weiXinPayAccount.setApiV3Key(apiV3Key);
             if (StringUtils.isNotBlank(subPublicAccountAppId)) {
                 weiXinPayAccount.setSubOpenPlatformAppId(subPublicAccountAppId);
             }
@@ -141,8 +143,9 @@ public class WeiXinService {
         } else {
             weiXinPayAccount.setAppId(appId);
             weiXinPayAccount.setMchId(mchId);
-            weiXinPayAccount.setApiSecretKey(apiSecretKey);
+            weiXinPayAccount.setApiKey(apiV3Key);
             weiXinPayAccount.setAcceptanceModel(acceptanceModel);
+            weiXinPayAccount.setApiV3Key(apiV3Key);
             weiXinPayAccount.setSubPublicAccountAppId(StringUtils.isNotBlank(subPublicAccountAppId) ? subPublicAccountAppId : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setSubOpenPlatformAppId(StringUtils.isNotBlank(subOpenPlatformAppId) ? subOpenPlatformAppId : Constants.VARCHAR_DEFAULT_VALUE);
             weiXinPayAccount.setSubMiniProgramAppId(StringUtils.isNotBlank(subMiniProgramAppId) ? subMiniProgramAppId : Constants.VARCHAR_DEFAULT_VALUE);
@@ -167,12 +170,19 @@ public class WeiXinService {
         SearchModel searchModel = new SearchModel(true);
         List<WeiXinPayAccount> weiXinPayAccounts = DatabaseHelper.findAll(WeiXinPayAccount.class, searchModel);
         Map<String, String> weiXinPayAccountMap = new HashMap<String, String>();
+        Map<String, String> weiXinPayApiV3KeyMap = new HashMap<String, String>();
         for (WeiXinPayAccount weiXinPayAccount : weiXinPayAccounts) {
             weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), JacksonUtils.writeValueAsString(weiXinPayAccount));
+            weiXinPayApiV3KeyMap.put(weiXinPayAccount.getAppId(), weiXinPayAccount.getApiV3Key());
         }
         CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
             CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
+        }
+
+        CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_API_V3_KEYS);
+        if (MapUtils.isNotEmpty(weiXinPayApiV3KeyMap)) {
+            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_API_V3_KEYS, weiXinPayApiV3KeyMap);
         }
     }
 

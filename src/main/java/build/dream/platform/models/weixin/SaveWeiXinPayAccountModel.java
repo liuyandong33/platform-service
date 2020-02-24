@@ -21,7 +21,7 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
     private String mchId;
 
     @NotNull
-    private String apiSecretKey;
+    private String apiKey;
 
     private String subPublicAccountAppId;
 
@@ -39,6 +39,8 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
 
     @NotNull
     private Boolean acceptanceModel;
+
+    private String apiV3Key;
 
     @NotNull
     private BigInteger userId;
@@ -75,12 +77,12 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
         this.mchId = mchId;
     }
 
-    public String getApiSecretKey() {
-        return apiSecretKey;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setApiSecretKey(String apiSecretKey) {
-        this.apiSecretKey = apiSecretKey;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 
     public String getSubPublicAccountAppId() {
@@ -145,6 +147,14 @@ public class SaveWeiXinPayAccountModel extends BasicModel {
 
     public void setAcceptanceModel(Boolean acceptanceModel) {
         this.acceptanceModel = acceptanceModel;
+    }
+
+    public String getApiV3Key() {
+        return apiV3Key;
+    }
+
+    public void setApiV3Key(String apiV3Key) {
+        this.apiV3Key = apiV3Key;
     }
 
     public BigInteger getUserId() {
