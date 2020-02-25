@@ -6,10 +6,11 @@ import build.dream.common.domains.saas.*;
 import build.dream.common.tuples.Tuple3;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.mappers.AppPrivilegeMapper;
-import build.dream.platform.mappers.BackgroundPrivilegeMapper;
-import build.dream.platform.mappers.PosPrivilegeMapper;
-import build.dream.platform.models.user.*;
+import build.dream.platform.mappers.PrivilegeMapper;
+import build.dream.platform.models.user.AddUserModel;
+import build.dream.platform.models.user.BatchDeleteUsersModel;
+import build.dream.platform.models.user.BatchGetUsersModel;
+import build.dream.platform.models.user.ObtainUserInfoModel;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,7 @@ import java.util.Objects;
 @Service
 public class UserService {
     @Autowired
-    private BackgroundPrivilegeMapper backgroundPrivilegeMapper;
-    @Autowired
-    private AppPrivilegeMapper appPrivilegeMapper;
-    @Autowired
-    private PosPrivilegeMapper posPrivilegeMapper;
+    private PrivilegeMapper privilegeMapper;
 
     /**
      * 获取用户信息
@@ -59,9 +56,9 @@ public class UserService {
             TenantSecretKey tenantSecretKey = DatabaseHelper.find(TenantSecretKey.class, tenantSecretKeySearchModel);
             ValidateUtils.notNull(tenantSecretKey, "未检索到商户秘钥！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
 
-            List<AppPrivilege> appPrivileges = appPrivilegeMapper.findAllAppPrivileges(userId);
-            List<PosPrivilege> posPrivileges = posPrivilegeMapper.findAllPosPrivileges(userId);
-            List<BackgroundPrivilege> backgroundPrivileges = backgroundPrivilegeMapper.findAllBackgroundPrivileges(userId);
+            List<AppPrivilege> appPrivileges = privilegeMapper.findAllAppPrivileges(userId);
+            List<PosPrivilege> posPrivileges = privilegeMapper.findAllPosPrivileges(userId);
+            List<BackgroundPrivilege> backgroundPrivileges = privilegeMapper.findAllBackgroundPrivileges(userId);
 
             data.put("tenant", tenant);
             data.put("tenantSecretKey", tenantSecretKey);
@@ -92,25 +89,6 @@ public class UserService {
                 .build();
         List<SystemUser> systemUsers = DatabaseHelper.findAll(SystemUser.class, searchModel);
         return ApiRest.builder().data(systemUsers).message("批量获取用户信息成功！").successful(true).build();
-    }
-
-    /**
-     * 获取用户所有权限
-     *
-     * @param obtainAllPrivilegesModel
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public ApiRest obtainAllPrivileges(ObtainAllPrivilegesModel obtainAllPrivilegesModel) {
-        Object data = null;
-        if (Constants.PRIVILEGE_TYPE_BACKGROUND.equals(obtainAllPrivilegesModel.getType())) {
-            data = backgroundPrivilegeMapper.findAllBackgroundPrivileges(obtainAllPrivilegesModel.getUserId());
-        } else if (Constants.PRIVILEGE_TYPE_APP.equals(obtainAllPrivilegesModel.getType())) {
-            data = appPrivilegeMapper.findAllAppPrivileges(obtainAllPrivilegesModel.getUserId());
-        } else if (Constants.PRIVILEGE_TYPE_POS.equals(obtainAllPrivilegesModel.getType())) {
-            data = posPrivilegeMapper.findAllPosPrivileges(obtainAllPrivilegesModel.getUserId());
-        }
-        return ApiRest.builder().data(data).message("查询权限成功！").successful(true).build();
     }
 
     /**

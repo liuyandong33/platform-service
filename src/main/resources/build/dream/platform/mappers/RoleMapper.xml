@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="build.dream.platform.mappers.RoleMapper">
+    <delete id="deleteTenantAppRolePrivileges">
+        DELETE FROM tenant_role_app_privilege_r WHERE role_id = ${roleId}
+    </delete>
+
+    <delete id="deleteTenantPosRolePrivileges">
+        DELETE FROM tenant_role_pos_privilege_r WHERE role_id = ${roleId}
+    </delete>
+
+    <delete id="deleteTenantBackgroundRolePrivileges">
+        DELETE FROM tenant_role_background_privilege_r WHERE role_id = ${roleId}
+    </delete>
+
+    <insert id="saveTenantRoleAppPrivileges">
+        INSERT INTO tenant_role_app_privilege_r(role_id, privilege_id)
+        VALUES
+        <foreach collection="privilegeIds" index="index" item="privilegeId" separator=",">
+            (#{roleId}, #{privilegeId})
+        </foreach>
+    </insert>
+
+    <insert id="saveTenantRolePosPrivileges">
+        INSERT INTO tenant_role_pos_privilege_r(role_id, privilege_id)
+        VALUES
+        <foreach collection="privilegeIds" index="index" item="privilegeId" separator=",">
+            (#{roleId}, #{privilegeId})
+        </foreach>
+    </insert>
+
+    <insert id="saveTenantRoleBackgroundPrivileges">
+        INSERT INTO tenant_role_background_privilege_r(role_id, privilege_id)
+        VALUES
+        <foreach collection="privilegeIds" index="index" item="privilegeId" separator=",">
+            (#{roleId}, #{privilegeId})
+        </foreach>
+    </insert>
+
+    <select id="listRoleAppPrivileges" resultType="build.dream.common.domains.saas.AppPrivilege">
+        SELECT
+        app_privilege.*
+        FROM tenant_role_app_privilege_r
+        INNER JOIN app_privilege ON app_privilege.id = tenant_role_app_privilege_r.privilege_id
+        WHERE tenant_role_app_privilege_r.role_id = #{roleId}
+    </select>
+
+    <select id="listRolePosPrivileges" resultType="build.dream.common.domains.saas.PosPrivilege">
+        SELECT
+        pos_privilege.*
+        FROM tenant_role_pos_privilege_r
+        INNER JOIN pos_privilege ON pos_privilege.id = tenant_role_pos_privilege_r.privilege_id
+        WHERE tenant_role_pos_privilege_r.role_id = #{roleId}
+    </select>
+
+    <select id="listRoleBackgroundPrivileges" resultType="build.dream.common.domains.saas.BackgroundPrivilege">
+        SELECT
+        background_privilege.*
+        FROM tenant_role_background_privilege_r
+        INNER JOIN background_privilege ON background_privilege.id = tenant_role_background_privilege_r.privilege_id
+        WHERE tenant_role_background_privilege_r.role_id = #{roleId}
+    </select>
+</mapper>

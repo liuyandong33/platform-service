@@ -10,14 +10,17 @@ import java.math.BigInteger;
 import java.util.List;
 
 public class SaveRolePrivilegesModel extends BasicModel {
-    private static final String[] TYPES = {Constants.PRIVILEGE_TYPE_BACKGROUND, Constants.PRIVILEGE_TYPE_APP, Constants.PRIVILEGE_TYPE_POS};
     @NotNull
     private BigInteger roleId;
 
     @NotNull
-    private List<BigInteger> privilegeIds;
+    private List<BigInteger> appPrivilegeIds;
 
-    private String type;
+    @NotNull
+    private List<BigInteger> posPrivilegeIds;
+
+    @NotNull
+    private List<BigInteger> backgroundPrivilegeIds;
 
     public BigInteger getRoleId() {
         return roleId;
@@ -27,30 +30,27 @@ public class SaveRolePrivilegesModel extends BasicModel {
         this.roleId = roleId;
     }
 
-    public List<BigInteger> getPrivilegeIds() {
-        return privilegeIds;
+    public List<BigInteger> getAppPrivilegeIds() {
+        return appPrivilegeIds;
     }
 
-    public void setPrivilegeIds(List<BigInteger> privilegeIds) {
-        this.privilegeIds = privilegeIds;
+    public void setAppPrivilegeIds(List<BigInteger> appPrivilegeIds) {
+        this.appPrivilegeIds = appPrivilegeIds;
     }
 
-    public String getType() {
-        return type;
+    public List<BigInteger> getPosPrivilegeIds() {
+        return posPrivilegeIds;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setPosPrivilegeIds(List<BigInteger> posPrivilegeIds) {
+        this.posPrivilegeIds = posPrivilegeIds;
     }
 
-    @Override
-    public boolean validate() {
-        return super.validate() && ArrayUtils.contains(TYPES, type);
+    public List<BigInteger> getBackgroundPrivilegeIds() {
+        return backgroundPrivilegeIds;
     }
 
-    @Override
-    public void validateAndThrow() {
-        super.validateAndThrow();
-        ApplicationHandler.inArray(TYPES, type, "type");
+    public void setBackgroundPrivilegeIds(List<BigInteger> backgroundPrivilegeIds) {
+        this.backgroundPrivilegeIds = backgroundPrivilegeIds;
     }
 }

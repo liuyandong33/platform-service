@@ -2,7 +2,10 @@ package build.dream.platform.controllers;
 
 import build.dream.common.annotations.ApiRestAction;
 import build.dream.platform.constants.Constants;
-import build.dream.platform.models.user.*;
+import build.dream.platform.models.user.AddUserModel;
+import build.dream.platform.models.user.BatchDeleteUsersModel;
+import build.dream.platform.models.user.BatchGetUsersModel;
+import build.dream.platform.models.user.ObtainUserInfoModel;
 import build.dream.platform.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -38,18 +41,6 @@ public class UserController {
     @ResponseBody
     @ApiRestAction(modelClass = BatchGetUsersModel.class, serviceClass = UserService.class, serviceMethodName = "batchGetUsers", error = "获取用户信息失败")
     public String batchGetUsers() {
-        return null;
-    }
-
-    /**
-     * 获取用户所有的权限
-     *
-     * @return
-     */
-    @RequestMapping(value = "/obtainAllPrivileges", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    @ApiRestAction(modelClass = ObtainAllPrivilegesModel.class, serviceClass = UserService.class, serviceMethodName = "obtainAllPrivileges", error = "获取用户权限失败")
-    public String obtainAllPrivileges() {
         return null;
     }
 
