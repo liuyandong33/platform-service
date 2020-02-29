@@ -1,7 +1,10 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
-import build.dream.common.domains.saas.*;
+import build.dream.common.domains.saas.AppPrivilege;
+import build.dream.common.domains.saas.BackgroundPrivilege;
+import build.dream.common.domains.saas.PosPrivilege;
+import build.dream.common.domains.saas.TenantRole;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.PagedSearchModel;
 import build.dream.common.utils.SearchModel;
@@ -46,8 +49,8 @@ public class RoleService {
         pagedSearchModel.setPage(listRolesModel.getPage());
         pagedSearchModel.setRows(listRolesModel.getRows());
 
-        long total = DatabaseHelper.count(BackgroundRole.class, countSearchModel);
-        List<TenantRole> tenantRoles = new ArrayList<TenantRole>();
+        long total = DatabaseHelper.count(TenantRole.class, countSearchModel);
+        List<TenantRole> tenantRoles = null;
         if (total > 0) {
             tenantRoles = DatabaseHelper.findAllPaged(TenantRole.class, pagedSearchModel);
         } else {

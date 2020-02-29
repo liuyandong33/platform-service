@@ -336,7 +336,7 @@ public class OrderService {
                     .outTradeNo(orderNumber)
                     .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
-                    .topic("")
+                    .mqConfig(null)
                     .tradeType(tradeType)
                     .openId(openId)
                     .subOpenId(subOpenId)
@@ -345,7 +345,7 @@ public class OrderService {
             data = WeiXinPayUtils.unifiedOrder(unifiedOrderModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_MOBILE_WEBSITE) {
             AlipayTradeWapPayModel alipayTradeWapPayModel = AlipayTradeWapPayModel.builder()
-                    .topic("")
+                    .mqConfig(null)
                     .subject("订单支付")
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
@@ -354,7 +354,7 @@ public class OrderService {
             data = AlipayUtils.alipayTradeWapPay(alipayTradeWapPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_PC_WEBSITE) {
             AlipayTradePagePayModel alipayTradePagePayModel = AlipayTradePagePayModel.builder()
-                    .topic("")
+                    .mqConfig(null)
                     .outTradeNo(orderNumber)
                     .productCode(orderNumber)
                     .totalAmount(payableAmount)
@@ -363,7 +363,7 @@ public class OrderService {
             data = AlipayUtils.alipayTradePagePay(alipayTradePagePayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_APP) {
             AlipayTradeAppPayModel alipayTradeAppPayModel = AlipayTradeAppPayModel.builder()
-                    .topic("")
+                    .mqConfig(null)
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .subject("订单支付")
@@ -371,7 +371,7 @@ public class OrderService {
             data = AlipayUtils.alipayTradeAppPay(alipayTradeAppPayModel);
         } else if (paidScene == Constants.PAID_SCENE_ALIPAY_FAC_TO_FACE) {
             AlipayTradePayModel alipayTradePayModel = AlipayTradePayModel.builder()
-                    .topic("")
+                    .mqConfig(null)
                     .outTradeNo(orderNumber)
                     .totalAmount(payableAmount)
                     .scene(Constants.SCENE_BAR_CODE)
