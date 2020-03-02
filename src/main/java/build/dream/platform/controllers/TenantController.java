@@ -102,7 +102,11 @@ public class TenantController {
         return null;
     }
 
-
+    /**
+     * 修改门店数量
+     *
+     * @return
+     */
     @RequestMapping(value = "/updateBranchCount", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     @ApiRestAction(modelClass = UpdateBranchCountModel.class, serviceClass = TenantService.class, serviceMethodName = "changeBranchCount", error = "修改门店数量失败")
@@ -110,10 +114,19 @@ public class TenantController {
         return null;
     }
 
+    /**
+     * 缓存商户信息
+     *
+     * @return
+     */
     @RequestMapping(value = "/cacheTenantInfos")
     @ResponseBody
     public String cacheTenantInfos() {
-        tenantService.cacheTenantInfos();
-        return Constants.SUCCESS;
+        try {
+            tenantService.cacheTenantInfos();
+            return Constants.SUCCESS;
+        } catch (Exception e) {
+            return Constants.FAILURE;
+        }
     }
 }

@@ -4,6 +4,8 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.domains.saas.OauthClientDetail;
 import build.dream.common.utils.BCryptUtils;
 import build.dream.common.utils.DatabaseHelper;
+import build.dream.common.utils.OauthClientDetailUtils;
+import build.dream.common.utils.SearchModel;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.oauthclientdetail.SaveOauthClientDetailModel;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Service
 public class OauthClientDetailService {
@@ -47,5 +50,12 @@ public class OauthClientDetailService {
                 .build();
         DatabaseHelper.insert(oauthClientDetail);
         return ApiRest.builder().data(oauthClientDetail).message("新增成功！").successful(true).build();
+    }
+
+    @Transactional(readOnly = true)
+    public void cacheOauthClientDetails() {
+        SearchModel searchModel = SearchModel.builder().autoSetDeletedFalse().build();
+        List<OauthClientDetail> oauthClientDetails = DatabaseHelper.findAll(OauthClientDetail.class, searchModel);
+        OauthClientDetailUtils.rejoinCacheOauthClientDetails(oauthClientDetails);
     }
 }

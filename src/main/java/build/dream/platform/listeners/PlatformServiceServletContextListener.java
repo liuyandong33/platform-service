@@ -27,6 +27,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private JDDJService jddjService;
     @Autowired
     private AgentService agentService;
+    @Autowired
+    private OauthClientDetailService oauthClientDetailService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -59,6 +61,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
         // 缓存代理商信息
         agentService.cacheAgentInfos();
+
+        // 缓存oauth客户端信息
+        oauthClientDetailService.cacheOauthClientDetails();
 
         // 启动所有定时任务
         jobScheduler.scheduler();

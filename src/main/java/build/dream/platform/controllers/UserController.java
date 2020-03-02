@@ -64,8 +64,12 @@ public class UserController {
     @RequestMapping(value = "/cacheUserInfos")
     @ResponseBody
     public String cacheUserInfos() {
-        userService.cacheUserInfos();
-        return Constants.SUCCESS;
+        try {
+            userService.cacheUserInfos();
+            return Constants.SUCCESS;
+        } catch (Exception e) {
+            return Constants.FAILURE;
+        }
     }
 
     /**
