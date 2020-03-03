@@ -166,7 +166,7 @@ public class RegisterService {
         Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchResult.getData());
         Long branchId = Long.valueOf(MapUtils.getLongValue(branchInfo, "id"));
 
-        String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(Constants.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
+        String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(ConfigurationKeys.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
         if (StringUtils.isBlank(basicServicesGoodsFreeTrialDays)) {
             basicServicesGoodsFreeTrialDays = "30";
         }

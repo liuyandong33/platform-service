@@ -20,4 +20,9 @@ public class ConfigurationKeys extends build.dream.common.constants.Configuratio
      * 零售业态当前分区
      */
     public static final String RETAIL_CURRENT_PARTITION_CODE = "retail.current.partition.code";
+
+    /**
+     * 基础服务免费试用天数
+     */
+    public static final String BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS = "basic.services.goods.free.trial.days";
 }
