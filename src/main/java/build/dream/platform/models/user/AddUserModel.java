@@ -5,7 +5,6 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class AddUserModel extends BasicModel {
     @NotNull
@@ -30,15 +29,15 @@ public class AddUserModel extends BasicModel {
 
     private String weiXinOpenPlatformOpenId;
 
-    private BigInteger tenantId;
+    private Long tenantId;
 
-    private BigInteger agentId;
+    private Long agentId;
 
     @NotNull
     private Boolean enabled;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     public String getName() {
         return name;
@@ -104,19 +103,19 @@ public class AddUserModel extends BasicModel {
         this.weiXinOpenPlatformOpenId = weiXinOpenPlatformOpenId;
     }
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 
@@ -128,11 +127,11 @@ public class AddUserModel extends BasicModel {
         this.enabled = enabled;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

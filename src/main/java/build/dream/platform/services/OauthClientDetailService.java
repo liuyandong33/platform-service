@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -30,7 +29,7 @@ public class OauthClientDetailService {
         Integer refreshTokenValidity = saveOauthClientDetailModel.getRefreshTokenValidity();
         String additionalInformation = saveOauthClientDetailModel.getAdditionalInformation();
         String autoApproveScope = saveOauthClientDetailModel.getAutoApproveScope();
-        BigInteger userId = saveOauthClientDetailModel.getUserId();
+        Long userId = saveOauthClientDetailModel.getUserId();
 
         OauthClientDetail oauthClientDetail = OauthClientDetail.builder()
                 .clientId(clientId)

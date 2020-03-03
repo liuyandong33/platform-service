@@ -5,11 +5,10 @@ import build.dream.common.models.BasicModel;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class ListRolesModel extends BasicModel {
     @NotNull
-    private BigInteger tenantId;
+    private Long tenantId;
 
     @NotNull
     @Min(value = 1)
@@ -20,11 +19,11 @@ public class ListRolesModel extends BasicModel {
     @Max(value = 500)
     private Integer rows;
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 

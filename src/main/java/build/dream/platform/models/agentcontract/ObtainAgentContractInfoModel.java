@@ -3,27 +3,26 @@ package build.dream.platform.models.agentcontract;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class ObtainAgentContractInfoModel extends BasicModel {
     @NotNull
-    private BigInteger agentId;
+    private Long agentId;
     @NotNull
-    private BigInteger agentContractId;
+    private Long agentContractId;
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 
-    public BigInteger getAgentContractId() {
+    public Long getAgentContractId() {
         return agentContractId;
     }
 
-    public void setAgentContractId(BigInteger agentContractId) {
+    public void setAgentContractId(Long agentContractId) {
         this.agentContractId = agentContractId;
     }
 }

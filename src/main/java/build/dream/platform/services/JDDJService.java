@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -61,7 +60,7 @@ public class JDDJService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveJDDJInfo(SaveJDDJInfoModel saveJDDJInfoModel) {
-        BigInteger tenantId = saveJDDJInfoModel.getTenantId();
+        Long tenantId = saveJDDJInfoModel.getTenantId();
         String appKey = saveJDDJInfoModel.getAppKey();
         String appSecret = saveJDDJInfoModel.getAppSecret();
         String venderId = saveJDDJInfoModel.getVenderId();

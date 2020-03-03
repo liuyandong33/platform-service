@@ -3,29 +3,28 @@ package build.dream.platform.models.user;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 import java.util.List;
 
 public class BatchDeleteUsersModel extends BasicModel {
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     @NotNull
-    private List<BigInteger> userIds;
+    private List<Long> userIds;
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public List<BigInteger> getUserIds() {
+    public List<Long> getUserIds() {
         return userIds;
     }
 
-    public void setUserIds(List<BigInteger> userIds) {
+    public void setUserIds(List<Long> userIds) {
         this.userIds = userIds;
     }
 }

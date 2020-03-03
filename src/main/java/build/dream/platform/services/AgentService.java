@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,7 @@ public class AgentService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainAgentInfo(ObtainAgentInfoModel obtainAgentInfoModel) {
-        BigInteger agentId = obtainAgentInfoModel.getAgentId();
+        Long agentId = obtainAgentInfoModel.getAgentId();
         String agentCode = obtainAgentInfoModel.getAgentCode();
 
         SearchModel searchModel = new SearchModel(true);
@@ -88,8 +87,8 @@ public class AgentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest deleteAgent(DeleteAgentModel deleteAgentModel) {
-        BigInteger agentId = deleteAgentModel.getAgentId();
-        BigInteger userId = deleteAgentModel.getUserId();
+        Long agentId = deleteAgentModel.getAgentId();
+        Long userId = deleteAgentModel.getUserId();
         Agent agent = DatabaseHelper.find(Agent.class, agentId);
         ValidateUtils.notNull(agent, "代理商不存在！");
 
@@ -136,7 +135,7 @@ public class AgentService {
         District district = DistrictUtils.obtainDistrictById(districtCode);
         ValidateUtils.notNull(province, "区域编码错误！");
 
-        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        Long userId = CommonUtils.getServiceSystemUserId();
         AgentForm agentForm = AgentForm.builder()
                 .name(name)
                 .linkman(linkman)
@@ -168,8 +167,8 @@ public class AgentService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest verifyAgentForm(VerifyAgentFormModel verifyAgentFormModel) {
-        BigInteger agentFormId = verifyAgentFormModel.getAgentFormId();
-        BigInteger userId = verifyAgentFormModel.getUserId();
+        Long agentFormId = verifyAgentFormModel.getAgentFormId();
+        Long userId = verifyAgentFormModel.getUserId();
         int status = verifyAgentFormModel.getStatus();
         String rejectReason = verifyAgentFormModel.getRejectReason();
 

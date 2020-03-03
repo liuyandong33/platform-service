@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,8 +31,8 @@ public class AgentContractService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveAgentContract(SaveAgentContractModel saveAgentContractModel) {
-        BigInteger agentContractId = saveAgentContractModel.getAgentContractId();
-        BigInteger userId = saveAgentContractModel.getUserId();
+        Long agentContractId = saveAgentContractModel.getAgentContractId();
+        Long userId = saveAgentContractModel.getUserId();
         if (agentContractId == null) {
             AgentContract agentContract = new AgentContract();
             String contractNumber = "HT" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.currentValue("agent_contract_number"));
@@ -48,8 +46,8 @@ public class AgentContractService {
             agentContract.setUpdatedRemark("新增代理商合同！");
 
             List<SaveAgentContractModel.ContractPriceInfo> contractPriceInfos = saveAgentContractModel.getContractPriceInfos();
-            List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-            List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+            List<Long> goodsIds = new ArrayList<Long>();
+            List<Long> goodsSpecificationIds = new ArrayList<Long>();
             for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
                 goodsIds.add(contractPriceInfo.getGoodsId());
                 goodsSpecificationIds.add(contractPriceInfo.getGoodsSpecificationId());
@@ -62,8 +60,8 @@ public class AgentContractService {
             goodsSpecificationSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
             List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
 
-            Map<BigInteger, Goods> goodsMap = new HashMap<BigInteger, Goods>();
-            Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
+            Map<Long, Goods> goodsMap = new HashMap<Long, Goods>();
+            Map<Long, GoodsSpecification> goodsSpecificationMap = new HashMap<Long, GoodsSpecification>();
             for (Goods goods : goodses) {
                 goodsMap.put(goods.getId(), goods);
             }
@@ -78,8 +76,8 @@ public class AgentContractService {
                 GoodsSpecification goodsSpecification = goodsSpecificationMap.get(contractPriceInfo.getGoodsSpecificationId());
                 Validate.notNull(goodsSpecification, "商品规格不存在！");
 
-                BigDecimal contractPrice = contractPriceInfo.getContractPrice();
-                Validate.isTrue(contractPrice.compareTo(BigDecimal.ZERO) >= 0 && contractPrice.compareTo(goodsSpecification.getAgentPrice()) <= 0, "商品【" + goods.getName() + "-" + goodsSpecification.getName() + "】的合同价格错误！");
+                Double contractPrice = contractPriceInfo.getContractPrice();
+                Validate.isTrue(contractPrice >= 0 && contractPrice <= goodsSpecification.getAgentPrice(), "商品【" + goods.getName() + "-" + goodsSpecification.getName() + "】的合同价格错误！");
 
                 AgentContractPriceInfo agentContractPriceInfo = new AgentContractPriceInfo();
                 agentContractPriceInfo.setAgentContractId(agentContract.getId());
@@ -100,7 +98,7 @@ public class AgentContractService {
             Validate.notNull(agentContract, "代理商合同不存在！");
             Validate.isTrue(agentContract.getStatus() == Constants.AGENT_CONTRACT_STATUS_UNAUDITED, "只有未审核状态的代理商合同才能修改！");
 
-            List<BigInteger> agentContractPriceInfoIds = new ArrayList<BigInteger>();
+            List<Long> agentContractPriceInfoIds = new ArrayList<Long>();
             List<SaveAgentContractModel.ContractPriceInfo> contractPriceInfos = saveAgentContractModel.getContractPriceInfos();
             for (SaveAgentContractModel.ContractPriceInfo contractPriceInfo : contractPriceInfos) {
                 agentContractPriceInfoIds.add(contractPriceInfo.getId());
@@ -109,7 +107,7 @@ public class AgentContractService {
             agentContractPriceInfoSearchModel.addSearchCondition("id", Constants.SQL_OPERATION_SYMBOL_IN, agentContractPriceInfoIds);
             agentContractPriceInfoSearchModel.addSearchCondition("agent_contract_id", Constants.SQL_OPERATION_SYMBOL_EQUAL, agentContract.getId());
             List<AgentContractPriceInfo> agentContractPriceInfos = DatabaseHelper.findAll(AgentContractPriceInfo.class, agentContractPriceInfoSearchModel);
-            Map<BigInteger, AgentContractPriceInfo> agentContractPriceInfoMap = new HashMap<BigInteger, AgentContractPriceInfo>();
+            Map<Long, AgentContractPriceInfo> agentContractPriceInfoMap = new HashMap<Long, AgentContractPriceInfo>();
             for (AgentContractPriceInfo agentContractPriceInfo : agentContractPriceInfos) {
                 agentContractPriceInfoMap.put(agentContractPriceInfo.getId(), agentContractPriceInfo);
             }
@@ -140,9 +138,9 @@ public class AgentContractService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest auditAgentContract(AuditAgentContractModel auditAgentContractModel) {
-        BigInteger agentContractId = auditAgentContractModel.getAgentContractId();
-        BigInteger agentId = auditAgentContractModel.getAgentId();
-        BigInteger userId = auditAgentContractModel.getUserId();
+        Long agentContractId = auditAgentContractModel.getAgentContractId();
+        Long agentId = auditAgentContractModel.getAgentId();
+        Long userId = auditAgentContractModel.getUserId();
 
         SearchModel searchModel = new SearchModel();
         searchModel.addSearchCondition(AgentContract.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentContractId);
@@ -186,9 +184,9 @@ public class AgentContractService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest terminateAgentContract(TerminateAgentContractModel terminateAgentContractModel) {
-        BigInteger agentContractId = terminateAgentContractModel.getAgentContractId();
-        BigInteger agentId = terminateAgentContractModel.getAgentId();
-        BigInteger userId = terminateAgentContractModel.getUserId();
+        Long agentContractId = terminateAgentContractModel.getAgentContractId();
+        Long agentId = terminateAgentContractModel.getAgentId();
+        Long userId = terminateAgentContractModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(AgentContract.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentContractId);
@@ -272,8 +270,8 @@ public class AgentContractService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainAgentContractInfo(ObtainAgentContractInfoModel obtainAgentContractInfoModel) {
-        BigInteger agentId = obtainAgentContractInfoModel.getAgentId();
-        BigInteger agentContractId = obtainAgentContractInfoModel.getAgentContractId();
+        Long agentId = obtainAgentContractInfoModel.getAgentId();
+        Long agentContractId = obtainAgentContractInfoModel.getAgentContractId();
 
         SearchModel agentSearchModel = new SearchModel(true);
         agentSearchModel.addSearchCondition(Agent.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, agentId);

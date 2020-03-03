@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -29,9 +28,9 @@ public class ElemeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest handleTenantAuthorizeCallback(HandleTenantAuthorizeCallbackModel handleTenantAuthorizeCallbackModel) throws IOException {
-        BigInteger tenantId = handleTenantAuthorizeCallbackModel.getTenantId();
-        BigInteger branchId = handleTenantAuthorizeCallbackModel.getBranchId();
-        BigInteger userId = handleTenantAuthorizeCallbackModel.getUserId();
+        Long tenantId = handleTenantAuthorizeCallbackModel.getTenantId();
+        Long branchId = handleTenantAuthorizeCallbackModel.getBranchId();
+        Long userId = handleTenantAuthorizeCallbackModel.getUserId();
         Integer elemeAccountType = handleTenantAuthorizeCallbackModel.getElemeAccountType();
         String code = handleTenantAuthorizeCallbackModel.getCode();
 
@@ -94,10 +93,10 @@ public class ElemeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveElemeBranchMapping(SaveElemeBranchMappingModel saveElemeBranchMappingModel) {
-        BigInteger tenantId = saveElemeBranchMappingModel.getTenantId();
-        BigInteger branchId = saveElemeBranchMappingModel.getBranchId();
-        BigInteger userId = saveElemeBranchMappingModel.getUserId();
-        BigInteger shopId = saveElemeBranchMappingModel.getShopId();
+        Long tenantId = saveElemeBranchMappingModel.getTenantId();
+        Long branchId = saveElemeBranchMappingModel.getBranchId();
+        Long userId = saveElemeBranchMappingModel.getUserId();
+        Long shopId = saveElemeBranchMappingModel.getShopId();
         String updatedRemark = "门店(" + branchId + ")绑定饿了么(" + shopId + ")，清除绑定关系！";
 
         UpdateModel updateModel = UpdateModel.builder()
@@ -130,9 +129,9 @@ public class ElemeService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest verifyToken(VerifyTokenModel verifyTokenModel) {
-        BigInteger tenantId = verifyTokenModel.getTenantId();
-        BigInteger branchId = verifyTokenModel.getBranchId();
-        BigInteger userId = verifyTokenModel.getUserId();
+        Long tenantId = verifyTokenModel.getTenantId();
+        Long branchId = verifyTokenModel.getBranchId();
+        Long userId = verifyTokenModel.getUserId();
         int elemeAccountType = verifyTokenModel.getElemeAccountType();
 
         boolean isEffective = ElemeUtils.verifyToken(tenantId.toString(), branchId.toString(), elemeAccountType);

@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -34,7 +33,7 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainTenantInfo(ObtainTenantInfoModel obtainTenantInfoModel) {
-        BigInteger tenantId = obtainTenantInfoModel.getTenantId();
+        Long tenantId = obtainTenantInfoModel.getTenantId();
         String tenantCode = obtainTenantInfoModel.getTenantCode();
 
         SearchModel searchModel = new SearchModel(true);
@@ -57,8 +56,8 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainAllGoodsInfos(ObtainAllGoodsInfosModel obtainAllGoodsInfosModel) {
-        BigInteger tenantId = obtainAllGoodsInfosModel.getTenantId();
-        BigInteger branchId = obtainAllGoodsInfosModel.getBranchId();
+        Long tenantId = obtainAllGoodsInfosModel.getTenantId();
+        Long branchId = obtainAllGoodsInfosModel.getBranchId();
 
         List<Map<String, Object>> goodsInfos = tenantGoodsMapper.findAllGoodsInfos(tenantId, branchId);
         Map<String, Object> data = new HashMap<String, Object>();
@@ -76,9 +75,9 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
-        BigInteger tenantId = obtainGoodsInfoModel.getTenantId();
-        BigInteger branchId = obtainGoodsInfoModel.getBranchId();
-        BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
+        Long tenantId = obtainGoodsInfoModel.getTenantId();
+        Long branchId = obtainGoodsInfoModel.getBranchId();
+        Long goodsId = obtainGoodsInfoModel.getGoodsId();
 
         Map<String, Object> goodsInfo = tenantGoodsMapper.findGoodsInfo(tenantId, branchId, goodsId);
         ValidateUtils.notEmpty(goodsInfo, "未检索到产品购买信息！");
@@ -98,8 +97,8 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainPayAccounts(ObtainPayAccountsModel obtainPayAccountsModel) {
-        BigInteger tenantId = obtainPayAccountsModel.getTenantId();
-        BigInteger branchId = obtainPayAccountsModel.getBranchId();
+        Long tenantId = obtainPayAccountsModel.getTenantId();
+        Long branchId = obtainPayAccountsModel.getBranchId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
         searchConditions.add(new SearchCondition(WeiXinPayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId));
@@ -149,7 +148,7 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainTenantSecretKey(ObtainTenantSecretKeyModel obtainTenantSecretKeyModel) {
-        BigInteger tenantId = obtainTenantSecretKeyModel.getTenantId();
+        Long tenantId = obtainTenantSecretKeyModel.getTenantId();
 
         SearchModel tenantSecretKeySearchModel = new SearchModel(true);
         tenantSecretKeySearchModel.addSearchCondition(TenantSecretKey.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
@@ -161,11 +160,11 @@ public class TenantService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest updateTenantInfo(UpdateTenantInfoModel updateTenantInfoModel) {
-        BigInteger id = updateTenantInfoModel.getId();
+        Long id = updateTenantInfoModel.getId();
         String name = updateTenantInfoModel.getName();
         Integer vipSharedType = updateTenantInfoModel.getVipSharedType();
-        BigInteger dadaSourceId = updateTenantInfoModel.getDadaSourceId();
-        BigInteger userId = updateTenantInfoModel.getUserId();
+        Long dadaSourceId = updateTenantInfoModel.getDadaSourceId();
+        Long userId = updateTenantInfoModel.getUserId();
 
         Tenant tenant = DatabaseHelper.find(Tenant.class, id);
         ValidateUtils.notNull(tenant, "商户不存在！");
@@ -222,14 +221,14 @@ public class TenantService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest updateBranchCount(UpdateBranchCountModel updateBranchCountModel) {
-        BigInteger tenantId = updateBranchCountModel.getTenantId();
+        Long tenantId = updateBranchCountModel.getTenantId();
         int changeCount = updateBranchCountModel.getChangeCount();
         int type = updateBranchCountModel.getType();
 
         UpdateModel updateModel = UpdateModel.builder()
                 .autoSetDeletedFalse()
                 .addContentValue(Tenant.ColumnName.DELETED, 1, 1)
-                .addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.BIG_INTEGER_ONE)
+                .addSearchCondition(Tenant.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, 1L)
                 .build();
         DatabaseHelper.universalUpdate(updateModel, Tenant.TABLE_NAME);
         return ApiRest.builder().message("更新门店数量成功！").successful(true).build();

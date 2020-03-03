@@ -3,47 +3,46 @@ package build.dream.platform.models.eleme;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class SaveElemeBranchMappingModel extends BasicModel {
     @NotNull
-    private BigInteger tenantId;
+    private Long tenantId;
     @NotNull
-    private BigInteger branchId;
+    private Long branchId;
     @NotNull
-    private BigInteger shopId;
+    private Long shopId;
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
-    public BigInteger getBranchId() {
+    public Long getBranchId() {
         return branchId;
     }
 
-    public void setBranchId(BigInteger branchId) {
+    public void setBranchId(Long branchId) {
         this.branchId = branchId;
     }
 
-    public BigInteger getShopId() {
+    public Long getShopId() {
         return shopId;
     }
 
-    public void setShopId(BigInteger shopId) {
+    public void setShopId(Long shopId) {
         this.shopId = shopId;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

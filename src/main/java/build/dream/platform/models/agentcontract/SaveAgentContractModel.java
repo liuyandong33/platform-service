@@ -5,16 +5,14 @@ import build.dream.common.models.BasicModel;
 import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
 public class SaveAgentContractModel extends BasicModel {
-    private BigInteger agentContractId;
+    private Long agentContractId;
 
     @NotNull
-    private BigInteger agentId;
+    private Long agentId;
 
     @NotNull
     private Date startTime;
@@ -23,24 +21,24 @@ public class SaveAgentContractModel extends BasicModel {
     private Date endTime;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     @VerifyJsonSchema(value = Constants.CONTRACT_PRICE_INFOS_SCHEMA_FILE_PATH)
     private List<ContractPriceInfo> contractPriceInfos;
 
-    public BigInteger getAgentContractId() {
+    public Long getAgentContractId() {
         return agentContractId;
     }
 
-    public void setAgentContractId(BigInteger agentContractId) {
+    public void setAgentContractId(Long agentContractId) {
         this.agentContractId = agentContractId;
     }
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 
@@ -60,11 +58,11 @@ public class SaveAgentContractModel extends BasicModel {
         this.endTime = endTime;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -77,40 +75,40 @@ public class SaveAgentContractModel extends BasicModel {
     }
 
     public static class ContractPriceInfo {
-        private BigInteger id;
-        private BigInteger goodsId;
-        private BigInteger goodsSpecificationId;
-        private BigDecimal contractPrice;
+        private Long id;
+        private Long goodsId;
+        private Long goodsSpecificationId;
+        private Double contractPrice;
 
-        public BigInteger getId() {
+        public Long getId() {
             return id;
         }
 
-        public void setId(BigInteger id) {
+        public void setId(Long id) {
             this.id = id;
         }
 
-        public BigInteger getGoodsId() {
+        public Long getGoodsId() {
             return goodsId;
         }
 
-        public void setGoodsId(BigInteger goodsId) {
+        public void setGoodsId(Long goodsId) {
             this.goodsId = goodsId;
         }
 
-        public BigInteger getGoodsSpecificationId() {
+        public Long getGoodsSpecificationId() {
             return goodsSpecificationId;
         }
 
-        public void setGoodsSpecificationId(BigInteger goodsSpecificationId) {
+        public void setGoodsSpecificationId(Long goodsSpecificationId) {
             this.goodsSpecificationId = goodsSpecificationId;
         }
 
-        public BigDecimal getContractPrice() {
+        public Double getContractPrice() {
             return contractPrice;
         }
 
-        public void setContractPrice(BigDecimal contractPrice) {
+        public void setContractPrice(Double contractPrice) {
             this.contractPrice = contractPrice;
         }
     }

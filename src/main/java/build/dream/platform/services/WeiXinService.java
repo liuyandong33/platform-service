@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class WeiXinService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinPublicAccount(ObtainWeiXinPublicAccountModel obtainWeiXinPublicAccountModel) {
-        BigInteger tenantId = obtainWeiXinPublicAccountModel.getTenantId();
+        Long tenantId = obtainWeiXinPublicAccountModel.getTenantId();
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
@@ -64,7 +63,7 @@ public class WeiXinService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainWeiXinMiniPrograms(ObtainWeiXinMiniProgramsModel obtainWeiXinMiniProgramsModel) {
-        BigInteger tenantId = obtainWeiXinMiniProgramsModel.getTenantId();
+        Long tenantId = obtainWeiXinMiniProgramsModel.getTenantId();
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         searchModel.addSearchCondition(WeiXinAuthorizerInfo.ColumnName.AUTHORIZER_TYPE, Constants.SQL_OPERATION_SYMBOL_EQUAL, Constants.AUTHORIZER_TYPE_MINI_PROGRAM);
@@ -80,8 +79,8 @@ public class WeiXinService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveWeiXinPayAccount(SaveWeiXinPayAccountModel saveWeiXinPayAccountModel) {
-        BigInteger tenantId = saveWeiXinPayAccountModel.getTenantId();
-        BigInteger branchId = saveWeiXinPayAccountModel.getBranchId();
+        Long tenantId = saveWeiXinPayAccountModel.getTenantId();
+        Long branchId = saveWeiXinPayAccountModel.getBranchId();
         String appId = saveWeiXinPayAccountModel.getAppId();
         String mchId = saveWeiXinPayAccountModel.getMchId();
         String apiKey = saveWeiXinPayAccountModel.getApiKey();
@@ -95,7 +94,7 @@ public class WeiXinService {
         SearchModel searchModel = new SearchModel(true);
         boolean acceptanceModel = saveWeiXinPayAccountModel.getAcceptanceModel();
         String apiV3Key = saveWeiXinPayAccountModel.getApiV3Key();
-        BigInteger userId = saveWeiXinPayAccountModel.getUserId();
+        Long userId = saveWeiXinPayAccountModel.getUserId();
 
         searchModel.addSearchCondition(WeiXinPayAccount.ColumnName.TENANT_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, tenantId);
         searchModel.addSearchCondition(WeiXinPayAccount.ColumnName.BRANCH_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, branchId);
@@ -253,7 +252,7 @@ public class WeiXinService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest handleAuthCallback(HandleAuthCallbackModel handleAuthCallbackModel) throws IOException {
-        BigInteger tenantId = handleAuthCallbackModel.getTenantId();
+        Long tenantId = handleAuthCallbackModel.getTenantId();
         String componentAppId = handleAuthCallbackModel.getComponentAppId();
         String authCode = handleAuthCallbackModel.getAuthCode();
 

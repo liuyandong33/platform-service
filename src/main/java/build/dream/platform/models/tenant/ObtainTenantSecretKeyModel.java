@@ -3,17 +3,16 @@ package build.dream.platform.models.tenant;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class ObtainTenantSecretKeyModel extends BasicModel {
     @NotNull
-    private BigInteger tenantId;
+    private Long tenantId;
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 }

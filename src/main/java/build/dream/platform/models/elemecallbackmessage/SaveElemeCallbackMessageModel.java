@@ -4,7 +4,6 @@ import build.dream.common.models.BasicModel;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class SaveElemeCallbackMessageModel extends BasicModel {
     @NotNull
@@ -15,23 +14,23 @@ public class SaveElemeCallbackMessageModel extends BasicModel {
     private Integer type;
 
     @NotNull
-    private BigInteger appId;
+    private Long appId;
 
     @NotNull
     private String message;
 
     @NotNull
-    private BigInteger shopId;
+    private Long shopId;
 
     @NotNull
-    private BigInteger timestamp;
+    private Long timestamp;
 
     @NotNull
     @Length(max = 50)
     private String signature;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     public String getRequestId() {
         return requestId;
@@ -49,11 +48,11 @@ public class SaveElemeCallbackMessageModel extends BasicModel {
         this.type = type;
     }
 
-    public BigInteger getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(BigInteger appId) {
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
@@ -65,19 +64,19 @@ public class SaveElemeCallbackMessageModel extends BasicModel {
         this.message = message;
     }
 
-    public BigInteger getShopId() {
+    public Long getShopId() {
         return shopId;
     }
 
-    public void setShopId(BigInteger shopId) {
+    public void setShopId(Long shopId) {
         this.shopId = shopId;
     }
 
-    public BigInteger getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(BigInteger timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -89,11 +88,11 @@ public class SaveElemeCallbackMessageModel extends BasicModel {
         this.signature = signature;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

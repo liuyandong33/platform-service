@@ -2,9 +2,9 @@ package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
 import build.dream.common.beans.AlipayAccount;
-import build.dream.common.models.alipay.AlipayOpenAuthTokenAppModel;
 import build.dream.common.domains.saas.AlipayAuthorizerInfo;
 import build.dream.common.domains.saas.AlipayDeveloperAccount;
+import build.dream.common.models.alipay.AlipayOpenAuthTokenAppModel;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.mappers.AlipayMapper;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,8 +99,8 @@ public class AlipayService {
         AlipayAuthorizerInfo alipayAuthorizerInfo = DatabaseHelper.find(AlipayAuthorizerInfo.class, searchModel);
         if (Objects.isNull(alipayAuthorizerInfo)) {
             alipayAuthorizerInfo = AlipayAuthorizerInfo.builder()
-                    .tenantId(BigInteger.valueOf(Long.valueOf(tenantId)))
-                    .branchId(BigInteger.valueOf(Long.valueOf(branchId)))
+                    .tenantId(Long.valueOf(Long.valueOf(tenantId)))
+                    .branchId(Long.valueOf(Long.valueOf(branchId)))
                     .appId(appId)
                     .appAuthToken(appAuthToken)
                     .userId(userId)
@@ -109,8 +108,8 @@ public class AlipayService {
                     .expiresIn(expiresIn)
                     .reExpiresIn(reExpiresIn)
                     .appRefreshToken(appRefreshToken)
-                    .createdUserId(BigInteger.ZERO)
-                    .updatedUserId(BigInteger.ZERO)
+                    .createdUserId(0L)
+                    .updatedUserId(0L)
                     .build();
             DatabaseHelper.insert(alipayAuthorizerInfo);
         } else {

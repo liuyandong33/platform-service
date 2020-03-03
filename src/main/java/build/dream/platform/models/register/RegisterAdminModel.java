@@ -4,7 +4,6 @@ import build.dream.common.models.BasicModel;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class RegisterAdminModel extends BasicModel {
     /**
@@ -36,7 +35,7 @@ public class RegisterAdminModel extends BasicModel {
     private String password;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     public String getName() {
         return name;
@@ -70,11 +69,11 @@ public class RegisterAdminModel extends BasicModel {
         this.password = password;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

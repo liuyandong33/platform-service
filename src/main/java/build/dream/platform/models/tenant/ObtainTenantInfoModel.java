@@ -4,18 +4,16 @@ import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ValidateUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.math.BigInteger;
-
 public class ObtainTenantInfoModel extends BasicModel {
-    private BigInteger tenantId;
+    private Long tenantId;
 
     private String tenantCode;
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 

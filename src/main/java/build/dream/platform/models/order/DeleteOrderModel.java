@@ -3,27 +3,26 @@ package build.dream.platform.models.order;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class DeleteOrderModel extends BasicModel {
     @NotNull
-    private BigInteger orderInfoId;
+    private Long orderInfoId;
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    public BigInteger getOrderInfoId() {
+    public Long getOrderInfoId() {
         return orderInfoId;
     }
 
-    public void setOrderInfoId(BigInteger orderInfoId) {
+    public void setOrderInfoId(Long orderInfoId) {
         this.orderInfoId = orderInfoId;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

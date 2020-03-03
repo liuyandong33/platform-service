@@ -1,13 +1,13 @@
 package build.dream.platform.services;
 
 import build.dream.common.api.ApiRest;
+import build.dream.common.domains.saas.*;
 import build.dream.common.models.alipay.AlipayTradeAppPayModel;
 import build.dream.common.models.alipay.AlipayTradePagePayModel;
 import build.dream.common.models.alipay.AlipayTradePayModel;
 import build.dream.common.models.alipay.AlipayTradeWapPayModel;
 import build.dream.common.models.weixinpay.MicroPayModel;
 import build.dream.common.models.weixinpay.UnifiedOrderModel;
-import build.dream.common.domains.saas.*;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.order.*;
@@ -19,9 +19,6 @@ import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,9 +33,9 @@ public class OrderService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveOrder(SaveOrderModel saveOrderModel) {
-        BigInteger userId = saveOrderModel.getUserId();
-        List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-        List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+        Long userId = saveOrderModel.getUserId();
+        List<Long> goodsIds = new ArrayList<Long>();
+        List<Long> goodsSpecificationIds = new ArrayList<Long>();
         List<SaveOrderModel.GoodsInfo> goodsInfos = saveOrderModel.getGoodsInfos();
         for (SaveOrderModel.GoodsInfo goodsInfo : goodsInfos) {
             goodsIds.add(goodsInfo.getGoodsId());
@@ -48,7 +45,7 @@ public class OrderService {
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
         List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
-        Map<BigInteger, Goods> goodsMap = new LinkedHashMap<BigInteger, Goods>();
+        Map<Long, Goods> goodsMap = new LinkedHashMap<Long, Goods>();
         for (Goods goods : goodses) {
             goodsMap.put(goods.getId(), goods);
         }
@@ -56,7 +53,7 @@ public class OrderService {
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
-        Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new LinkedHashMap<BigInteger, GoodsSpecification>();
+        Map<Long, GoodsSpecification> goodsSpecificationMap = new LinkedHashMap<Long, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
         }
@@ -78,8 +75,8 @@ public class OrderService {
         orderInfo.setUpdatedUserId(userId);
         DatabaseHelper.insert(orderInfo);
 
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        BigDecimal discountAmount = BigDecimal.ZERO;
+        Double totalAmount = 0D;
+        Double discountAmount = 0D;
         List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
         for (SaveOrderModel.GoodsInfo goodsInfo : goodsInfos) {
             Goods goods = goodsMap.get(goodsInfo.getGoodsId());
@@ -97,18 +94,18 @@ public class OrderService {
             Integer quantity = goodsInfo.getQuantity();
             if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getTenantPrice());
-                orderDetail.setTotalAmount(goodsSpecification.getTenantPrice().multiply(BigDecimal.valueOf(quantity)));
-                orderDetail.setDiscountAmount(BigDecimal.ZERO);
+                orderDetail.setTotalAmount(goodsSpecification.getTenantPrice() * Double.valueOf(quantity));
+                orderDetail.setDiscountAmount(0D);
                 orderDetail.setBranchId(goodsInfo.getBranchId());
             } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
                 orderDetail.setPrice(goodsSpecification.getAgentPrice());
-                orderDetail.setTotalAmount(goodsSpecification.getAgentPrice().multiply(BigDecimal.valueOf(quantity)));
-                orderDetail.setDiscountAmount(BigDecimal.ZERO);
+                orderDetail.setTotalAmount(goodsSpecification.getAgentPrice() * Double.valueOf(quantity));
+                orderDetail.setDiscountAmount(0D);
             }
-            orderDetail.setPayableAmount(orderDetail.getTotalAmount().subtract(orderDetail.getDiscountAmount()));
+            orderDetail.setPayableAmount(orderDetail.getTotalAmount() - orderDetail.getDiscountAmount());
             orderDetail.setQuantity(quantity);
-            totalAmount = totalAmount.add(orderDetail.getTotalAmount());
-            discountAmount = discountAmount.add(orderDetail.getDiscountAmount());
+            totalAmount = totalAmount + orderDetail.getTotalAmount();
+            discountAmount = discountAmount + orderDetail.getDiscountAmount();
             orderDetail.setCreatedUserId(userId);
             orderDetail.setUpdatedUserId(userId);
             orderDetail.setUpdatedRemark("保存订单详情信息！");
@@ -118,8 +115,8 @@ public class OrderService {
 
         orderInfo.setTotalAmount(totalAmount);
         orderInfo.setDiscountAmount(discountAmount);
-        orderInfo.setPayableAmount(totalAmount.subtract(discountAmount));
-        orderInfo.setPaidAmount(BigDecimal.ZERO);
+        orderInfo.setPayableAmount(totalAmount - discountAmount);
+        orderInfo.setPaidAmount(0D);
         orderInfo.setUpdatedRemark("保存订单信息！");
         DatabaseHelper.update(orderInfo);
 
@@ -138,7 +135,7 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainOrderInfo(ObtainOrderInfoModel obtainOrderInfoModel) {
-        BigInteger orderInfoId = obtainOrderInfoModel.getOrderInfoId();
+        Long orderInfoId = obtainOrderInfoModel.getOrderInfoId();
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, orderInfoId);
         ValidateUtils.notNull(orderInfo, "订单不存在！");
 
@@ -162,8 +159,8 @@ public class OrderService {
     public ApiRest obtainAllOrderInfos(ObtainAllOrderInfosModel obtainAllOrderInfosModel) {
         int page = obtainAllOrderInfosModel.getPage();
         int rows = obtainAllOrderInfosModel.getRows();
-        BigInteger tenantId = obtainAllOrderInfosModel.getTenantId();
-        BigInteger agentId = obtainAllOrderInfosModel.getAgentId();
+        Long tenantId = obtainAllOrderInfosModel.getTenantId();
+        Long agentId = obtainAllOrderInfosModel.getAgentId();
 
         List<SearchCondition> searchConditions = new ArrayList<SearchCondition>();
         searchConditions.add(new SearchCondition(OrderInfo.ColumnName.DELETED, Constants.SQL_OPERATION_SYMBOL_GREATER_THAN_EQUAL, 0));
@@ -186,7 +183,7 @@ public class OrderService {
             pagedSearchModel.setRows(rows);
             List<OrderInfo> orderInfos = DatabaseHelper.findAllPaged(OrderInfo.class, pagedSearchModel);
 
-            List<BigInteger> orderIds = new ArrayList<BigInteger>();
+            List<Long> orderIds = new ArrayList<Long>();
             for (OrderInfo orderInfo : orderInfos) {
                 orderIds.add(orderInfo.getId());
             }
@@ -194,7 +191,7 @@ public class OrderService {
             SearchModel orderDetailSearchModel = new SearchModel(true);
             orderDetailSearchModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_IN, orderIds);
             List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
-            Map<BigInteger, List<OrderDetail>> orderDetailsMap = orderDetails.stream().collect(Collectors.groupingBy(OrderDetail::getOrderInfoId));
+            Map<Long, List<OrderDetail>> orderDetailsMap = orderDetails.stream().collect(Collectors.groupingBy(OrderDetail::getOrderInfoId));
 
             for (OrderInfo orderInfo : orderInfos) {
                 Map<String, Object> order = new HashMap<String, Object>();
@@ -218,8 +215,8 @@ public class OrderService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest batchDeleteOrders(BatchDeleteOrdersModel batchDeleteOrdersModel) {
-        List<BigInteger> orderInfoIds = batchDeleteOrdersModel.getOrderInfoIds();
-        BigInteger userId = batchDeleteOrdersModel.getUserId();
+        List<Long> orderInfoIds = batchDeleteOrdersModel.getOrderInfoIds();
+        Long userId = batchDeleteOrdersModel.getUserId();
 
         UpdateModel orderInfoUpdateModel = UpdateModel.builder()
                 .autoSetDeletedFalse()
@@ -249,8 +246,8 @@ public class OrderService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest deleteOrder(DeleteOrderModel deleteOrderModel) {
-        BigInteger orderInfoId = deleteOrderModel.getOrderInfoId();
-        BigInteger userId = deleteOrderModel.getUserId();
+        Long orderInfoId = deleteOrderModel.getOrderInfoId();
+        Long userId = deleteOrderModel.getUserId();
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(OrderInfo.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfoId);
         OrderInfo orderInfo = DatabaseHelper.find(OrderInfo.class, searchModel);
@@ -281,7 +278,7 @@ public class OrderService {
      */
     @Transactional(readOnly = true)
     public ApiRest doPay(DoPayModel doPayModel) throws DocumentException {
-        BigInteger orderInfoId = doPayModel.getOrderInfoId();
+        Long orderInfoId = doPayModel.getOrderInfoId();
         int paidScene = doPayModel.getPaidScene();
         String authCode = doPayModel.getAuthCode();
         String openId = doPayModel.getOpenId();
@@ -296,7 +293,7 @@ public class OrderService {
         String tenantId = "0";
         String branchId = "0";
 
-        BigDecimal payableAmount = orderInfo.getPayableAmount().setScale(2, RoundingMode.DOWN);
+        Double payableAmount = orderInfo.getPayableAmount();
 
         Object data = null;
         if (paidScene == Constants.PAID_SCENE_WEI_XIN_MICROPAY) {
@@ -311,7 +308,7 @@ public class OrderService {
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .totalFee(Double.valueOf(payableAmount * 100).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .authCode(authCode)
                     .build();
@@ -334,7 +331,7 @@ public class OrderService {
                     .signType(Constants.MD5)
                     .body("订单支付")
                     .outTradeNo(orderNumber)
-                    .totalFee(payableAmount.multiply(Constants.BIG_DECIMAL_ONE_HUNDRED).intValue())
+                    .totalFee((Double.valueOf(payableAmount * 100)).intValue())
                     .spbillCreateIp(ApplicationHandler.getRemoteAddress())
                     .mqConfig(null)
                     .tradeType(tradeType)
@@ -404,7 +401,7 @@ public class OrderService {
 
         ValidateUtils.isTrue(orderStatus == Constants.ORDER_STATUS_UNPAID, "订单状态异常！");
 
-        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        Long userId = CommonUtils.getServiceSystemUserId();
 
         orderInfo.setOrderStatus(Constants.ORDER_STATUS_PAID);
         orderInfo.setPaidAmount(orderInfo.getPayableAmount());
@@ -417,21 +414,21 @@ public class OrderService {
         orderDetailSearchModel.addSearchCondition(OrderDetail.ColumnName.ORDER_INFO_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, orderInfo.getId());
         List<OrderDetail> orderDetails = DatabaseHelper.findAll(OrderDetail.class, orderDetailSearchModel);
 
-        BigInteger orderId = orderInfo.getId();
+        Long orderId = orderInfo.getId();
         Date occurrenceTime = new Date();
 
         List<SaleFlow> saleFlows = new ArrayList<SaleFlow>();
         int orderType = orderInfo.getOrderType();
         if (orderType == Constants.ORDER_TYPE_TENANT_ORDER) {
-            BigInteger tenantId = orderInfo.getTenantId();
+            Long tenantId = orderInfo.getTenantId();
             Tenant tenant = DatabaseHelper.find(Tenant.class, tenantId);
             String partitionCode = tenant.getPartitionCode();
             String serviceName = CommonUtils.getServiceName(tenant.getBusiness());
 
             for (OrderDetail orderDetail : orderDetails) {
-                BigInteger branchId = orderDetail.getBranchId();
-                BigInteger goodsId = orderDetail.getGoodsId();
-                BigInteger goodsSpecificationId = orderDetail.getGoodsSpecificationId();
+                Long branchId = orderDetail.getBranchId();
+                Long goodsId = orderDetail.getGoodsId();
+                Long goodsSpecificationId = orderDetail.getGoodsSpecificationId();
                 int quantity = orderDetail.getQuantity();
 
                 SearchModel tenantGoodsSearchModel = new SearchModel(true);
@@ -502,11 +499,11 @@ public class OrderService {
                 saleFlows.add(saleFlow);
             }
         } else if (orderType == Constants.ORDER_TYPE_AGENT_ORDER) {
-            BigInteger agentId = orderInfo.getAgentId();
+            Long agentId = orderInfo.getAgentId();
             List<ActivationCodeInfo> activationCodeInfos = new ArrayList<ActivationCodeInfo>();
             for (OrderDetail orderDetail : orderDetails) {
-                BigInteger goodsId = orderDetail.getGoodsId();
-                BigInteger goodsSpecificationId = orderDetail.getGoodsSpecificationId();
+                Long goodsId = orderDetail.getGoodsId();
+                Long goodsSpecificationId = orderDetail.getGoodsSpecificationId();
                 int quantity = orderDetail.getQuantity();
                 for (int index = 0; index < quantity; index++) {
                     ActivationCodeInfo activationCodeInfo = ActivationCodeInfo.builder()

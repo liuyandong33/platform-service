@@ -4,14 +4,13 @@ import build.dream.common.models.BasicModel;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class VerifyAgentFormModel extends BasicModel {
     @NotNull
-    private BigInteger agentFormId;
+    private Long agentFormId;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     @NotNull
     private Integer status;
@@ -19,19 +18,19 @@ public class VerifyAgentFormModel extends BasicModel {
     @Length(max = 255)
     private String rejectReason;
 
-    public BigInteger getAgentFormId() {
+    public Long getAgentFormId() {
         return agentFormId;
     }
 
-    public void setAgentFormId(BigInteger agentFormId) {
+    public void setAgentFormId(Long agentFormId) {
         this.agentFormId = agentFormId;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

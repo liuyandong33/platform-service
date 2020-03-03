@@ -7,7 +7,6 @@ import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 import java.util.List;
 
 public class SaveOrderModel extends BasicModel {
@@ -16,10 +15,10 @@ public class SaveOrderModel extends BasicModel {
     private Integer orderType;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    private BigInteger tenantId;
-    private BigInteger agentId;
+    private Long tenantId;
+    private Long agentId;
 
     @NotEmpty
     @VerifyJsonSchema(value = Constants.GOODS_INFOS_SCHEMA_FILE_PATH)
@@ -33,27 +32,27 @@ public class SaveOrderModel extends BasicModel {
         this.orderType = orderType;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 
@@ -81,24 +80,24 @@ public class SaveOrderModel extends BasicModel {
     }
 
     public static class GoodsInfo {
-        private BigInteger goodsId;
-        private BigInteger goodsSpecificationId;
+        private Long goodsId;
+        private Long goodsSpecificationId;
         private Integer quantity;
-        private BigInteger branchId;
+        private Long branchId;
 
-        public BigInteger getGoodsId() {
+        public Long getGoodsId() {
             return goodsId;
         }
 
-        public void setGoodsId(BigInteger goodsId) {
+        public void setGoodsId(Long goodsId) {
             this.goodsId = goodsId;
         }
 
-        public BigInteger getGoodsSpecificationId() {
+        public Long getGoodsSpecificationId() {
             return goodsSpecificationId;
         }
 
-        public void setGoodsSpecificationId(BigInteger goodsSpecificationId) {
+        public void setGoodsSpecificationId(Long goodsSpecificationId) {
             this.goodsSpecificationId = goodsSpecificationId;
         }
 
@@ -110,11 +109,11 @@ public class SaveOrderModel extends BasicModel {
             this.quantity = quantity;
         }
 
-        public BigInteger getBranchId() {
+        public Long getBranchId() {
             return branchId;
         }
 
-        public void setBranchId(BigInteger branchId) {
+        public void setBranchId(Long branchId) {
             this.branchId = branchId;
         }
     }

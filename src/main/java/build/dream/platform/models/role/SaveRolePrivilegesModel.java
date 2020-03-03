@@ -1,56 +1,52 @@
 package build.dream.platform.models.role;
 
 import build.dream.common.models.BasicModel;
-import build.dream.common.utils.ApplicationHandler;
-import build.dream.platform.constants.Constants;
-import org.apache.commons.lang.ArrayUtils;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 import java.util.List;
 
 public class SaveRolePrivilegesModel extends BasicModel {
     @NotNull
-    private BigInteger roleId;
+    private Long roleId;
 
     @NotNull
-    private List<BigInteger> appPrivilegeIds;
+    private List<Long> appPrivilegeIds;
 
     @NotNull
-    private List<BigInteger> posPrivilegeIds;
+    private List<Long> posPrivilegeIds;
 
     @NotNull
-    private List<BigInteger> backgroundPrivilegeIds;
+    private List<Long> backgroundPrivilegeIds;
 
-    public BigInteger getRoleId() {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(BigInteger roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
-    public List<BigInteger> getAppPrivilegeIds() {
+    public List<Long> getAppPrivilegeIds() {
         return appPrivilegeIds;
     }
 
-    public void setAppPrivilegeIds(List<BigInteger> appPrivilegeIds) {
+    public void setAppPrivilegeIds(List<Long> appPrivilegeIds) {
         this.appPrivilegeIds = appPrivilegeIds;
     }
 
-    public List<BigInteger> getPosPrivilegeIds() {
+    public List<Long> getPosPrivilegeIds() {
         return posPrivilegeIds;
     }
 
-    public void setPosPrivilegeIds(List<BigInteger> posPrivilegeIds) {
+    public void setPosPrivilegeIds(List<Long> posPrivilegeIds) {
         this.posPrivilegeIds = posPrivilegeIds;
     }
 
-    public List<BigInteger> getBackgroundPrivilegeIds() {
+    public List<Long> getBackgroundPrivilegeIds() {
         return backgroundPrivilegeIds;
     }
 
-    public void setBackgroundPrivilegeIds(List<BigInteger> backgroundPrivilegeIds) {
+    public void setBackgroundPrivilegeIds(List<Long> backgroundPrivilegeIds) {
         this.backgroundPrivilegeIds = backgroundPrivilegeIds;
     }
 }

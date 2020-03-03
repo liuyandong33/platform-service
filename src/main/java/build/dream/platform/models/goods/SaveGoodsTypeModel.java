@@ -3,10 +3,9 @@ package build.dream.platform.models.goods;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class SaveGoodsTypeModel extends BasicModel {
-    private BigInteger id;
+    private Long id;
 
     @NotNull
     private String name;
@@ -21,13 +20,13 @@ public class SaveGoodsTypeModel extends BasicModel {
     private String disableSql;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -71,11 +70,11 @@ public class SaveGoodsTypeModel extends BasicModel {
         this.disableSql = disableSql;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

@@ -5,7 +5,6 @@ import build.dream.common.models.BasicModel;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class ObtainAllOrderInfosModel extends BasicModel {
     @NotNull
@@ -17,8 +16,8 @@ public class ObtainAllOrderInfosModel extends BasicModel {
     @Max(value = 500)
     private Integer rows;
 
-    private BigInteger tenantId;
-    private BigInteger agentId;
+    private Long tenantId;
+    private Long agentId;
 
     public Integer getPage() {
         return page;
@@ -36,19 +35,19 @@ public class ObtainAllOrderInfosModel extends BasicModel {
         this.rows = rows;
     }
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 }

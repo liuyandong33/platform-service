@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,15 +27,15 @@ public class ActivityService {
 
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveSpecialGoodsActivity(SaveSpecialGoodsActivityModel saveSpecialGoodsActivityModel) throws ParseException {
-        BigInteger userId = saveSpecialGoodsActivityModel.getUserId();
+        Long userId = saveSpecialGoodsActivityModel.getUserId();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.DEFAULT_DATE_PATTERN);
         Date startTime = simpleDateFormat.parse(saveSpecialGoodsActivityModel.getStartTime() + " 00:00:00");
         Date endTime = simpleDateFormat.parse(saveSpecialGoodsActivityModel.getEndTime() + " 23:59:59");
         Validate.isTrue(endTime.after(startTime), "活动结束时间必须大于开始时间！");
 
-        List<BigInteger> goodsIds = new ArrayList<BigInteger>();
-        List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+        List<Long> goodsIds = new ArrayList<Long>();
+        List<Long> goodsSpecificationIds = new ArrayList<Long>();
         List<SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo> specialGoodsActivityInfos = saveSpecialGoodsActivityModel.getSpecialGoodsActivityInfos();
         for (SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo specialGoodsActivityInfo : specialGoodsActivityInfos) {
             goodsIds.add(specialGoodsActivityInfo.getGoodsId());
@@ -47,7 +46,7 @@ public class ActivityService {
         SearchModel goodsSearchModel = new SearchModel(true);
         goodsSearchModel.addSearchCondition(Goods.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsIds);
         List<Goods> goodses = DatabaseHelper.findAll(Goods.class, goodsSearchModel);
-        Map<BigInteger, Goods> goodsMap = new HashMap<BigInteger, Goods>();
+        Map<Long, Goods> goodsMap = new HashMap<Long, Goods>();
         for (Goods goods : goodses) {
             goodsMap.put(goods.getId(), goods);
         }
@@ -56,7 +55,7 @@ public class ActivityService {
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
-        Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
+        Map<Long, GoodsSpecification> goodsSpecificationMap = new HashMap<Long, GoodsSpecification>();
         for (GoodsSpecification goodsSpecification : goodsSpecifications) {
             goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
         }
@@ -73,8 +72,8 @@ public class ActivityService {
 
         List<SpecialGoodsActivity> specialGoodsActivities = new ArrayList<SpecialGoodsActivity>();
         for (SaveSpecialGoodsActivityModel.SpecialGoodsActivityInfo specialGoodsActivityInfo : specialGoodsActivityInfos) {
-            BigInteger goodsId = specialGoodsActivityInfo.getGoodsId();
-            BigInteger goodsSpecificationId = specialGoodsActivityInfo.getGoodsSpecificationId();
+            Long goodsId = specialGoodsActivityInfo.getGoodsId();
+            Long goodsSpecificationId = specialGoodsActivityInfo.getGoodsSpecificationId();
 
             Goods goods = goodsMap.get(goodsId);
             Validate.notNull(goods, "商品不存在！");

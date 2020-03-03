@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.util.*;
 
 @Component
@@ -45,8 +44,8 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             requestLog.setRequestParameters(GsonUtils.toJson(ApplicationHandler.getRequestParameters(request)));
             requestLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getRequestHeaders(request))));
             requestLog.setCookies(GsonUtils.toJson(ApplicationHandler.getCookies(request)));
-            requestLog.setCreatedUserId(BigInteger.ONE);
-            requestLog.setUpdatedUserId(BigInteger.ONE);
+            requestLog.setCreatedUserId(1L);
+            requestLog.setUpdatedUserId(1L);
             DatabaseHelper.insert(requestLog);
         }
         return true;
@@ -64,8 +63,8 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             responseLog.setResponseTime(new Date());
             responseLog.setResponseContent((String) request.getAttribute(Constants.RESPONSE_CONTENT));
             responseLog.setHeaders(GsonUtils.toJson(obtainHeaders(ApplicationHandler.getResponseHeaders(response))));
-            responseLog.setCreatedUserId(BigInteger.ONE);
-            responseLog.setUpdatedUserId(BigInteger.ONE);
+            responseLog.setCreatedUserId(1L);
+            responseLog.setUpdatedUserId(1L);
             DatabaseHelper.insert(responseLog);
         }
     }

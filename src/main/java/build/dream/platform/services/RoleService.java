@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +36,7 @@ public class RoleService {
      */
     @Transactional(readOnly = true)
     public ApiRest listRoles(ListRolesModel listRolesModel) {
-        BigInteger tenantId = listRolesModel.getTenantId();
+        Long tenantId = listRolesModel.getTenantId();
         Integer page = listRolesModel.getPage();
         Integer rows = listRolesModel.getRows();
 
@@ -70,7 +69,7 @@ public class RoleService {
      */
     @Transactional(readOnly = true)
     public ApiRest listRolePrivileges(ListRolePrivilegesModel listRolePrivilegesModel) {
-        BigInteger roleId = listRolePrivilegesModel.getRoleId();
+        Long roleId = listRolePrivilegesModel.getRoleId();
         List<AppPrivilege> appPrivileges = roleMapper.listRoleAppPrivileges(roleId);
         List<PosPrivilege> posPrivileges = roleMapper.listRolePosPrivileges(roleId);
         List<BackgroundPrivilege> backgroundPrivileges = roleMapper.listRoleBackgroundPrivileges(roleId);
@@ -89,10 +88,10 @@ public class RoleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveRolePrivileges(SaveRolePrivilegesModel saveRolePrivilegesModel) {
-        BigInteger roleId = saveRolePrivilegesModel.getRoleId();
-        List<BigInteger> appPrivilegeIds = saveRolePrivilegesModel.getAppPrivilegeIds();
-        List<BigInteger> posPrivilegeIds = saveRolePrivilegesModel.getPosPrivilegeIds();
-        List<BigInteger> backgroundPrivilegeIds = saveRolePrivilegesModel.getBackgroundPrivilegeIds();
+        Long roleId = saveRolePrivilegesModel.getRoleId();
+        List<Long> appPrivilegeIds = saveRolePrivilegesModel.getAppPrivilegeIds();
+        List<Long> posPrivilegeIds = saveRolePrivilegesModel.getPosPrivilegeIds();
+        List<Long> backgroundPrivilegeIds = saveRolePrivilegesModel.getBackgroundPrivilegeIds();
 
         roleMapper.deleteTenantAppRolePrivileges(roleId);
         if (CollectionUtils.isNotEmpty(appPrivilegeIds)) {

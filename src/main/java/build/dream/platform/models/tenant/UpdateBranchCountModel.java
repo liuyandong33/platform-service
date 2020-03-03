@@ -3,11 +3,10 @@ package build.dream.platform.models.tenant;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class UpdateBranchCountModel extends BasicModel {
     @NotNull
-    private BigInteger tenantId;
+    private Long tenantId;
 
     @NotNull
     private Integer changeCount;
@@ -15,11 +14,11 @@ public class UpdateBranchCountModel extends BasicModel {
     @NotNull
     private Integer type;
 
-    public BigInteger getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(BigInteger tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 

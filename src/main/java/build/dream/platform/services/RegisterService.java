@@ -17,7 +17,6 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class RegisterService {
         ValidateUtils.isTrue(DatabaseHelper.count(SystemUser.class, emailCountSearchModel) == 0, "邮箱已注册！");
 
         SearchModel searchModel = new SearchModel(true);
-        searchModel.addSearchCondition(Goods.ColumnName.GOODS_TYPE_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, BigInteger.ONE);
+        searchModel.addSearchCondition(Goods.ColumnName.GOODS_TYPE_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, 1L);
         searchModel.addSearchCondition(Goods.ColumnName.STATUS, Constants.SQL_OPERATION_SYMBOL_EQUAL, 1);
         searchModel.addSearchCondition(Goods.ColumnName.BUSINESS, Constants.SQL_OPERATION_SYMBOL_EQUAL, business);
         Goods goods = DatabaseHelper.find(Goods.class, searchModel);
@@ -72,7 +71,7 @@ public class RegisterService {
         Integer currentPartitionQuantity = SequenceUtils.nextValue(partitionCode);
         ValidateUtils.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");
 
-        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        Long userId = CommonUtils.getServiceSystemUserId();
 
         District province = DistrictUtils.obtainDistrictById(provinceCode);
         ValidateUtils.notNull(province, "省编码错误！");
@@ -111,7 +110,7 @@ public class RegisterService {
                 .build();
         DatabaseHelper.insert(tenant);
 
-        BigInteger tenantId = tenant.getId();
+        Long tenantId = tenant.getId();
 
         SystemUser systemUser = SystemUser.builder()
                 .name(linkman)
@@ -164,7 +163,7 @@ public class RegisterService {
         ValidateUtils.isTrue(initializeBranchResult.isSuccessful(), initializeBranchResult.getError());
 
         Map<String, Object> branchInfo = ApplicationHandler.toMap(initializeBranchResult.getData());
-        BigInteger branchId = BigInteger.valueOf(MapUtils.getLongValue(branchInfo, "id"));
+        Long branchId = Long.valueOf(MapUtils.getLongValue(branchInfo, "id"));
 
         String basicServicesGoodsFreeTrialDays = ConfigurationUtils.getConfiguration(Constants.BASIC_SERVICES_GOODS_FREE_TRIAL_DAYS);
         if (StringUtils.isBlank(basicServicesGoodsFreeTrialDays)) {
@@ -236,7 +235,7 @@ public class RegisterService {
         District district = DistrictUtils.obtainDistrictById(districtCode);
         ValidateUtils.notNull(province, "区域编码错误！");
 
-        BigInteger userId = CommonUtils.getServiceSystemUserId();
+        Long userId = CommonUtils.getServiceSystemUserId();
 
         String code = SerialNumberGenerator.nextSerialNumber(8, SequenceUtils.nextValue(Constants.SEQUENCE_NAME_AGENT_CODE));
         Agent agent = Agent.builder()
@@ -298,7 +297,7 @@ public class RegisterService {
         String mobile = registerAdminModel.getMobile();
         String email = registerAdminModel.getEmail();
         String password = registerAdminModel.getPassword();
-        BigInteger userId = registerAdminModel.getUserId();
+        Long userId = registerAdminModel.getUserId();
 
         ValidateUtils.isTrue(mobileIsUnique(mobile), "手机号码已经注册！");
         ValidateUtils.isTrue(emailIsUnique(email), "邮箱已经注册！");

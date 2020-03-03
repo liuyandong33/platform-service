@@ -6,8 +6,6 @@ import build.dream.platform.constants.Constants;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 public class SaveSpecialGoodsActivityModel extends BasicModel {
@@ -24,7 +22,7 @@ public class SaveSpecialGoodsActivityModel extends BasicModel {
     private String endTime;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
     @VerifyJsonSchema(value = Constants.SPECIAL_GOODS_ACTIVITY_INFOS_SCHEMA_FILE_PATH)
     private List<SpecialGoodsActivityInfo> specialGoodsActivityInfos;
@@ -53,11 +51,11 @@ public class SaveSpecialGoodsActivityModel extends BasicModel {
         this.endTime = endTime;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -70,27 +68,27 @@ public class SaveSpecialGoodsActivityModel extends BasicModel {
     }
 
     public static class SpecialGoodsActivityInfo {
-        private BigInteger goodsId;
-        private BigInteger goodsSpecificationId;
+        private Long goodsId;
+        private Long goodsSpecificationId;
         private Integer discountType;
-        private BigDecimal tenantSpecialPrice;
-        private BigDecimal agentSpecialPrice;
-        private BigDecimal tenantDiscountRate;
-        private BigDecimal agentDiscountRate;
+        private Double tenantSpecialPrice;
+        private Double agentSpecialPrice;
+        private Double tenantDiscountRate;
+        private Double agentDiscountRate;
 
-        public BigInteger getGoodsId() {
+        public Long getGoodsId() {
             return goodsId;
         }
 
-        public void setGoodsId(BigInteger goodsId) {
+        public void setGoodsId(Long goodsId) {
             this.goodsId = goodsId;
         }
 
-        public BigInteger getGoodsSpecificationId() {
+        public Long getGoodsSpecificationId() {
             return goodsSpecificationId;
         }
 
-        public void setGoodsSpecificationId(BigInteger goodsSpecificationId) {
+        public void setGoodsSpecificationId(Long goodsSpecificationId) {
             this.goodsSpecificationId = goodsSpecificationId;
         }
 
@@ -102,35 +100,35 @@ public class SaveSpecialGoodsActivityModel extends BasicModel {
             this.discountType = discountType;
         }
 
-        public BigDecimal getTenantSpecialPrice() {
+        public Double getTenantSpecialPrice() {
             return tenantSpecialPrice;
         }
 
-        public void setTenantSpecialPrice(BigDecimal tenantSpecialPrice) {
+        public void setTenantSpecialPrice(Double tenantSpecialPrice) {
             this.tenantSpecialPrice = tenantSpecialPrice;
         }
 
-        public BigDecimal getAgentSpecialPrice() {
+        public Double getAgentSpecialPrice() {
             return agentSpecialPrice;
         }
 
-        public void setAgentSpecialPrice(BigDecimal agentSpecialPrice) {
+        public void setAgentSpecialPrice(Double agentSpecialPrice) {
             this.agentSpecialPrice = agentSpecialPrice;
         }
 
-        public BigDecimal getTenantDiscountRate() {
+        public Double getTenantDiscountRate() {
             return tenantDiscountRate;
         }
 
-        public void setTenantDiscountRate(BigDecimal tenantDiscountRate) {
+        public void setTenantDiscountRate(Double tenantDiscountRate) {
             this.tenantDiscountRate = tenantDiscountRate;
         }
 
-        public BigDecimal getAgentDiscountRate() {
+        public Double getAgentDiscountRate() {
             return agentDiscountRate;
         }
 
-        public void setAgentDiscountRate(BigDecimal agentDiscountRate) {
+        public void setAgentDiscountRate(Double agentDiscountRate) {
             this.agentDiscountRate = agentDiscountRate;
         }
     }

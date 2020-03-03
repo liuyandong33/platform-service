@@ -13,7 +13,6 @@ import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,7 @@ public class GoodsService {
         SearchModel goodsSpecificationSearchModel = new SearchModel(true);
         List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
 
-        Map<BigInteger, List<GoodsSpecification>> goodsSpecificationsMap = goodsSpecifications.stream().collect(Collectors.groupingBy(GoodsSpecification::getGoodsId));
+        Map<Long, List<GoodsSpecification>> goodsSpecificationsMap = goodsSpecifications.stream().collect(Collectors.groupingBy(GoodsSpecification::getGoodsId));
 
         List<Map<String, Object>> goodsInfos = new ArrayList<Map<String, Object>>();
         for (Goods goods : goodses) {
@@ -95,7 +94,7 @@ public class GoodsService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainGoodsInfo(ObtainGoodsInfoModel obtainGoodsInfoModel) {
-        BigInteger goodsId = obtainGoodsInfoModel.getGoodsId();
+        Long goodsId = obtainGoodsInfoModel.getGoodsId();
 
         Goods goods = DatabaseHelper.find(Goods.class, goodsId);
         Validate.notNull(goods, "商品不存在！");
@@ -121,15 +120,15 @@ public class GoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveGoods(SaveGoodsModel saveGoodsModel) {
-        BigInteger id = saveGoodsModel.getId();
+        Long id = saveGoodsModel.getId();
         String name = saveGoodsModel.getName();
-        BigInteger goodsTypeId = saveGoodsModel.getGoodsTypeId();
+        Long goodsTypeId = saveGoodsModel.getGoodsTypeId();
         int status = saveGoodsModel.getStatus();
         String photoUrl = saveGoodsModel.getPhotoUrl();
         int meteringMode = saveGoodsModel.getMeteringMode();
         String business = saveGoodsModel.getBusiness();
         List<SaveGoodsModel.GoodsSpecificationModel> goodsSpecificationModels = saveGoodsModel.getGoodsSpecificationModels();
-        BigInteger userId = saveGoodsModel.getUserId();
+        Long userId = saveGoodsModel.getUserId();
 
         SearchModel searchModel = new SearchModel(true);
         searchModel.addSearchCondition(GoodsType.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, goodsTypeId);
@@ -159,7 +158,7 @@ public class GoodsService {
             goods.setUpdatedRemark("修改商品信息！");
             DatabaseHelper.update(goods);
 
-            List<BigInteger> goodsSpecificationIds = new ArrayList<BigInteger>();
+            List<Long> goodsSpecificationIds = new ArrayList<Long>();
             for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
                 if (goodsSpecificationModel.getId() != null) {
                     goodsSpecificationIds.add(goodsSpecificationModel.getId());
@@ -169,7 +168,7 @@ public class GoodsService {
             goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, goodsSpecificationIds);
             goodsSpecificationSearchModel.addSearchCondition(GoodsSpecification.ColumnName.GOODS_ID, Constants.SQL_OPERATION_SYMBOL_EQUAL, id);
             List<GoodsSpecification> goodsSpecifications = DatabaseHelper.findAll(GoodsSpecification.class, goodsSpecificationSearchModel);
-            Map<BigInteger, GoodsSpecification> goodsSpecificationMap = new HashMap<BigInteger, GoodsSpecification>();
+            Map<Long, GoodsSpecification> goodsSpecificationMap = new HashMap<Long, GoodsSpecification>();
             for (GoodsSpecification goodsSpecification : goodsSpecifications) {
                 goodsSpecificationMap.put(goodsSpecification.getId(), goodsSpecification);
             }
@@ -218,7 +217,7 @@ public class GoodsService {
                     .build();
             DatabaseHelper.insert(goods);
 
-            BigInteger goodsId = goods.getId();
+            Long goodsId = goods.getId();
             for (SaveGoodsModel.GoodsSpecificationModel goodsSpecificationModel : goodsSpecificationModels) {
                 GoodsSpecification goodsSpecification = GoodsSpecification.builder()
                         .name(goodsSpecificationModel.getName())
@@ -246,13 +245,13 @@ public class GoodsService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest saveGoodsType(SaveGoodsTypeModel saveGoodsTypeModel) {
-        BigInteger id = saveGoodsTypeModel.getId();
+        Long id = saveGoodsTypeModel.getId();
         String name = saveGoodsTypeModel.getName();
         String description = saveGoodsTypeModel.getDescription();
         boolean single = saveGoodsTypeModel.getSingle();
         String renewSql = saveGoodsTypeModel.getRenewSql();
         String disableSql = saveGoodsTypeModel.getDisableSql();
-        BigInteger userId = saveGoodsTypeModel.getUserId();
+        Long userId = saveGoodsTypeModel.getUserId();
 
         GoodsType goodsType = null;
         if (id != null) {

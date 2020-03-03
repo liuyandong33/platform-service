@@ -7,18 +7,16 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 public class SaveGoodsModel extends BasicModel {
-    private BigInteger id;
+    private Long id;
     @NotNull
     @Length(max = 20)
     private String name;
 
     @NotNull
-    private BigInteger goodsTypeId;
+    private Long goodsTypeId;
 
     @NotNull
     private Integer status;
@@ -35,13 +33,13 @@ public class SaveGoodsModel extends BasicModel {
     private List<GoodsSpecificationModel> goodsSpecificationModels;
 
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,11 +51,11 @@ public class SaveGoodsModel extends BasicModel {
         this.name = name;
     }
 
-    public BigInteger getGoodsTypeId() {
+    public Long getGoodsTypeId() {
         return goodsTypeId;
     }
 
-    public void setGoodsTypeId(BigInteger goodsTypeId) {
+    public void setGoodsTypeId(Long goodsTypeId) {
         this.goodsTypeId = goodsTypeId;
     }
 
@@ -101,16 +99,16 @@ public class SaveGoodsModel extends BasicModel {
         this.goodsSpecificationModels = goodsSpecificationModels;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
     public static class GoodsSpecificationModel extends BasicModel {
-        private BigInteger id;
+        private Long id;
 
         @NotNull
         @Length(max = 20)
@@ -126,16 +124,16 @@ public class SaveGoodsModel extends BasicModel {
         private Integer renewalTime;
 
         @NotNull
-        private BigDecimal tenantPrice;
+        private Double tenantPrice;
 
         @NotNull
-        private BigDecimal agentPrice;
+        private Double agentPrice;
 
-        public BigInteger getId() {
+        public Long getId() {
             return id;
         }
 
-        public void setId(BigInteger id) {
+        public void setId(Long id) {
             this.id = id;
         }
 
@@ -171,19 +169,19 @@ public class SaveGoodsModel extends BasicModel {
             this.renewalTime = renewalTime;
         }
 
-        public BigDecimal getTenantPrice() {
+        public Double getTenantPrice() {
             return tenantPrice;
         }
 
-        public void setTenantPrice(BigDecimal tenantPrice) {
+        public void setTenantPrice(Double tenantPrice) {
             this.tenantPrice = tenantPrice;
         }
 
-        public BigDecimal getAgentPrice() {
+        public Double getAgentPrice() {
             return agentPrice;
         }
 
-        public void setAgentPrice(BigDecimal agentPrice) {
+        public void setAgentPrice(Double agentPrice) {
             this.agentPrice = agentPrice;
         }
     }

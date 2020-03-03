@@ -3,22 +3,21 @@ package build.dream.platform.models.tenant;
 import build.dream.common.models.BasicModel;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class UpdateTenantInfoModel extends BasicModel {
     @NotNull
-    private BigInteger id;
+    private Long id;
     private String name;
     private Integer vipSharedType;
-    private BigInteger dadaSourceId;
+    private Long dadaSourceId;
     @NotNull
-    private BigInteger userId;
+    private Long userId;
 
-    public BigInteger getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -38,19 +37,19 @@ public class UpdateTenantInfoModel extends BasicModel {
         this.vipSharedType = vipSharedType;
     }
 
-    public BigInteger getDadaSourceId() {
+    public Long getDadaSourceId() {
         return dadaSourceId;
     }
 
-    public void setDadaSourceId(BigInteger dadaSourceId) {
+    public void setDadaSourceId(Long dadaSourceId) {
         this.dadaSourceId = dadaSourceId;
     }
 
-    public BigInteger getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(BigInteger userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

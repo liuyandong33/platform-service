@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public ApiRest obtainUserInfo(ObtainUserInfoModel obtainUserInfoModel) {
-        BigInteger userId = obtainUserInfoModel.getUserId();
+        Long userId = obtainUserInfoModel.getUserId();
 
         SystemUser systemUser = DatabaseHelper.find(SystemUser.class, userId);
         ValidateUtils.notNull(systemUser, "用户不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
@@ -47,7 +46,7 @@ public class UserService {
         if (userType == Constants.USER_TYPE_TENANT || userType == Constants.USER_TYPE_TENANT_EMPLOYEE) {
             Tenant tenant = DatabaseHelper.find(Tenant.class, systemUser.getTenantId());
             ValidateUtils.notNull(tenant, "商户不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
-            BigInteger tenantId = tenant.getId();
+            Long tenantId = tenant.getId();
 
             SearchModel tenantSecretKeySearchModel = SearchModel.builder()
                     .autoSetDeletedFalse()
@@ -81,7 +80,7 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public ApiRest batchGetUsers(BatchGetUsersModel batchGetUsersModel) {
-        List<BigInteger> userIds = batchGetUsersModel.getUserIds();
+        List<Long> userIds = batchGetUsersModel.getUserIds();
 
         SearchModel searchModel = SearchModel.builder()
                 .autoSetDeletedFalse()
@@ -99,8 +98,8 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public ApiRest batchDeleteUsers(BatchDeleteUsersModel batchDeleteUsersModel) {
-        BigInteger userId = batchDeleteUsersModel.getUserId();
-        List<BigInteger> userIds = batchDeleteUsersModel.getUserIds();
+        Long userId = batchDeleteUsersModel.getUserId();
+        List<Long> userIds = batchDeleteUsersModel.getUserIds();
 
         Tuple3[] searchConditions = {TupleUtils.buildTuple3(SystemUser.ColumnName.ID, Constants.SQL_OPERATION_SYMBOL_IN, userIds)};
         DatabaseHelper.markedDelete(SystemUser.class, userId, "删除用户信息！", searchConditions);
@@ -134,10 +133,10 @@ public class UserService {
         String password = addUserModel.getPassword();
         String weiXinPublicPlatformOpenId = addUserModel.getWeiXinPublicPlatformOpenId();
         String weiXinOpenPlatformOpenId = addUserModel.getWeiXinOpenPlatformOpenId();
-        BigInteger tenantId = addUserModel.getTenantId();
-        BigInteger agentId = addUserModel.getAgentId();
+        Long tenantId = addUserModel.getTenantId();
+        Long agentId = addUserModel.getAgentId();
         Boolean enabled = addUserModel.getEnabled();
-        BigInteger userId = addUserModel.getUserId();
+        Long userId = addUserModel.getUserId();
 
         SearchModel mobileCountSearchModel = SearchModel.builder()
                 .addSearchCondition(SystemUser.ColumnName.MOBILE, Constants.SQL_OPERATION_SYMBOL_EQUAL, mobile)

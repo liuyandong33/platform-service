@@ -5,11 +5,10 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.platform.constants.Constants;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
 
 public class DoPayModel extends BasicModel {
     @NotNull
-    private BigInteger orderInfoId;
+    private Long orderInfoId;
 
     private Integer paidScene;
 
@@ -19,11 +18,11 @@ public class DoPayModel extends BasicModel {
 
     private String subOpenId;
 
-    public BigInteger getOrderInfoId() {
+    public Long getOrderInfoId() {
         return orderInfoId;
     }
 
-    public void setOrderInfoId(BigInteger orderInfoId) {
+    public void setOrderInfoId(Long orderInfoId) {
         this.orderInfoId = orderInfoId;
     }
 

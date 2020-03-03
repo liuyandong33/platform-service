@@ -3,20 +3,17 @@ package build.dream.platform.models.agent;
 import build.dream.common.models.BasicModel;
 import build.dream.common.utils.ValidateUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-
-import java.math.BigInteger;
 
 public class ObtainAgentInfoModel extends BasicModel {
-    private BigInteger agentId;
+    private Long agentId;
 
     private String agentCode;
 
-    public BigInteger getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public void setAgentId(BigInteger agentId) {
+    public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
 
