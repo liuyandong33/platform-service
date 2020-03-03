@@ -68,6 +68,8 @@ public class UserService {
             Agent agent = DatabaseHelper.find(Agent.class, systemUser.getAgentId());
             ValidateUtils.notNull(agent, "代理商不存在！", ErrorConstants.ERROR_CODE_HANDLING_ERROR);
             data.put("agent", agent);
+        } else if (userType == Constants.USER_TYPE_ADMIN) {
+
         }
         return ApiRest.builder().data(data).message("获取用户信息成功！").successful(true).build();
     }
