@@ -4,6 +4,7 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.beans.District;
 import build.dream.common.domains.saas.*;
 import build.dream.common.utils.*;
+import build.dream.platform.constants.ConfigurationKeys;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.models.register.RegisterAdminModel;
 import build.dream.platform.models.register.RegisterAgentModel;
@@ -64,9 +65,9 @@ public class RegisterService {
 
         String partitionCode = null;
         if (Constants.BUSINESS_CATERING.equals(business)) {
-            partitionCode = ConfigurationUtils.getConfiguration(Constants.CATERING_CURRENT_PARTITION_CODE);
+            partitionCode = ConfigurationUtils.getConfiguration(ConfigurationKeys.CATERING_CURRENT_PARTITION_CODE);
         } else if (Constants.BUSINESS_RETAIL.equals(business)) {
-            partitionCode = ConfigurationUtils.getConfiguration(Constants.RETAIL_CURRENT_PARTITION_CODE);
+            partitionCode = ConfigurationUtils.getConfiguration(ConfigurationKeys.RETAIL_CURRENT_PARTITION_CODE);
         }
         Integer currentPartitionQuantity = SequenceUtils.nextValue(partitionCode);
         ValidateUtils.isTrue(currentPartitionQuantity <= 2000, "分区已满无法创建商户！");

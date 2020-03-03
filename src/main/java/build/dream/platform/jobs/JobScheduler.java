@@ -4,7 +4,7 @@ import build.dream.common.models.job.ScheduleCronJobModel;
 import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.JobUtils;
-import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.ConfigurationKeys;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
@@ -34,7 +34,7 @@ public class JobScheduler implements Serializable {
     private void startDisableBranchGoodsJob() throws SchedulerException {
         JobKey jobKey = JobKey.jobKey("Disable_Branch_Goods_Job", "Platform_Job_Group");
         TriggerKey triggerKey = TriggerKey.triggerKey("Disable_Branch_Goods_Trigger", "Platform_Trigger_Group");
-        String disableBranchGoodsJobCronExpression = ConfigurationUtils.getConfiguration(Constants.DISABLE_BRANCH_GOODS_JOB_CRON_EXPRESSION);
+        String disableBranchGoodsJobCronExpression = ConfigurationUtils.getConfiguration(ConfigurationKeys.DISABLE_BRANCH_GOODS_JOB_CRON_EXPRESSION);
         stopJob(jobKey, triggerKey);
         if (StringUtils.isNotBlank(disableBranchGoodsJobCronExpression)) {
             stopJob(jobKey, triggerKey);
@@ -53,7 +53,7 @@ public class JobScheduler implements Serializable {
     public void startRefreshWeiXinAuthorizerTokenJob() throws SchedulerException {
         JobKey jobKey = JobKey.jobKey("Refresh_Wei_Xin_Authorizer_Token_Job", "Platform_Job_Group");
         TriggerKey triggerKey = TriggerKey.triggerKey("Refresh_Wei_Xin_Authorizer_Token_Trigger", "Platform_Trigger_Group");
-        String refreshWeiXinAuthorizerTokenJobCronExpression = ConfigurationUtils.getConfiguration(Constants.REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION);
+        String refreshWeiXinAuthorizerTokenJobCronExpression = ConfigurationUtils.getConfiguration(ConfigurationKeys.REFRESH_WEI_XIN_AUTHORIZER_TOKEN_JOB_CRON_EXPRESSION);
         stopJob(jobKey, triggerKey);
         if (StringUtils.isNotBlank(refreshWeiXinAuthorizerTokenJobCronExpression)) {
             stopJob(jobKey, triggerKey);
