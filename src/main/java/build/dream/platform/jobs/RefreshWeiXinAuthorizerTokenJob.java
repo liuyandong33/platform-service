@@ -7,6 +7,7 @@ import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
 import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@DisallowConcurrentExecution
 public class RefreshWeiXinAuthorizerTokenJob implements Job {
     private static final String CLASS_NAME = RefreshWeiXinAuthorizerTokenJob.class.getName();
     @Autowired

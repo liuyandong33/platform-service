@@ -60,7 +60,7 @@ public class JobScheduler implements Serializable {
             ScheduleCronJobModel scheduleCronJobModel = ScheduleCronJobModel.builder()
                     .jobName("Refresh_Wei_Xin_Authorizer_Token_Job")
                     .jobGroup("Platform_Job_Group")
-                    .jobClass(DisableBranchGoodsJob.class)
+                    .jobClass(RefreshWeiXinAuthorizerTokenJob.class)
                     .triggerName("Refresh_Wei_Xin_Authorizer_Token_Trigger")
                     .triggerGroup("Platform_Trigger_Group")
                     .cronExpression(refreshWeiXinAuthorizerTokenJobCronExpression)
