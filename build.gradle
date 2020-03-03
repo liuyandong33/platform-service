@@ -40,7 +40,6 @@ configurations.all {
 }
 
 dependencies {
-//    compile("org.scala-lang:scala-library:2.12.5")
     compile("build.dream:lib-common:0.1.0-SNAPSHOT")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-devtools")
@@ -50,7 +49,7 @@ dependencies {
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-config")
     compile("org.springframework.cloud:spring-cloud-starter-hystrix:1.4.7.RELEASE")
-//    compile("com.alibaba:druid:1.1.9")
+    compile("org.springframework.boot:spring-boot-starter-quartz")
     compile("mysql:mysql-connector-java:6.0.6")
     compile("commons-lang:commons-lang:2.6")
     compile("com.google.code.gson:gson:2.8.0")
@@ -60,7 +59,6 @@ dependencies {
     compile("net.sf.json-lib:json-lib:2.4:jdk15")
     compile("com.networknt:json-schema-validator:0.1.13")
     compile("com.google.zxing:core:3.3.2")
-    compile("org.quartz-scheduler:quartz:2.3.0")
     compile("org.apache.tomcat.embed:tomcat-embed-jasper")
     compile("org.apache.poi:poi-ooxml:3.17")
     compile("com.belerweb:pinyin4j:2.5.1")
