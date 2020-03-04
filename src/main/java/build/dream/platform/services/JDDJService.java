@@ -4,7 +4,7 @@ import build.dream.common.api.ApiRest;
 import build.dream.common.domains.saas.JDDJToken;
 import build.dream.common.domains.saas.Tenant;
 import build.dream.common.utils.*;
-import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import build.dream.platform.mappers.JDDJMapper;
 import build.dream.platform.models.jddj.ListJDDJCodesModel;
 import build.dream.platform.models.jddj.SaveJDDJInfoModel;
@@ -104,9 +104,9 @@ public class JDDJService {
             tokenMap.put(jddjToken.getVenderId(), JacksonUtils.writeValueAsString(jddjToken));
         }
 
-        CommonRedisUtils.del(Constants.KEY_JDDJ_TOKENS);
+        CommonRedisUtils.del(RedisKeys.KEY_JDDJ_TOKENS);
         if (MapUtils.isNotEmpty(tokenMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_JDDJ_TOKENS, tokenMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_JDDJ_TOKENS, tokenMap);
         }
     }
 }

@@ -7,6 +7,7 @@ import build.dream.common.domains.saas.AlipayDeveloperAccount;
 import build.dream.common.models.alipay.AlipayOpenAuthTokenAppModel;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import build.dream.platform.mappers.AlipayMapper;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class AlipayService {
         for (AlipayAccount alipayAccount : alipayAccounts) {
             alipayAccountMap.put(alipayAccount.getAppId(), JacksonUtils.writeValueAsString(alipayAccount));
         }
-        CommonRedisUtils.del(Constants.KEY_ALIPAY_ACCOUNTS);
+        CommonRedisUtils.del(RedisKeys.KEY_ALIPAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayAccountMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_ALIPAY_ACCOUNTS, alipayAccountMap);
         }
     }
 
@@ -52,9 +53,9 @@ public class AlipayService {
         for (AlipayDeveloperAccount alipayDeveloperAccount : alipayDeveloperAccounts) {
             alipayDeveloperAccountMap.put(alipayDeveloperAccount.getAppId(), JacksonUtils.writeValueAsString(alipayDeveloperAccount));
         }
-        CommonRedisUtils.del(Constants.KEY_ALIPAY_DEVELOPER_ACCOUNTS);
+        CommonRedisUtils.del(RedisKeys.KEY_ALIPAY_DEVELOPER_ACCOUNTS);
         if (MapUtils.isNotEmpty(alipayDeveloperAccountMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_ALIPAY_DEVELOPER_ACCOUNTS, alipayDeveloperAccountMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_ALIPAY_DEVELOPER_ACCOUNTS, alipayDeveloperAccountMap);
         }
     }
 

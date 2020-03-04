@@ -8,6 +8,7 @@ import build.dream.common.domains.saas.WeiXinOpenPlatformApplication;
 import build.dream.common.domains.saas.WeiXinPayAccount;
 import build.dream.common.utils.*;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import build.dream.platform.models.weixin.HandleAuthCallbackModel;
 import build.dream.platform.models.weixin.ObtainWeiXinMiniProgramsModel;
 import build.dream.platform.models.weixin.ObtainWeiXinPublicAccountModel;
@@ -157,7 +158,7 @@ public class WeiXinService {
             DatabaseHelper.update(weiXinPayAccount);
         }
 
-        CommonRedisUtils.hset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
+        CommonRedisUtils.hset(RedisKeys.KEY_WEI_XIN_PAY_ACCOUNTS, tenantId + "_" + branchId, GsonUtils.toJson(weiXinPayAccount));
         return ApiRest.builder().message("保存微信支付账号成功！").successful(true).build();
     }
 
@@ -174,14 +175,14 @@ public class WeiXinService {
             weiXinPayAccountMap.put(weiXinPayAccount.getTenantId() + "_" + weiXinPayAccount.getBranchId(), JacksonUtils.writeValueAsString(weiXinPayAccount));
             weiXinPayApiV3KeyMap.put(weiXinPayAccount.getAppId(), weiXinPayAccount.getApiV3Key());
         }
-        CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_ACCOUNTS);
+        CommonRedisUtils.del(RedisKeys.KEY_WEI_XIN_PAY_ACCOUNTS);
         if (MapUtils.isNotEmpty(weiXinPayAccountMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_WEI_XIN_PAY_ACCOUNTS, weiXinPayAccountMap);
         }
 
-        CommonRedisUtils.del(Constants.KEY_WEI_XIN_PAY_API_V3_KEYS);
+        CommonRedisUtils.del(RedisKeys.KEY_WEI_XIN_PAY_API_V3_KEYS);
         if (MapUtils.isNotEmpty(weiXinPayApiV3KeyMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_PAY_API_V3_KEYS, weiXinPayApiV3KeyMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_WEI_XIN_PAY_API_V3_KEYS, weiXinPayApiV3KeyMap);
         }
     }
 
@@ -208,9 +209,9 @@ public class WeiXinService {
             weiXinAuthorizerTokenMap.put(weiXinAuthorizerToken.getComponentAppId() + "_" + weiXinAuthorizerToken.getAuthorizerAppId(), JacksonUtils.writeValueAsString(weiXinAuthorizerToken));
         }
 
-        CommonRedisUtils.del(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        CommonRedisUtils.del(RedisKeys.KEY_WEI_XIN_AUTHORIZER_TOKENS);
         if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
         }
     }
 

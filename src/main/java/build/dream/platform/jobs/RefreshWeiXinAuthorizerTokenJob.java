@@ -4,7 +4,7 @@ import build.dream.common.beans.ComponentAccessToken;
 import build.dream.common.domains.saas.WeiXinAuthorizerToken;
 import build.dream.common.domains.saas.WeiXinOpenPlatformApplication;
 import build.dream.common.utils.*;
-import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import build.dream.platform.services.WeiXinService;
 import org.apache.commons.collections.MapUtils;
 import org.quartz.DisallowConcurrentExecution;
@@ -46,9 +46,9 @@ public class RefreshWeiXinAuthorizerTokenJob implements Job {
             }
         }
 
-        CommonRedisUtils.del(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS);
+        CommonRedisUtils.del(RedisKeys.KEY_WEI_XIN_AUTHORIZER_TOKENS);
         if (MapUtils.isNotEmpty(weiXinAuthorizerTokenMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_WEI_XIN_AUTHORIZER_TOKENS, weiXinAuthorizerTokenMap);
         }
     }
 

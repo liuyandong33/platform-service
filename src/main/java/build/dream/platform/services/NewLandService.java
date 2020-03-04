@@ -5,7 +5,7 @@ import build.dream.common.utils.CommonRedisUtils;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.JacksonUtils;
 import build.dream.common.utils.SearchModel;
-import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,9 +28,9 @@ public class NewLandService {
         for (NewLandAccount newLandAccount : newLandAccounts) {
             newLandAccountMap.put(newLandAccount.getTenantId() + "_" + newLandAccount.getBranchId(), JacksonUtils.writeValueAsString(newLandAccount));
         }
-        CommonRedisUtils.del(Constants.KEY_NEW_LAND_ACCOUNTS);
+        CommonRedisUtils.del(RedisKeys.KEY_NEW_LAND_ACCOUNTS);
         if (MapUtils.isNotEmpty(newLandAccountMap)) {
-            CommonRedisUtils.hmset(Constants.KEY_NEW_LAND_ACCOUNTS, newLandAccountMap);
+            CommonRedisUtils.hmset(RedisKeys.KEY_NEW_LAND_ACCOUNTS, newLandAccountMap);
         }
     }
 }

@@ -139,7 +139,7 @@ public class RegisterService {
                 .tenantCode(tenantCode)
                 .publicKey(publicKey)
                 .privateKey(privateKey)
-                .platformPublicKey(ConfigurationUtils.getConfiguration(Constants.PLATFORM_PUBLIC_KEY))
+                .platformPublicKey(ConfigurationUtils.getConfiguration(ConfigurationKeys.PLATFORM_PUBLIC_KEY))
                 .createdUserId(userId)
                 .updatedUserId(userId)
                 .updatedRemark("新增商户，增加商户秘钥！")

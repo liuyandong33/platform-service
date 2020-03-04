@@ -7,6 +7,7 @@ import build.dream.common.utils.ApplicationHandler;
 import build.dream.common.utils.ConfigurationUtils;
 import build.dream.common.utils.DatabaseHelper;
 import build.dream.common.utils.GsonUtils;
+import build.dream.platform.constants.ConfigurationKeys;
 import build.dream.platform.constants.Constants;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,9 @@ import java.util.*;
 
 @Component
 public class AccessLogHandlerInterceptor implements HandlerInterceptor {
-    private static final String DEPLOYMENT_ENVIRONMENT = ConfigurationUtils.getConfiguration(Constants.DEPLOYMENT_ENVIRONMENT);
-    private static final String PARTITION_CODE = ConfigurationUtils.getConfiguration(Constants.PARTITION_CODE);
-    private static final String SERVICE_NAME = ConfigurationUtils.getConfiguration(Constants.SERVICE_NAME);
+    private static final String DEPLOYMENT_ENVIRONMENT = ConfigurationUtils.getConfiguration(ConfigurationKeys.DEPLOYMENT_ENVIRONMENT);
+    private static final String PARTITION_CODE = ConfigurationUtils.getConfiguration(ConfigurationKeys.PARTITION_CODE);
+    private static final String SERVICE_NAME = ConfigurationUtils.getConfiguration(ConfigurationKeys.SERVICE_NAME);
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {

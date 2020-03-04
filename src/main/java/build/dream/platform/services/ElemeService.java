@@ -5,7 +5,9 @@ import build.dream.common.domains.saas.ElemeBranchMapping;
 import build.dream.common.domains.saas.ElemeToken;
 import build.dream.common.domains.saas.Tenant;
 import build.dream.common.utils.*;
+import build.dream.platform.constants.ConfigurationKeys;
 import build.dream.platform.constants.Constants;
+import build.dream.platform.constants.RedisKeys;
 import build.dream.platform.models.eleme.HandleTenantAuthorizeCallbackModel;
 import build.dream.platform.models.eleme.SaveElemeBranchMappingModel;
 import build.dream.platform.models.eleme.VerifyTokenModel;
@@ -39,8 +41,8 @@ public class ElemeService {
         Tenant tenant = DatabaseHelper.find(Tenant.class, searchModel);
         ValidateUtils.notNull(tenant, "商户不存在！");
 
-        String appKey = ConfigurationUtils.getConfiguration(Constants.ELEME_APP_KEY);
-        String appSecret = ConfigurationUtils.getConfiguration(Constants.ELEME_APP_SECRET);
+        String appKey = ConfigurationUtils.getConfiguration(ConfigurationKeys.ELEME_APP_KEY);
+        String appSecret = ConfigurationUtils.getConfiguration(ConfigurationKeys.ELEME_APP_SECRET);
         String redirectUrl = "http://check-local.smartpos.top/zd1/ct2/proxy/doGetPermit/zd1/catering/eleme/tenantAuthorizeCallback";
         JSONObject tokenJsonObject = JSONObject.fromObject(ElemeUtils.obtainTokenByCode(code, appKey, appSecret, redirectUrl));
         if (tokenJsonObject.has("error")) {
@@ -80,7 +82,7 @@ public class ElemeService {
         DatabaseHelper.insert(elemeToken);
 
         tokenJsonObject.put("fetch_time", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fetchTime));
-        CommonRedisUtils.hset(Constants.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
+        CommonRedisUtils.hset(RedisKeys.KEY_ELEME_TOKENS, tokenField, GsonUtils.toJson(elemeToken));
 
         return ApiRest.builder().message("处理商户授权成功！").successful(true).build();
     }
@@ -154,9 +156,9 @@ public class ElemeService {
             DatabaseHelper.update(elemeToken);
 
             if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_CHAIN_ACCOUNT) {
-                CommonRedisUtils.hdel(Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId);
+                CommonRedisUtils.hdel(RedisKeys.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId);
             } else if (elemeAccountType == Constants.ELEME_ACCOUNT_TYPE_INDEPENDENT_ACCOUNT) {
-                CommonRedisUtils.hdel(build.dream.common.constants.Constants.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId);
+                CommonRedisUtils.hdel(RedisKeys.KEY_ELEME_TOKENS, Constants.ELEME_TOKEN + "_" + tenantId + "_" + branchId);
             }
         }
 
