@@ -18,9 +18,9 @@ public class RsaKeyPairController {
      *
      * @return
      */
-    @RequestMapping(value = "/cacheTenantInfos")
+    @RequestMapping(value = "/cacheRsaKeyPairs")
     @ResponseBody
-    public String cacheTenantInfos() {
+    public String cacheRsaKeyPairs() {
         try {
             rsaKeyPairService.cacheRsaKeyPairs();
             return Constants.SUCCESS;
