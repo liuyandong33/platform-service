@@ -135,7 +135,9 @@ public class TenantService {
      */
     @Transactional(readOnly = true)
     public void cacheTenantInfos() {
-        SearchModel searchModel = new SearchModel(true);
+        SearchModel searchModel = SearchModel.builder()
+                .autoSetDeletedFalse()
+                .build();
         List<Tenant> tenants = DatabaseHelper.findAll(Tenant.class, searchModel);
         TenantUtils.rejoinCacheTenantInfos(tenants);
     }
