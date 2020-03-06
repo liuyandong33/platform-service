@@ -29,6 +29,8 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
     private AgentService agentService;
     @Autowired
     private OauthClientDetailService oauthClientDetailService;
+    @Autowired
+    private RsaKeyPairService rsaKeyPairService;
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -64,6 +66,9 @@ public class PlatformServiceServletContextListener extends BasicServletContextLi
 
         // 缓存oauth客户端信息
         oauthClientDetailService.cacheOauthClientDetails();
+
+        // 缓存rsa秘钥对
+        rsaKeyPairService.cacheRsaKeyPairs();
 
         // 启动所有定时任务
         jobScheduler.scheduler();
